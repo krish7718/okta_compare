@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>OktaCompare Report</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:400,500,600&display=swap">
+
+<style>
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #f7f9fb;
+  margin: 0;
+  padding: 40px;
+  color: #1f2937;
+}
+
+/* Header buttons */
+.export-section {
+    text-align: center;
+    margin-bottom: 30px;
+}
+.export-section button {
+    background-color: #0063e0;
+    color: #fff;
+    padding: 12px 22px;
+    margin: 10px;
+    border: none;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.export-section button:hover {
+    background-color: #004bb5;
+}
+
+/* Summary card grid */
+.entity-summary-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin: 10px 0 30px;
+}
+.summary-card {
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(15, 23, 42, 0.08);
+    padding: 16px 18px;
+    min-width: 220px;
+    flex: 1 1 220px;
+    max-width: 260px;
+}
+.summary-card h4 {
+    margin: 0 0 8px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #002e5d;
+}
+.summary-card .entity-label {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #6b7280;
+    margin-bottom: 4px;
+}
+.summary-card .total {
+    font-size: 13px;
+    margin-bottom: 6px;
+    color: #374151;
+}
+.summary-card .counts {
+    font-size: 13px;
+    line-height: 1.5;
+    margin-bottom: 10px;
+}
+.summary-card .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+.summary-card button {
+    background-color: #0063e0;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+}
+.summary-card button:hover {
+    background-color: #004bb5;
+}
+
+/* Detailed tables */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+table th, table td {
+  border: 1px solid #d1d5db;
+  padding: 10px 14px;
+  text-align: left;
+}
+table th {
+  background-color: #e1e8f5;
+  font-weight: 600;
+}
+
+/* Row colors */
+.table-row-critical { background-color: #f8d7da; }
+.table-row-medium   { background-color: #fff3cd; }
+.table-row-low      { background-color: #d1ecf1; }
+.table-row-matched  { background-color: #d4edda; }
+
+/* Toggle headers */
+.toggle-header {
+    cursor: pointer;
+    margin-top: 4px;
+    font-weight: 500;
+    font-size: 14px;
+    color: #1f2937;
+}
+.toggle-header span.chevron {
+    margin-right: 6px;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid #e5e7eb;
+    margin: 20px 0;
+}
+</style>
+</head>
+
+<body>
+
+<!-- Top Buttons -->
+<div class="export-section">
+    <button onclick="window.location.href='/'">Home</button>
+    <button onclick="window.location.href='/export_differences'">Export Differences CSV</button>
+    <button onclick="window.location.href='/export_matches'">Export Matches CSV</button>
+</div>
+
+<!-- Header -->
+<header>
+  <h1>OktaCompare Report</h1>
+  <p><strong>Generated On:</strong> {{ generated_at }}</p>
+  <p><strong>Environment A:</strong> {{ envA }}</p>
+  <p><strong>Environment B:</strong> {{ envB }}</p>
+</header>
+
+<hr>
+
+<!-- SUMMARY GRID -->
+<h3>Summary by Entity</h3>
+<div class="entity-summary-grid">
+
+  <!-- Groups -->
+  <div class="summary-card">
+      <div class="entity-label">Entity</div>
+      <h4>Groups</h4>
+      <div class="total">Total Differences: <strong>{{ group_total_diff }}</strong></div>
+      <div class="counts">
+        <div class="badge">🔴 Critical: {{ group_summary_counts.get('🔴 Critical', 0) }}</div>
+        <div class="badge">🟠 Medium: {{ group_summary_counts.get('🟠 Medium', 0) }}</div>
+        <div class="badge">🟡 Low: {{ group_summary_counts.get('🟡 Low', 0) }}</div>
+      </div>
+      <button onclick="viewDetails('groups')">View Details</button>
+  </div>
+
+  <!-- Group Rules -->
+  <div class="summary-card">
+      <div class="entity-label">Entity</div>
+      <h4>Group Rules</h4>
+      <div class="total">Total Differences: <strong>{{ rule_total_diff }}</strong></div>
+      <div class="counts">
+        <div class="badge">🔴 Critical: {{ rule_summary_counts.get('🔴 Critical', 0) }}</div>
+        <div class="badge">🟠 Medium: {{ rule_summary_counts.get('🟠 Medium', 0) }}</div>
+        <div class="badge">🟡 Low: {{ rule_summary_counts.get('🟡 Low', 0) }}</div>
+      </div>
+      <button onclick="viewDetails('rules')">View Details</button>
+  </div>
+
+  <!-- Network Zones -->
+  <div class="summary-card">
+      <div class="entity-label">Entity</div>
+      <h4>Network Zones</h4>
+      <div class="total">Total Differences: <strong>{{ zone_total_diff }}</strong></div>
+      <div class="counts">
+        <div class="badge">🔴 Critical: {{ zone_summary_counts.get('🔴 Critical', 0) }}</div>
+        <div class="badge">🟠 Medium: {{ zone_summary_counts.get('🟠 Medium', 0) }}</div>
+        <div class="badge">🟡 Low: {{ zone_summary_counts.get('🟡 Low', 0) }}</div>
+      </div>
+      <button onclick="viewDetails('zones')">View Details</button>
+  </div>
+
+  <!-- Applications -->
+  <div class="summary-card">
+      <div class="entity-label">Entity</div>
+      <h4>Applications</h4>
+      <div class="total">Total Differences: <strong>{{ app_total_diff }}</strong></div>
+      <div class="counts">
+        <div class="badge">🔴 Critical: {{ app_summary_counts.get('🔴 Critical', 0) }}</div>
+        <div class="badge">🟠 Medium: {{ app_summary_counts.get('🟠 Medium', 0) }}</div>
+        <div class="badge">🟡 Low: {{ app_summary_counts.get('🟡 Low', 0) }}</div>
+      </div>
+      <button onclick="viewDetails('apps')">View Details</button>
+  </div>
+
+  <!-- Global Session Policies (combined) -->
+  <div class="summary-card">
+      <div class="entity-label">Entity</div>
+      <h4>Session Policies</h4>
+      <div class="total">Total Differences: <strong>{{ session_total_diff }}</strong></div>
+      <div class="counts">
+        <div class="badge">🔴 Critical: {{ session_summary_counts.get('🔴 Critical', 0) }}</div>
+        <div class="badge">🟠 Medium: {{ session_summary_counts.get('🟠 Medium', 0) }}</div>
+        <div class="badge">🟡 Low: {{ session_summary_counts.get('🟡 Low', 0) }}</div>
+      </div>
+      <button onclick="viewDetails('sessionpol')">View Details</button>
+  </div>
+
+</div>
+
+<hr>
+
+<!-- GROUPS DETAIL -->
+<section id="groups-section">
+  <div id="groups-toggle" class="toggle-header" onclick="toggleSection('groups')">
+      <span class="chevron">▶</span> Entity: Groups – Detailed Comparison
+  </div>
+
+  <div id="groups-comparison" style="display:none; margin-top: 10px;">
+    {% if group_df %}
+    <table>
+      <tr>
+        <th>Category</th><th>Object</th><th>Attribute</th>
+        <th>Env A Value</th><th>Env B Value</th>
+        <th>Difference Type</th><th>Impact</th>
+        <th>Recommended Action</th><th>Priority</th>
+      </tr>
+      {% for row in group_df %}
+      <tr class="
+          {% if '🔴' in row['Priority'] %}table-row-critical
+          {% elif '🟠' in row['Priority'] %}table-row-medium
+          {% elif '🟡' in row['Priority'] %}table-row-low
+          {% else %}table-row-matched{% endif %}
+      ">
+        <td>{{ row['Category'] }}</td>
+        <td>{{ row['Object'] }}</td>
+        <td>{{ row['Attribute'] }}</td>
+        <td>{{ row['Env A Value'] }}</td>
+        <td>{{ row['Env B Value'] }}</td>
+        <td>{{ row['Difference Type'] }}</td>
+        <td>{{ row['Impact'] }}</td>
+        <td>{{ row['Recommended Action'] }}</td>
+        <td>{{ row['Priority'] }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}
+      <p>No group differences detected.</p>
+    {% endif %}
+  </div>
+</section>
+
+<!-- GROUP RULES DETAIL -->
+<section id="rules-section" style="margin-top: 30px;">
+  <div id="rules-toggle" class="toggle-header" onclick="toggleSection('rules')">
+      <span class="chevron">▶</span> Entity: Group Rules – Detailed Comparison
+  </div>
+
+  <div id="rules-comparison" style="display:none; margin-top: 10px;">
+    {% if rule_df %}
+    <table>
+      <tr>
+        <th>Category</th><th>Object</th><th>Attribute</th>
+        <th>Env A Value</th><th>Env B Value</th>
+        <th>Difference Type</th><th>Impact</th>
+        <th>Recommended Action</th><th>Priority</th>
+      </tr>
+      {% for row in rule_df %}
+      <tr class="
+          {% if '🔴' in row['Priority'] %}table-row-critical
+          {% elif '🟠' in row['Priority'] %}table-row-medium
+          {% elif '🟡' in row['Priority'] %}table-row-low
+          {% else %}table-row-matched{% endif %}
+      ">
+        <td>{{ row['Category'] }}</td>
+        <td>{{ row['Object'] }}</td>
+        <td>{{ row['Attribute'] }}</td>
+        <td>{{ row['Env A Value'] }}</td>
+        <td>{{ row['Env B Value'] }}</td>
+        <td>{{ row['Difference Type'] }}</td>
+        <td>{{ row['Impact'] }}</td>
+        <td>{{ row['Recommended Action'] }}</td>
+        <td>{{ row['Priority'] }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}
+      <p>No group rule differences detected.</p>
+    {% endif %}
+  </div>
+</section>
+
+<!-- NETWORK ZONES DETAIL -->
+<section id="zones-section" style="margin-top: 30px;">
+  <div id="zones-toggle" class="toggle-header" onclick="toggleSection('zones')">
+      <span class="chevron">▶</span> Entity: Network Zones – Detailed Comparison
+  </div>
+
+  <div id="zones-comparison" style="display:none; margin-top: 10px;">
+    {% if zone_df %}
+    <table>
+      <tr>
+        <th>Category</th><th>Object</th><th>Attribute</th>
+        <th>Env A Value</th><th>Env B Value</th>
+        <th>Difference Type</th><th>Impact</th>
+        <th>Recommended Action</th><th>Priority</th>
+      </tr>
+      {% for row in zone_df %}
+      <tr class="
+          {% if '🔴' in row['Priority'] %}table-row-critical
+          {% elif '🟠' in row['Priority'] %}table-row-medium
+          {% elif '🟡' in row['Priority'] %}table-row-low
+          {% else %}table-row-matched{% endif %}
+      ">
+        <td>{{ row['Category'] }}</td>
+        <td>{{ row['Object'] }}</td>
+        <td>{{ row['Attribute'] }}</td>
+        <td>{{ row['Env A Value'] }}</td>
+        <td>{{ row['Env B Value'] }}</td>
+        <td>{{ row['Difference Type'] }}</td>
+        <td>{{ row['Impact'] }}</td>
+        <td>{{ row['Recommended Action'] }}</td>
+        <td>{{ row['Priority'] }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}
+      <p>No network zone differences detected.</p>
+    {% endif %}
+  </div>
+</section>
+
+<!-- APPLICATIONS DETAIL -->
+<section id="apps-section" style="margin-top: 30px;">
+  <div id="apps-toggle" class="toggle-header" onclick="toggleSection('apps')">
+      <span class="chevron">▶</span> Entity: Applications – Detailed Comparison
+  </div>
+
+  <div id="apps-comparison" style="display:none; margin-top: 10px;">
+    {% if apps_df %}
+    <table>
+      <tr>
+        <th>Category</th><th>Object</th><th>Attribute</th>
+        <th>Env A Value</th><th>Env B Value</th>
+        <th>Difference Type</th><th>Impact</th>
+        <th>Recommended Action</th><th>Priority</th>
+      </tr>
+      {% for row in apps_df %}
+      <tr class="
+          {% if '🔴' in row['Priority'] %}table-row-critical
+          {% elif '🟠' in row['Priority'] %}table-row-medium
+          {% elif '🟡' in row['Priority'] %}table-row-low
+          {% else %}table-row-matched{% endif %}
+      ">
+        <td>{{ row['Category'] }}</td>
+        <td>{{ row['Object'] }}</td>
+        <td>{{ row['Attribute'] }}</td>
+        <td>{{ row['Env A Value'] }}</td>
+        <td>{{ row['Env B Value'] }}</td>
+        <td>{{ row['Difference Type'] }}</td>
+        <td>{{ row['Impact'] }}</td>
+        <td>{{ row['Recommended Action'] }}</td>
+        <td>{{ row['Priority'] }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}
+      <p>No application differences detected.</p>
+    {% endif %}
+  </div>
+</section>
+
+<!-- SESSION POLICIES DETAIL -->
+<section id="sessionpol-section" style="margin-top: 30px;">
+  <div id="sessionpol-toggle" class="toggle-header" onclick="toggleSection('sessionpol')">
+      <span class="chevron">▶</span> Entity: Session Policies – Detailed Comparison
+  </div>
+
+  <div id="sessionpol-comparison" style="display:none; margin-top: 10px;">
+    {% if session_df %}
+    <table>
+      <tr>
+        <th>Category</th><th>Object</th><th>Attribute</th>
+        <th>Env A Value</th><th>Env B Value</th>
+        <th>Difference Type</th><th>Impact</th>
+        <th>Recommended Action</th><th>Priority</th>
+      </tr>
+
+      {% for row in session_df %}
+      <tr class="
+        {% if '🔴' in row['Priority'] %}table-row-critical
+        {% elif '🟠' in row['Priority'] %}table-row-medium
+        {% elif '🟡' in row['Priority'] %}table-row-low
+        {% else %}table-row-matched{% endif %}
+      ">
+        <td>{{ row['Category'] }}</td>
+        <td>{{ row['Object'] }}</td>
+        <td>{{ row['Attribute'] }}</td>
+        <td>{{ row['Env A Value'] }}</td>
+        <td>{{ row['Env B Value'] }}</td>
+        <td>{{ row['Difference Type'] }}</td>
+        <td>{{ row['Impact'] }}</td>
+        <td>{{ row['Recommended Action'] }}</td>
+        <td>{{ row['Priority'] }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}
+      <p>No session policy differences detected.</p>
+    {% endif %}
+  </div>
+</section>
+
+<script>
+function toggleSection(prefix) {
+    const container = document.getElementById(prefix + "-comparison");
+    const header    = document.getElementById(prefix + "-toggle");
+    const chevron   = header.querySelector(".chevron");
+
+    if (container.style.display === "none" || container.style.display === "") {
+        container.style.display = "block";
+        chevron.textContent = "▼";
+    } else {
+        container.style.display = "none";
+        chevron.textContent = "▶";
+    }
+}
+
+function viewDetails(prefix) {
+    document.getElementById(prefix + "-section")
+        .scrollIntoView({ behavior: "smooth" });
+
+    setTimeout(() => toggleSection(prefix), 200);
+}
+</script>
+
+</body>
+</html>

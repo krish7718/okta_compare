@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>OktaCompare</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
+<style>
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f3f5f7;
+        margin: 0;
+        padding: 0;
+        color: #1f2937;
+    }
+    .header {
+        background: #002e5d;
+        color: #ffffff;
+        padding: 50px 20px;
+        text-align: center;
+    }
+    .header h1 {
+        font-size: 32px;
+        font-weight: 600;
+        margin: 0;
+        letter-spacing: -0.5px;
+    }
+    .header p {
+        font-size: 15px;
+        margin-top: 10px;
+        opacity: 0.9;
+    }
+    .container {
+        max-width: 700px;
+        margin: -40px auto 40px;
+        background: #ffffff;
+        padding: 40px 50px;
+        border-radius: 12px;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+    }
+    h2.section-title {
+        color: #002e5d;
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 10px;
+        border-left: 4px solid #0063e0;
+        padding-left: 10px;
+        margin-top: 40px;
+    }
+    label {
+        display: block;
+        margin-top: 18px;
+        font-weight: 500;
+        color: #002e5d;
+        font-size: 14px;
+    }
+    input[type=text],
+    input[type=password] {
+        width: 100%;
+        padding: 12px 14px;
+        margin-top: 6px;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        font-size: 14px;
+        background: #f9fafb;
+        transition: all 0.2s ease;
+    }
+    input[type=text]:focus,
+    input[type=password]:focus {
+        border-color: #0063e0;
+        background: #ffffff;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(0, 99, 224, 0.1);
+    }
+    .button-wrapper {
+        text-align: center;
+        margin-top: 30px;
+    }
+    button {
+        width: 100%;
+        padding: 15px;
+        background-color: #0063e0;
+        color: #ffffff;
+        border: none;
+        border-radius: 6px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s ease, transform 0.1s ease;
+    }
+    button:hover {
+        background-color: #004bb5;
+    }
+    button:active {
+        transform: scale(0.98);
+    }
+</style>
+</head>
+
+<body>
+<div class="header">
+    <h1>OktaCompare</h1>
+    <p>Compare configurations between two Okta environments to ensure consistency before migrations, testing, or production deployments.</p>
+</div>
+
+<div class="container">
+    <h2 class="section-title">Environment A</h2>
+    <form method="POST">
+        <label>Environment A Domain</label>
+        <input type="text" name="envA_domain" placeholder="{{ defaultA }}">
+        <label>Environment A API Token</label>
+        <input type="password" name="envA_token" placeholder="Leave blank to use default">
+
+        <h2 class="section-title">Environment B</h2>
+        <label>Environment B Domain</label>
+        <input type="text" name="envB_domain" placeholder="{{ defaultB }}">
+        <label>Environment B API Token</label>
+        <input type="password" name="envB_token" placeholder="Leave blank to use default">
+
+        <div class="button-wrapper">
+            <button type="submit">Compare Environments</button>
+        </div>
+    </form>
+</div>
+</body>
+</html>

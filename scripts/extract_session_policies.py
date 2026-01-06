@@ -1,0 +1,71 @@
+import requests
+
+def _ensure_domain_str(domain_url):
+    """Ensure domain_url is a valid HTTPS string."""
+    if not isinstance(domain_url, str):
+        raise TypeError(f"Expected domain_url as str, got {type(domain_url).__name__}: {domain_url!r}")
+    return domain_url if domain_url.startswith(("http://", "https://")) else f"https://{domain_url}"
+
+
+# -----------------------------------------------------------
+# Fetch all Global Session Policies (type = OKTA_SIGN_ON)
+# -----------------------------------------------------------
+def get_session_policies(domain_url, api_token):
+    headers = {
+        "Authorization": f"SSWS {api_token}",
+        "Accept": "application/json"
+    }
+
+    domain_url = _ensure_domain_str(domain_url)
+    base = domain_url.rstrip("/")
+
+    policies = []
+    url = base + "/api/v1/policies?type=OKTA_SIGN_ON"
+
+    while url:
+        resp = requests.get(url, headers=headers)
+        if resp.status_code != 200:
+            print(f"Error fetching session policies: {resp.status_code}")
+            break
+
+        policies.extend(resp.json())
+
+        next_link = resp.headers.get("Link")
+        if next_link and 'rel="next"' in next_link:
+            url = next_link.split(";")[0].strip("<>")
+        else:
+            url = None
+
+    return policies
+
+
+# -----------------------------------------------------------
+# Fetch rules of a given session policy
+# -----------------------------------------------------------
+def get_policy_rules(domain_url, api_token, policy_id):
+    headers = {
+        "Authorization": f"SSWS {api_token}",
+        "Accept": "application/json"
+    }
+
+    domain_url = _ensure_domain_str(domain_url)
+    base = domain_url.rstrip("/")
+
+    rules = []
+    url = base + f"/api/v1/policies/{policy_id}/rules"
+
+    while url:
+        resp = requests.get(url, headers=headers)
+        if resp.status_code != 200:
+            print(f"Error fetching policy rules for {policy_id}: {resp.status_code}")
+            break
+
+        rules.extend(resp.json())
+
+        next_link = resp.headers.get("Link")
+        if next_link and 'rel=\"next\"' in next_link:
+            url = next_link.split(";")[0].strip("<>")
+        else:
+            url = None
+
+    return rules
