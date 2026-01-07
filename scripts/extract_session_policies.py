@@ -1,4 +1,11 @@
+import logging
 import requests
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(name)s - %(message)s",
+)
+logger = logging.getLogger("okta_compare")
 
 def _ensure_domain_str(domain_url):
     """Ensure domain_url is a valid HTTPS string."""
@@ -16,6 +23,7 @@ def get_session_policies(domain_url, api_token):
         "Accept": "application/json"
     }
 
+    logger.info("Fetching session policies.")
     domain_url = _ensure_domain_str(domain_url)
     base = domain_url.rstrip("/")
 
@@ -25,7 +33,7 @@ def get_session_policies(domain_url, api_token):
     while url:
         resp = requests.get(url, headers=headers)
         if resp.status_code != 200:
-            print(f"Error fetching session policies: {resp.status_code}")
+            logger.error("Error fetching session policies: %s", resp.status_code)
             break
 
         policies.extend(resp.json())
@@ -48,6 +56,7 @@ def get_policy_rules(domain_url, api_token, policy_id):
         "Accept": "application/json"
     }
 
+    logger.info("Fetching policy rules for policy_id=%s.", policy_id)
     domain_url = _ensure_domain_str(domain_url)
     base = domain_url.rstrip("/")
 
@@ -57,7 +66,7 @@ def get_policy_rules(domain_url, api_token, policy_id):
     while url:
         resp = requests.get(url, headers=headers)
         if resp.status_code != 200:
-            print(f"Error fetching policy rules for {policy_id}: {resp.status_code}")
+            logger.error("Error fetching policy rules for %s: %s", policy_id, resp.status_code)
             break
 
         rules.extend(resp.json())

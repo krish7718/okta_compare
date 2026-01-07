@@ -1,4 +1,11 @@
+import logging
 import requests
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(name)s - %(message)s",
+)
+logger = logging.getLogger("okta_compare")
 
 def _ensure_domain_str(domain_url):
     if not isinstance(domain_url, str):
@@ -15,6 +22,7 @@ def get_groups(domain_url, api_token):
         'Accept': 'application/json'
     }
 
+    logger.info("Fetching groups.")
     groups = []
     domain_url = _ensure_domain_str(domain_url)
     url = domain_url + '/api/v1/groups'
@@ -22,7 +30,11 @@ def get_groups(domain_url, api_token):
     while url:
         response = requests.get(url, headers=headers)
         if response.status_code != 200:
-            print("Error fetching groups:", response.status_code, response.text)
+            logger.error(
+                "Error fetching groups: %s %s",
+                response.status_code,
+                response.text,
+            )
             break
 
         groups.extend(response.json())
@@ -78,4 +90,4 @@ def extract_groups(domain_url, api_token, csv_output_file):
     if groups:
         export_groups_to_csv(groups, csv_output_file)
     else:
-        print("No groups fetched.")
+        logger.warning("No groups fetched.")

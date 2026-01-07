@@ -209,6 +209,123 @@ hr {
       <button onclick="viewDetails('apps')">View Details</button>
   </div>
 
+  <!-- Authenticators -->
+  <div class="summary-card">
+      <div class="entity-label">Entity</div>
+      <h4>Authenticators</h4>
+      <div class="total">Total Differences: <strong>{{ auth_total_diff }}</strong></div>
+      <div class="counts">
+        <div class="badge">🔴 Critical: {{ auth_summary_counts.get('🔴 Critical', 0) }}</div>
+        <div class="badge">🟠 Medium: {{ auth_summary_counts.get('🟠 Medium', 0) }}</div>
+        <div class="badge">🟡 Low: {{ auth_summary_counts.get('🟡 Low', 0) }}</div>
+      </div>
+      <button onclick="viewDetails('authenticators')">View Details</button>
+  </div>
+
+  <!-- Authenticator Enrollment Policies -->
+  <div class="summary-card">
+      <div class="entity-label">Entity</div>
+      <h4>Authenticator Enrollment Policies</h4>
+      <div class="total">Total Differences: <strong>{{ mfa_total_diff }}</strong></div>
+      <div class="counts">
+        <div class="badge">🔴 Critical: {{ mfa_summary_counts.get('🔴 Critical', 0) }}</div>
+        <div class="badge">🟠 Medium: {{ mfa_summary_counts.get('🟠 Medium', 0) }}</div>
+        <div class="badge">🟡 Low: {{ mfa_summary_counts.get('🟡 Low', 0) }}</div>
+      </div>
+      <button onclick="viewDetails('mfa')">View Details</button>
+  </div>
+
+  <!-- Password Policies -->
+  <div class="summary-card">
+      <div class="entity-label">Entity</div>
+      <h4>Password Policies</h4>
+      <div class="total">Total Differences: <strong>{{ pwd_total_diff }}</strong></div>
+      <div class="counts">
+        <div class="badge">🔴 Critical: {{ pwd_summary_counts.get('🔴 Critical', 0) }}</div>
+        <div class="badge">🟠 Medium: {{ pwd_summary_counts.get('🟠 Medium', 0) }}</div>
+        <div class="badge">🟡 Low: {{ pwd_summary_counts.get('🟡 Low', 0) }}</div>
+      </div>
+      <button onclick="viewDetails('pwd')">View Details</button>
+  </div>
+
+  <!-- App Sign-On Policies -->
+  <div class="summary-card">
+      <div class="entity-label">Entity</div>
+      <h4>App Sign-On Policies</h4>
+      <div class="total">Total Differences: <strong>{{ access_total_diff }}</strong></div>
+      <div class="counts">
+        <div class="badge">🔴 Critical: {{ access_summary_counts.get('🔴 Critical', 0) }}</div>
+        <div class="badge">🟠 Medium: {{ access_summary_counts.get('🟠 Medium', 0) }}</div>
+        <div class="badge">🟡 Low: {{ access_summary_counts.get('🟡 Low', 0) }}</div>
+      </div>
+      <button onclick="viewDetails('access')">View Details</button>
+  </div>
+
+  <!-- IDP Discovery Policies -->
+  <div class="summary-card">
+      <div class="entity-label">Entity</div>
+      <h4>IDP Discovery Policies</h4>
+      <div class="total">Total Differences: <strong>{{ idp_total_diff }}</strong></div>
+      <div class="counts">
+        <div class="badge">🔴 Critical: {{ idp_summary_counts.get('🔴 Critical', 0) }}</div>
+        <div class="badge">🟠 Medium: {{ idp_summary_counts.get('🟠 Medium', 0) }}</div>
+        <div class="badge">🟡 Low: {{ idp_summary_counts.get('🟡 Low', 0) }}</div>
+      </div>
+      <button onclick="viewDetails('idp')">View Details</button>
+  </div>
+
+  <!-- Profile Enrollment Policies -->
+  <div class="summary-card">
+      <div class="entity-label">Entity</div>
+      <h4>Profile Enrollment Policies</h4>
+      <div class="total">Total Differences: <strong>{{ profile_total_diff }}</strong></div>
+      <div class="counts">
+        <div class="badge">🔴 Critical: {{ profile_summary_counts.get('🔴 Critical', 0) }}</div>
+        <div class="badge">🟠 Medium: {{ profile_summary_counts.get('🟠 Medium', 0) }}</div>
+        <div class="badge">🟡 Low: {{ profile_summary_counts.get('🟡 Low', 0) }}</div>
+      </div>
+      <button onclick="viewDetails('profile')">View Details</button>
+  </div>
+
+  <!-- Brand Settings -->
+  <div class="summary-card">
+      <div class="entity-label">Entity</div>
+      <h4>Brand Settings</h4>
+      <div class="total">Total Differences: <strong>{{ brand_total_diff }}</strong></div>
+      <div class="counts">
+        <div class="badge">🔴 Critical: {{ brand_summary_counts.get('🔴 Critical', 0) }}</div>
+        <div class="badge">🟠 Medium: {{ brand_summary_counts.get('🟠 Medium', 0) }}</div>
+        <div class="badge">🟡 Low: {{ brand_summary_counts.get('🟡 Low', 0) }}</div>
+      </div>
+      <button onclick="viewDetails('brand')">View Details</button>
+  </div>
+
+  <!-- Brand Pages -->
+  <div class="summary-card">
+      <div class="entity-label">Entity</div>
+      <h4>Brand Pages</h4>
+      <div class="total">Total Differences: <strong>{{ brand_pages_total_diff }}</strong></div>
+      <div class="counts">
+        <div class="badge">🔴 Critical: {{ brand_pages_summary_counts.get('🔴 Critical', 0) }}</div>
+        <div class="badge">🟠 Medium: {{ brand_pages_summary_counts.get('🟠 Medium', 0) }}</div>
+        <div class="badge">🟡 Low: {{ brand_pages_summary_counts.get('🟡 Low', 0) }}</div>
+      </div>
+      <button onclick="viewDetails('brandpages')">View Details</button>
+  </div>
+
+  <!-- Brand Email Templates -->
+  <div class="summary-card">
+      <div class="entity-label">Entity</div>
+      <h4>Brand Email Templates</h4>
+      <div class="total">Total Differences: <strong>{{ brand_email_total_diff }}</strong></div>
+      <div class="counts">
+        <div class="badge">🔴 Critical: {{ brand_email_summary_counts.get('🔴 Critical', 0) }}</div>
+        <div class="badge">🟠 Medium: {{ brand_email_summary_counts.get('🟠 Medium', 0) }}</div>
+        <div class="badge">🟡 Low: {{ brand_email_summary_counts.get('🟡 Low', 0) }}</div>
+      </div>
+      <button onclick="viewDetails('brandemail')">View Details</button>
+  </div>
+
   <!-- Global Session Policies (combined) -->
   <div class="summary-card">
       <div class="entity-label">Entity</div>
@@ -386,6 +503,326 @@ hr {
   </div>
 </section>
 
+<!-- MFA POLICIES DETAIL -->
+<section id="mfa-section" style="margin-top: 30px;">
+  <div id="mfa-toggle" class="toggle-header" onclick="toggleSection('mfa')">
+      <span class="chevron">▶</span> Entity: Authenticator Enrollment Policies – Detailed Comparison
+  </div>
+
+  <div id="mfa-comparison" style="display:none; margin-top: 10px;">
+    {% if mfa_df %}
+    <table>
+      <tr>
+        <th>Category</th><th>Object</th><th>Attribute</th>
+        <th>Env A Value</th><th>Env B Value</th>
+        <th>Difference Type</th><th>Impact</th>
+        <th>Recommended Action</th><th>Priority</th>
+      </tr>
+      {% for row in mfa_df %}
+      <tr class="
+          {% if '🔴' in row['Priority'] %}table-row-critical
+          {% elif '🟠' in row['Priority'] %}table-row-medium
+          {% elif '🟡' in row['Priority'] %}table-row-low
+          {% else %}table-row-matched{% endif %}
+      ">
+        <td>{{ row['Category'] }}</td>
+        <td>{{ row['Object'] }}</td>
+        <td>{{ row['Attribute'] }}</td>
+        <td>{{ row['Env A Value'] }}</td>
+        <td>{{ row['Env B Value'] }}</td>
+        <td>{{ row['Difference Type'] }}</td>
+        <td>{{ row['Impact'] }}</td>
+        <td>{{ row['Recommended Action'] }}</td>
+        <td>{{ row['Priority'] }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}
+      <p>No authenticator enrollment policy differences detected.</p>
+    {% endif %}
+  </div>
+</section>
+
+<!-- PASSWORD POLICIES DETAIL -->
+<section id="pwd-section" style="margin-top: 30px;">
+  <div id="pwd-toggle" class="toggle-header" onclick="toggleSection('pwd')">
+      <span class="chevron">▶</span> Entity: Password Policies – Detailed Comparison
+  </div>
+
+  <div id="pwd-comparison" style="display:none; margin-top: 10px;">
+    {% if pwd_df %}
+    <table>
+      <tr>
+        <th>Category</th><th>Object</th><th>Attribute</th>
+        <th>Env A Value</th><th>Env B Value</th>
+        <th>Difference Type</th><th>Impact</th>
+        <th>Recommended Action</th><th>Priority</th>
+      </tr>
+      {% for row in pwd_df %}
+      <tr class="
+          {% if '🔴' in row['Priority'] %}table-row-critical
+          {% elif '🟠' in row['Priority'] %}table-row-medium
+          {% elif '🟡' in row['Priority'] %}table-row-low
+          {% else %}table-row-matched{% endif %}
+      ">
+        <td>{{ row['Category'] }}</td>
+        <td>{{ row['Object'] }}</td>
+        <td>{{ row['Attribute'] }}</td>
+        <td>{{ row['Env A Value'] }}</td>
+        <td>{{ row['Env B Value'] }}</td>
+        <td>{{ row['Difference Type'] }}</td>
+        <td>{{ row['Impact'] }}</td>
+        <td>{{ row['Recommended Action'] }}</td>
+        <td>{{ row['Priority'] }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}
+      <p>No password policy differences detected.</p>
+    {% endif %}
+  </div>
+</section>
+
+<!-- APP SIGN-ON POLICIES DETAIL -->
+<section id="access-section" style="margin-top: 30px;">
+  <div id="access-toggle" class="toggle-header" onclick="toggleSection('access')">
+      <span class="chevron">▶</span> Entity: App Sign-On Policies – Detailed Comparison
+  </div>
+
+  <div id="access-comparison" style="display:none; margin-top: 10px;">
+    {% if access_df %}
+    <table>
+      <tr>
+        <th>Category</th><th>Object</th><th>Attribute</th>
+        <th>Env A Value</th><th>Env B Value</th>
+        <th>Difference Type</th><th>Impact</th>
+        <th>Recommended Action</th><th>Priority</th>
+      </tr>
+      {% for row in access_df %}
+      <tr class="
+          {% if '🔴' in row['Priority'] %}table-row-critical
+          {% elif '🟠' in row['Priority'] %}table-row-medium
+          {% elif '🟡' in row['Priority'] %}table-row-low
+          {% else %}table-row-matched{% endif %}
+      ">
+        <td>{{ row['Category'] }}</td>
+        <td>{{ row['Object'] }}</td>
+        <td>{{ row['Attribute'] }}</td>
+        <td>{{ row['Env A Value'] }}</td>
+        <td>{{ row['Env B Value'] }}</td>
+        <td>{{ row['Difference Type'] }}</td>
+        <td>{{ row['Impact'] }}</td>
+        <td>{{ row['Recommended Action'] }}</td>
+        <td>{{ row['Priority'] }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}
+      <p>No app sign-on policy differences detected.</p>
+    {% endif %}
+  </div>
+</section>
+
+<!-- IDP DISCOVERY POLICIES DETAIL -->
+<section id="idp-section" style="margin-top: 30px;">
+  <div id="idp-toggle" class="toggle-header" onclick="toggleSection('idp')">
+      <span class="chevron">▶</span> Entity: IDP Discovery Policies – Detailed Comparison
+  </div>
+
+  <div id="idp-comparison" style="display:none; margin-top: 10px;">
+    {% if idp_df %}
+    <table>
+      <tr>
+        <th>Category</th><th>Object</th><th>Attribute</th>
+        <th>Env A Value</th><th>Env B Value</th>
+        <th>Difference Type</th><th>Impact</th>
+        <th>Recommended Action</th><th>Priority</th>
+      </tr>
+      {% for row in idp_df %}
+      <tr class="
+          {% if '🔴' in row['Priority'] %}table-row-critical
+          {% elif '🟠' in row['Priority'] %}table-row-medium
+          {% elif '🟡' in row['Priority'] %}table-row-low
+          {% else %}table-row-matched{% endif %}
+      ">
+        <td>{{ row['Category'] }}</td>
+        <td>{{ row['Object'] }}</td>
+        <td>{{ row['Attribute'] }}</td>
+        <td>{{ row['Env A Value'] }}</td>
+        <td>{{ row['Env B Value'] }}</td>
+        <td>{{ row['Difference Type'] }}</td>
+        <td>{{ row['Impact'] }}</td>
+        <td>{{ row['Recommended Action'] }}</td>
+        <td>{{ row['Priority'] }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}
+      <p>No IDP discovery policy differences detected.</p>
+    {% endif %}
+  </div>
+</section>
+
+<!-- PROFILE ENROLLMENT POLICIES DETAIL -->
+<section id="profile-section" style="margin-top: 30px;">
+  <div id="profile-toggle" class="toggle-header" onclick="toggleSection('profile')">
+      <span class="chevron">▶</span> Entity: Profile Enrollment Policies – Detailed Comparison
+  </div>
+
+  <div id="profile-comparison" style="display:none; margin-top: 10px;">
+    {% if profile_df %}
+    <table>
+      <tr>
+        <th>Category</th><th>Object</th><th>Attribute</th>
+        <th>Env A Value</th><th>Env B Value</th>
+        <th>Difference Type</th><th>Impact</th>
+        <th>Recommended Action</th><th>Priority</th>
+      </tr>
+      {% for row in profile_df %}
+      <tr class="
+          {% if '🔴' in row['Priority'] %}table-row-critical
+          {% elif '🟠' in row['Priority'] %}table-row-medium
+          {% elif '🟡' in row['Priority'] %}table-row-low
+          {% else %}table-row-matched{% endif %}
+      ">
+        <td>{{ row['Category'] }}</td>
+        <td>{{ row['Object'] }}</td>
+        <td>{{ row['Attribute'] }}</td>
+        <td>{{ row['Env A Value'] }}</td>
+        <td>{{ row['Env B Value'] }}</td>
+        <td>{{ row['Difference Type'] }}</td>
+        <td>{{ row['Impact'] }}</td>
+        <td>{{ row['Recommended Action'] }}</td>
+        <td>{{ row['Priority'] }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}
+      <p>No profile enrollment policy differences detected.</p>
+    {% endif %}
+  </div>
+</section>
+
+<!-- BRAND SETTINGS DETAIL -->
+<section id="brand-section" style="margin-top: 30px;">
+  <div id="brand-toggle" class="toggle-header" onclick="toggleSection('brand')">
+      <span class="chevron">▶</span> Entity: Brand Settings – Detailed Comparison
+  </div>
+
+  <div id="brand-comparison" style="display:none; margin-top: 10px;">
+    {% if brand_df %}
+    <table>
+      <tr>
+        <th>Category</th><th>Object</th><th>Attribute</th>
+        <th>Env A Value</th><th>Env B Value</th>
+        <th>Difference Type</th><th>Impact</th>
+        <th>Recommended Action</th><th>Priority</th>
+      </tr>
+      {% for row in brand_df %}
+      <tr class="
+          {% if '🔴' in row['Priority'] %}table-row-critical
+          {% elif '🟠' in row['Priority'] %}table-row-medium
+          {% elif '🟡' in row['Priority'] %}table-row-low
+          {% else %}table-row-matched{% endif %}
+      ">
+        <td>{{ row['Category'] }}</td>
+        <td>{{ row['Object'] }}</td>
+        <td>{{ row['Attribute'] }}</td>
+        <td>{{ row['Env A Value'] }}</td>
+        <td>{{ row['Env B Value'] }}</td>
+        <td>{{ row['Difference Type'] }}</td>
+        <td>{{ row['Impact'] }}</td>
+        <td>{{ row['Recommended Action'] }}</td>
+        <td>{{ row['Priority'] }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}
+      <p>No brand settings differences detected.</p>
+    {% endif %}
+  </div>
+</section>
+
+<!-- BRAND PAGES DETAIL -->
+<section id="brandpages-section" style="margin-top: 30px;">
+  <div id="brandpages-toggle" class="toggle-header" onclick="toggleSection('brandpages')">
+      <span class="chevron">▶</span> Entity: Brand Pages – Detailed Comparison
+  </div>
+
+  <div id="brandpages-comparison" style="display:none; margin-top: 10px;">
+    {% if brand_pages_df %}
+    <table>
+      <tr>
+        <th>Category</th><th>Object</th><th>Attribute</th>
+        <th>Env A Value</th><th>Env B Value</th>
+        <th>Difference Type</th><th>Impact</th>
+        <th>Recommended Action</th><th>Priority</th>
+      </tr>
+      {% for row in brand_pages_df %}
+      <tr class="
+          {% if '🔴' in row['Priority'] %}table-row-critical
+          {% elif '🟠' in row['Priority'] %}table-row-medium
+          {% elif '🟡' in row['Priority'] %}table-row-low
+          {% else %}table-row-matched{% endif %}
+      ">
+        <td>{{ row['Category'] }}</td>
+        <td>{{ row['Object'] }}</td>
+        <td>{{ row['Attribute'] }}</td>
+        <td>{{ row['Env A Value'] }}</td>
+        <td>{{ row['Env B Value'] }}</td>
+        <td>{{ row['Difference Type'] }}</td>
+        <td>{{ row['Impact'] }}</td>
+        <td>{{ row['Recommended Action'] }}</td>
+        <td>{{ row['Priority'] }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}
+      <p>No brand pages differences detected.</p>
+    {% endif %}
+  </div>
+</section>
+
+<!-- BRAND EMAIL TEMPLATES DETAIL -->
+<section id="brandemail-section" style="margin-top: 30px;">
+  <div id="brandemail-toggle" class="toggle-header" onclick="toggleSection('brandemail')">
+      <span class="chevron">▶</span> Entity: Brand Email Templates – Detailed Comparison
+  </div>
+
+  <div id="brandemail-comparison" style="display:none; margin-top: 10px;">
+    {% if brand_email_df %}
+    <table>
+      <tr>
+        <th>Category</th><th>Object</th><th>Attribute</th>
+        <th>Env A Value</th><th>Env B Value</th>
+        <th>Difference Type</th><th>Impact</th>
+        <th>Recommended Action</th><th>Priority</th>
+      </tr>
+      {% for row in brand_email_df %}
+      <tr class="
+          {% if '🔴' in row['Priority'] %}table-row-critical
+          {% elif '🟠' in row['Priority'] %}table-row-medium
+          {% elif '🟡' in row['Priority'] %}table-row-low
+          {% else %}table-row-matched{% endif %}
+      ">
+        <td>{{ row['Category'] }}</td>
+        <td>{{ row['Object'] }}</td>
+        <td>{{ row['Attribute'] }}</td>
+        <td>{{ row['Env A Value'] }}</td>
+        <td>{{ row['Env B Value'] }}</td>
+        <td>{{ row['Difference Type'] }}</td>
+        <td>{{ row['Impact'] }}</td>
+        <td>{{ row['Recommended Action'] }}</td>
+        <td>{{ row['Priority'] }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}
+      <p>No brand email template differences detected.</p>
+    {% endif %}
+  </div>
+</section>
+
 <!-- SESSION POLICIES DETAIL -->
 <section id="sessionpol-section" style="margin-top: 30px;">
   <div id="sessionpol-toggle" class="toggle-header" onclick="toggleSection('sessionpol')">
@@ -423,6 +860,46 @@ hr {
     </table>
     {% else %}
       <p>No session policy differences detected.</p>
+    {% endif %}
+  </div>
+</section>
+
+<!-- AUTHENTICATORS DETAIL -->
+<section id="authenticators-section" style="margin-top: 30px;">
+  <div id="authenticators-toggle" class="toggle-header" onclick="toggleSection('authenticators')">
+      <span class="chevron">▶</span> Entity: Authenticators – Detailed Comparison
+  </div>
+
+  <div id="authenticators-comparison" style="display:none; margin-top: 10px;">
+    {% if auth_df %}
+    <table>
+      <tr>
+        <th>Category</th><th>Object</th><th>Attribute</th>
+        <th>Env A Value</th><th>Env B Value</th>
+        <th>Difference Type</th><th>Impact</th>
+        <th>Recommended Action</th><th>Priority</th>
+      </tr>
+      {% for row in auth_df %}
+      <tr class="
+          {% if '🔴' in row['Priority'] %}table-row-critical
+          {% elif '🟠' in row['Priority'] %}table-row-medium
+          {% elif '🟡' in row['Priority'] %}table-row-low
+          {% else %}table-row-matched{% endif %}
+      ">
+        <td>{{ row['Category'] }}</td>
+        <td>{{ row['Object'] }}</td>
+        <td>{{ row['Attribute'] }}</td>
+        <td>{{ row['Env A Value'] }}</td>
+        <td>{{ row['Env B Value'] }}</td>
+        <td>{{ row['Difference Type'] }}</td>
+        <td>{{ row['Impact'] }}</td>
+        <td>{{ row['Recommended Action'] }}</td>
+        <td>{{ row['Priority'] }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}
+      <p>No authenticator differences detected.</p>
     {% endif %}
   </div>
 </section>

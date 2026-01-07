@@ -1,4 +1,11 @@
+import logging
 import requests
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(name)s - %(message)s",
+)
+logger = logging.getLogger("okta_compare")
 
 def _ensure_domain_str(domain_url):
     if not isinstance(domain_url, str):
@@ -11,6 +18,7 @@ def get_groups_map(domain_url, api_token):
         'Accept': 'application/json'
     }
 
+    logger.info("Fetching groups map for group rules.")
     groups_map = {}
     # validate domain_url to avoid passing lists/dicts into requests
     domain_url = _ensure_domain_str(domain_url)
@@ -19,7 +27,7 @@ def get_groups_map(domain_url, api_token):
     while url:
         response = requests.get(url, headers=headers)
         if response.status_code != 200:
-            print("Error fetching groups:", response.status_code)
+            logger.error("Error fetching groups: %s", response.status_code)
             break
 
         for group in response.json():
@@ -40,6 +48,7 @@ def get_group_rules(domain_url, api_token):
         'Accept': 'application/json'
     }
 
+    logger.info("Fetching group rules.")
     rules = []
     # validate domain_url to avoid passing lists/dicts into requests
     domain_url = _ensure_domain_str(domain_url)
@@ -48,7 +57,7 @@ def get_group_rules(domain_url, api_token):
     while url:
         response = requests.get(url, headers=headers)
         if response.status_code != 200:
-            print("Error fetching group rules:", response.status_code)
+            logger.error("Error fetching group rules: %s", response.status_code)
             break
 
         rules.extend(response.json())

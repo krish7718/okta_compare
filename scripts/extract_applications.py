@@ -1,5 +1,12 @@
+import logging
 import requests
 from urllib.parse import urlparse
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(name)s - %(message)s",
+)
+logger = logging.getLogger("okta_compare")
 
 def _ensure_domain_str(domain_url):
     """
@@ -23,7 +30,7 @@ def _ensure_domain_str(domain_url):
     return f"{parsed.scheme}://{parsed.netloc}"
 
 
-def get_applications(domain_url, api_token):
+def get_applications(domain_url, api_token, limit=200):
     """
     Fetch all Okta applications from the given domain using the provided API token.
     Handles pagination via the Link header. Returns a list of application dicts.
@@ -33,21 +40,22 @@ def get_applications(domain_url, api_token):
         'Accept': 'application/json'
     }
 
+    logger.info("Fetching applications.")
     domain_url = _ensure_domain_str(domain_url)
     base = domain_url.rstrip('/')
-    url = base + '/api/v1/apps'
+    url = f"{base}/api/v1/apps?limit={limit}"
 
     apps = []
     while url:
         resp = requests.get(url, headers=headers)
         if resp.status_code != 200:
-            print(f"Error fetching applications: {resp.status_code} {resp.text}")
+            logger.error("Error fetching applications: %s %s", resp.status_code, resp.text)
             break
 
         try:
             data = resp.json()
         except ValueError:
-            print("Invalid JSON received for applications")
+            logger.error("Invalid JSON received for applications")
             break
 
         if isinstance(data, list):
@@ -57,7 +65,7 @@ def get_applications(domain_url, api_token):
             if isinstance(data, dict) and 'applications' in data and isinstance(data['applications'], list):
                 apps.extend(data['applications'])
             else:
-                print("Unexpected response format for applications:", type(data))
+                logger.error("Unexpected response format for applications: %s", type(data))
                 break
 
         next_link = resp.headers.get('Link')
@@ -78,6 +86,7 @@ def get_application_groups(domain_url, api_token, app_id):
     if not app_id:
         return []
 
+    logger.info("Fetching application groups for app_id=%s.", app_id)
     headers = {
         'Authorization': f"SSWS {api_token}",
         'Accept': 'application/json'
@@ -91,19 +100,24 @@ def get_application_groups(domain_url, api_token, app_id):
     while url:
         resp = requests.get(url, headers=headers)
         if resp.status_code != 200:
-            print(f"Error fetching groups for app {app_id}: {resp.status_code} {resp.text}")
+            logger.error(
+                "Error fetching groups for app %s: %s %s",
+                app_id,
+                resp.status_code,
+                resp.text,
+            )
             break
 
         try:
             data = resp.json()
         except ValueError:
-            print(f"Invalid JSON received for application groups (app {app_id})")
+            logger.error("Invalid JSON received for application groups (app %s)", app_id)
             break
 
         if isinstance(data, list):
             groups.extend(data)
         else:
-            print("Unexpected response format for application groups:", type(data))
+            logger.error("Unexpected response format for application groups: %s", type(data))
             break
 
         next_link = resp.headers.get('Link')

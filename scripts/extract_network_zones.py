@@ -1,4 +1,11 @@
+import logging
 import requests
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(name)s - %(message)s",
+)
+logger = logging.getLogger("okta_compare")
 
 def _ensure_domain_str(domain_url):
     """Ensure domain URL is a proper https:// URL."""
@@ -14,6 +21,7 @@ def get_network_zones(domain_url, api_token):
         "Accept": "application/json"
     }
 
+    logger.info("Fetching network zones.")
     zones = []
     domain_url = _ensure_domain_str(domain_url)
     base = domain_url.rstrip("/")
@@ -22,7 +30,7 @@ def get_network_zones(domain_url, api_token):
     while url:
         response = requests.get(url, headers=headers)
         if response.status_code != 200:
-            print("Error fetching network zones:", response.status_code)
+            logger.error("Error fetching network zones: %s", response.status_code)
             break
 
         zones.extend(response.json())
