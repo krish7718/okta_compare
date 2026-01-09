@@ -171,11 +171,30 @@ def get_brand_email_templates(domain_url, api_token, brand_id, limit=200):
             f"Error fetching email customizations for template {name} (brand {brand_id})",
         )
         if isinstance(data, list):
-            template_customizations[name] = data
+            customizations = data
         elif data is None:
-            template_customizations[name] = []
+            customizations = []
         else:
             logger.error("Unexpected response format for email customizations: %s", type(data))
-            template_customizations[name] = []
+            customizations = []
+
+        detailed_customizations = []
+        for customization in customizations:
+            cust_id = customization.get("id")
+            if not cust_id:
+                detailed_customizations.append(customization)
+                continue
+
+            detail_url = (
+                f"{base}/api/v1/brands/{brand_id}/templates/email/{safe_name}/customizations/{cust_id}"
+            )
+            detail, _ = _get_json(
+                detail_url,
+                headers,
+                f"Error fetching email customization detail {cust_id} for template {name} (brand {brand_id})",
+            )
+            detailed_customizations.append(detail or customization)
+
+        template_customizations[name] = detailed_customizations
 
     return template_customizations

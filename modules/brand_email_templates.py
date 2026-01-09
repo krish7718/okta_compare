@@ -22,6 +22,16 @@ def _signature_list(items):
     return json.dumps(sorted(normalized, key=lambda x: json.dumps(x, sort_keys=True, default=str)), sort_keys=True, default=str)
 
 
+def _customization_signature(customizations):
+    normalized = []
+    for customization in customizations or []:
+        normalized.append({
+            "subject": customization.get("subject"),
+            "body": customization.get("body") or customization.get("htmlBody"),
+        })
+    return _signature_list(normalized)
+
+
 def compare_brand_email_templates(envA_domain, envA_token, envB_domain, envB_token, limit=200):
     """
     Compare brand email templates for matching brand names only.
@@ -63,13 +73,13 @@ def compare_brand_email_templates(envA_domain, envA_token, envB_domain, envB_tok
                 continue
 
             customizationsB = templatesB.get(template_name, [])
-            if _signature_list(customizationsA) != _signature_list(customizationsB):
+            if _customization_signature(customizationsA) != _customization_signature(customizationsB):
                 diffs.append({
                     "Category": "Brand Email Templates",
                     "Object": name,
                     "Attribute": template_name,
-                    "Env A Value": "Different",
-                    "Env B Value": "Different",
+                    "Env A Value": "Didn't match",
+                    "Env B Value": "Didn't match",
                     "Difference Type": "Mismatch",
                     "Impact": "Email Branding Drift",
                     "Recommended Action": f"Align email template '{template_name}' for brand '{name}'",

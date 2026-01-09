@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>OktaMigrate</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
+<style>
+  body {
+    font-family: 'Space Grotesk', sans-serif;
+    background: radial-gradient(1200px 600px at 10% 10%, #e6f0ff 0%, #f3f6fb 60%, #f7f9fc 100%);
+    margin: 0;
+    padding: 0;
+    color: #1f2937;
+  }
+  .app-shell {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    min-height: 100vh;
+  }
+  .sidebar {
+    background: linear-gradient(180deg, #1b2a6b 0%, #0f1b3d 100%);
+    color: #dbe7ff;
+    padding: 26px 18px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.06);
+  }
+  .brand-lockup {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 22px;
+    padding: 10px 12px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 14px;
+    justify-content: center;
+    box-shadow: 0 8px 18px rgba(4, 10, 40, 0.18);
+  }
+  .brand-dot {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ff7a59, #ffb347);
+  }
+  .brand-logo {
+    width: 120px;
+    height: auto;
+    display: block;
+  }
+  .brand-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #ffffff;
+  }
+  .tool-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 14px;
+  }
+  .tool-button {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid transparent;
+    color: #dbe7ff;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .tool-button.active {
+    background: #ffffff;
+    color: #1b2a6b;
+    border-color: rgba(255, 255, 255, 0.65);
+    box-shadow: 0 8px 18px rgba(4, 10, 40, 0.2);
+  }
+  .tool-pill {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.18);
+    color: #ffffff;
+    font-weight: 600;
+  }
+  .tool-button.active .tool-pill {
+    background: rgba(27, 42, 107, 0.15);
+    color: #1b2a6b;
+  }
+  .content {
+    padding: 34px 48px 60px;
+  }
+  .page-header {
+    margin-bottom: 22px;
+  }
+  .page-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: #0f1b3d;
+    margin: 0 0 6px;
+  }
+  .page-subtitle {
+    margin: 0;
+    color: #4b5563;
+    font-size: 14px;
+  }
+  .card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 28px 32px;
+    box-shadow: 0 14px 32px rgba(17, 24, 39, 0.08);
+    border: 1px solid #eef1f7;
+  }
+  .placeholder {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+  .placeholder svg {
+    width: 64px;
+    height: 64px;
+  }
+  .placeholder h2 {
+    margin: 0 0 6px;
+    font-size: 18px;
+    color: #1b2a6b;
+  }
+  .placeholder p {
+    margin: 0;
+    color: #4b5563;
+    font-size: 14px;
+  }
+  @media (max-width: 900px) {
+    .app-shell {
+      grid-template-columns: 1fr;
+    }
+    .sidebar {
+      position: relative;
+      height: auto;
+    }
+    .content {
+      padding: 28px 20px 40px;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand-lockup">
+      <img class="brand-logo" src="/assets/oktaverse-logo.png" alt="OktaVerse">
+    </div>
+    <div class="tool-list">
+      <a class="tool-button" href="/">OktaCompare <span class="tool-pill">Live</span></a>
+      <a class="tool-button" href="/view">OktaView <span class="tool-pill">Beta</span></a>
+      <a class="tool-button" href="/evaluate">OktaEvaluate <span class="tool-pill">Soon</span></a>
+      <a class="tool-button active" href="/migrate">OktaMigrate <span class="tool-pill">Soon</span></a>
+    </div>
+  </aside>
+  <main class="content">
+    <div class="page-header">
+      <h1 class="page-title">OktaMigrate</h1>
+      <p class="page-subtitle">Plan and orchestrate migrations safely.</p>
+    </div>
+    <section class="card">
+      <div class="placeholder">
+        <svg viewBox="0 0 64 64" aria-hidden="true">
+          <rect x="8" y="14" width="48" height="28" rx="8" fill="#e6ecff"></rect>
+          <path d="M20 48h24" stroke="#1b2a6b" stroke-width="4" stroke-linecap="round"></path>
+          <path d="M24 20h16v16H24z" fill="#4f7cff"></path>
+        </svg>
+        <div>
+          <h2>OktaMigrate is in progress</h2>
+          <p>The migration cockpit is under construction. Check back soon.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+</body>
+</html>

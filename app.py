@@ -3,7 +3,7 @@ import requests
 import pandas as pd
 import io
 import csv
-from flask import Flask, session, request, render_template, send_file
+from flask import Flask, session, request, render_template, send_file, send_from_directory
 from datetime import datetime
 
 # ----------------------------------------------------
@@ -22,6 +22,8 @@ from modules.profile_enrollment_policies import compare_profile_enrollment_polic
 from modules.brand_settings import compare_brand_settings
 from modules.brand_pages import compare_brand_pages
 from modules.brand_email_templates import compare_brand_email_templates
+from modules.authorization_servers_settings import compare_authorization_servers_settings
+from modules.authorization_servers_access_policies import compare_authorization_servers_access_policies
 
 # ----------------------------------------------------
 # Extractor modules
@@ -30,6 +32,7 @@ from scripts.extract_groups import get_groups
 
 app = Flask(__name__)
 app.secret_key = "okta_compare_secret_key"
+LAST_EXPORT = {"diffs": [], "matches": []}
 
 # ---------------------------------------------------
 # Logging
@@ -522,6 +525,68 @@ def index():
             len(brand_email_matches_raw),
         )
 
+        # ===================================================
+        # AUTHORIZATION SERVERS - SETTINGS
+        # ===================================================
+        logger.info("Comparing authorization servers settings.")
+        authz_diffs, authz_matches_raw = compare_authorization_servers_settings(
+            envA_domain, envA_token,
+            envB_domain, envB_token
+        )
+
+        authz_matches_display = [
+            {
+                "Category": m["Category"],
+                "Object": m["Object"],
+                "Attribute": m["Attribute"],
+                "Env A Value": m["Value"],
+                "Env B Value": m["Value"],
+                "Difference Type": "Match",
+                "Impact": "",
+                "Recommended Action": "",
+                "Priority": "🟢 Match"
+            } for m in authz_matches_raw
+        ]
+
+        authz_df = pd.DataFrame(authz_diffs + authz_matches_display)
+        authz_summary_counts = pd.DataFrame(authz_diffs)["Priority"].value_counts().to_dict() if authz_diffs else {}
+        authz_total_diff = len(authz_diffs)
+        logger.info("Authorization servers settings comparison complete: diffs=%s matches=%s", len(authz_diffs), len(authz_matches_raw))
+
+        # ===================================================
+        # AUTHORIZATION SERVERS - ACCESS POLICIES
+        # ===================================================
+        logger.info("Comparing authorization servers access policies.")
+        authz_policy_diffs, authz_policy_matches_raw = compare_authorization_servers_access_policies(
+            envA_domain, envA_token,
+            envB_domain, envB_token
+        )
+
+        authz_policy_matches_display = [
+            {
+                "Category": m["Category"],
+                "Object": m["Object"],
+                "Attribute": m["Attribute"],
+                "Env A Value": m["Value"],
+                "Env B Value": m["Value"],
+                "Difference Type": "Match",
+                "Impact": "",
+                "Recommended Action": "",
+                "Priority": "🟢 Match"
+            } for m in authz_policy_matches_raw
+        ]
+
+        authz_policy_df = pd.DataFrame(authz_policy_diffs + authz_policy_matches_display)
+        authz_policy_summary_counts = (
+            pd.DataFrame(authz_policy_diffs)["Priority"].value_counts().to_dict() if authz_policy_diffs else {}
+        )
+        authz_policy_total_diff = len(authz_policy_diffs)
+        logger.info(
+            "Authorization servers access policies comparison complete: diffs=%s matches=%s",
+            len(authz_policy_diffs),
+            len(authz_policy_matches_raw),
+        )
+
 
         # ===================================================
         # GLOBAL SESSION POLICIES (policies + rules together)
@@ -557,8 +622,46 @@ def index():
         # SESSION STORAGE
         # ===================================================
         logger.info("Storing session results.")
-        session["session_diffs"] = session_diffs
-        session["session_matches"] = session_matches_raw
+        all_diffs = (
+            group_diffs
+            + rule_diffs
+            + zone_diffs
+            + app_diffs
+            + session_diffs
+            + auth_diffs
+            + mfa_diffs
+            + pwd_diffs
+            + access_diffs
+            + idp_diffs
+            + profile_diffs
+            + brand_diffs
+            + brand_pages_diffs
+            + brand_email_diffs
+            + authz_diffs
+            + authz_policy_diffs
+        )
+        all_matches_raw = (
+            group_matches_raw
+            + rule_matches_raw
+            + zone_matches_raw
+            + app_matches_raw
+            + session_matches_raw
+            + auth_matches_raw
+            + mfa_matches_raw
+            + pwd_matches_raw
+            + access_matches_raw
+            + idp_matches_raw
+            + profile_matches_raw
+            + brand_matches_raw
+            + brand_pages_matches_raw
+            + brand_email_matches_raw
+            + authz_matches_raw
+            + authz_policy_matches_raw
+        )
+        session["all_diffs"] = all_diffs
+        session["all_matches"] = all_matches_raw
+        LAST_EXPORT["diffs"] = all_diffs
+        LAST_EXPORT["matches"] = all_matches_raw
 
 
         # ===================================================
@@ -633,6 +736,16 @@ def index():
             brand_email_summary_counts=brand_email_summary_counts,
             brand_email_total_diff=brand_email_total_diff,
 
+            # Authorization Servers - Settings
+            authz_df=authz_df.to_dict(orient="records"),
+            authz_summary_counts=authz_summary_counts,
+            authz_total_diff=authz_total_diff,
+
+            # Authorization Servers - Access Policies
+            authz_policy_df=authz_policy_df.to_dict(orient="records"),
+            authz_policy_summary_counts=authz_policy_summary_counts,
+            authz_policy_total_diff=authz_policy_total_diff,
+
             # Global Session Policies (combined)
             session_df=session_df.to_dict(orient="records"),
             session_summary_counts=session_summary_counts,
@@ -646,6 +759,174 @@ def index():
 
     logger.info("Rendering input form.")
     return render_template("oktacompare_form.html")
+
+
+def _export_rows(rows, export_type):
+    fieldnames = [
+        "Entity",
+        "Object",
+        "Attribute",
+        "Env A Value",
+        "Env B Value",
+        "Difference Type",
+        "Impact",
+        "Recommended Action",
+        "Priority",
+    ]
+    output = io.StringIO()
+    writer = csv.DictWriter(output, fieldnames=fieldnames)
+    writer.writeheader()
+
+    for row in rows:
+        if export_type == "matches":
+            value = row.get("Value", "")
+            export_row = {
+                "Entity": row.get("Category", ""),
+                "Object": row.get("Object", ""),
+                "Attribute": row.get("Attribute", ""),
+                "Env A Value": value,
+                "Env B Value": value,
+                "Difference Type": "Match",
+                "Impact": "",
+                "Recommended Action": "",
+                "Priority": "🟢 Match",
+            }
+        else:
+            export_row = {
+                "Entity": row.get("Category", ""),
+                "Object": row.get("Object", ""),
+                "Attribute": row.get("Attribute", ""),
+                "Env A Value": row.get("Env A Value", ""),
+                "Env B Value": row.get("Env B Value", ""),
+                "Difference Type": row.get("Difference Type", ""),
+                "Impact": row.get("Impact", ""),
+                "Recommended Action": row.get("Recommended Action", ""),
+                "Priority": row.get("Priority", ""),
+            }
+        writer.writerow(export_row)
+
+    output.seek(0)
+    return output
+
+
+def _export_comparison_rows(diffs, matches):
+    fieldnames = [
+        "Category",
+        "Object",
+        "Attribute",
+        "Env A Value",
+        "Env B Value",
+        "Difference Type",
+        "Impact",
+        "Recommended Action",
+        "Priority",
+    ]
+    output = io.StringIO()
+    writer = csv.DictWriter(output, fieldnames=fieldnames)
+    writer.writeheader()
+
+    def _clean_priority(value):
+        if not value:
+            return ""
+        normalized = str(value)
+        for token in ("🔴", "🟠", "🟡", "🟢"):
+            normalized = normalized.replace(token, "")
+        return normalized.strip()
+
+    for row in diffs:
+        writer.writerow({
+            "Category": row.get("Category", ""),
+            "Object": row.get("Object", ""),
+            "Attribute": row.get("Attribute", ""),
+            "Env A Value": row.get("Env A Value", ""),
+            "Env B Value": row.get("Env B Value", ""),
+            "Difference Type": row.get("Difference Type", ""),
+            "Impact": row.get("Impact", ""),
+            "Recommended Action": row.get("Recommended Action", ""),
+            "Priority": _clean_priority(row.get("Priority", "")),
+        })
+
+    for row in matches:
+        value = row.get("Value", "")
+        writer.writerow({
+            "Category": row.get("Category", ""),
+            "Object": row.get("Object", ""),
+            "Attribute": row.get("Attribute", ""),
+            "Env A Value": value,
+            "Env B Value": value,
+            "Difference Type": "Match",
+            "Impact": "",
+            "Recommended Action": "",
+            "Priority": "Match",
+        })
+
+    output.seek(0)
+    return output
+
+
+@app.route("/export_report")
+def export_report():
+    diffs = session.get("all_diffs") or LAST_EXPORT.get("diffs", [])
+    matches = session.get("all_matches") or LAST_EXPORT.get("matches", [])
+    if not diffs and not matches:
+        logger.warning("No comparison data found in session or server cache for export.")
+    output = _export_comparison_rows(diffs, matches)
+    return send_file(
+        io.BytesIO(output.getvalue().encode("utf-8")),
+        mimetype="text/csv",
+        as_attachment=True,
+        download_name="okta_compare_report.csv",
+    )
+
+
+@app.route("/export_differences")
+def export_differences():
+    diffs = session.get("all_diffs") or LAST_EXPORT.get("diffs", [])
+    if not diffs:
+        logger.warning("No differences found in session or server cache for export.")
+    output = _export_rows(diffs, "diffs")
+    return send_file(
+        io.BytesIO(output.getvalue().encode("utf-8")),
+        mimetype="text/csv",
+        as_attachment=True,
+        download_name="okta_compare_differences.csv",
+    )
+
+
+@app.route("/export_matches")
+def export_matches():
+    matches = session.get("all_matches") or LAST_EXPORT.get("matches", [])
+    if not matches:
+        logger.warning("No matches found in session or server cache for export.")
+    output = _export_rows(matches, "matches")
+    return send_file(
+        io.BytesIO(output.getvalue().encode("utf-8")),
+        mimetype="text/csv",
+        as_attachment=True,
+        download_name="okta_compare_matches.csv",
+    )
+
+@app.route("/view", methods=["GET"])
+def okta_view():
+    logger.info("Rendering OktaView placeholder.")
+    return render_template("okta_view.html")
+
+
+@app.route("/evaluate", methods=["GET"])
+def okta_evaluate():
+    logger.info("Rendering OktaEvaluate placeholder.")
+    return render_template("okta_evaluate.html")
+
+
+@app.route("/migrate", methods=["GET"])
+def okta_migrate():
+    logger.info("Rendering OktaMigrate placeholder.")
+    return render_template("okta_migrate.html")
+
+
+@app.route("/assets/<path:filename>")
+def assets(filename):
+    return send_from_directory("templates/static", filename)
 
 
 # ---------------------------------------------------

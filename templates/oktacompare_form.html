@@ -6,6 +6,9 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
 <style>
+    * {
+        box-sizing: border-box;
+    }
     body {
         font-family: 'Space Grotesk', sans-serif;
         background: radial-gradient(1200px 600px at 10% 10%, #e6f0ff 0%, #f3f6fb 60%, #f7f9fc 100%);
@@ -32,12 +35,22 @@
         align-items: center;
         gap: 10px;
         margin-bottom: 22px;
+        padding: 10px 12px;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 14px;
+        justify-content: center;
+        box-shadow: 0 8px 18px rgba(4, 10, 40, 0.18);
     }
     .brand-dot {
         width: 36px;
         height: 36px;
         border-radius: 50%;
         background: linear-gradient(135deg, #ff7a59, #ffb347);
+    }
+    .brand-logo {
+        width: 120px;
+        height: auto;
+        display: block;
     }
     .brand-title {
         font-size: 18px;
@@ -63,6 +76,7 @@
         font-weight: 600;
         cursor: pointer;
         transition: all 0.2s ease;
+        text-decoration: none;
     }
     .tool-button:hover {
         background: rgba(255, 255, 255, 0.15);
@@ -113,6 +127,27 @@
         box-shadow: 0 14px 32px rgba(17, 24, 39, 0.08);
         border: 1px solid #eef1f7;
     }
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(260px, 1fr));
+        gap: 18px 24px;
+        margin-top: 16px;
+    }
+    .env-card {
+        background: #f8faff;
+        border: 1px solid #e3e9f7;
+        border-radius: 14px;
+        padding: 18px 20px;
+    }
+    .field-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+    .field-hint {
+        font-size: 12px;
+        color: #6b7280;
+    }
     h2.section-title {
         color: #1b2a6b;
         font-size: 18px;
@@ -124,7 +159,7 @@
     }
     label {
         display: block;
-        margin-top: 18px;
+        margin-top: 0;
         font-weight: 500;
         color: #1b2a6b;
         font-size: 14px;
@@ -219,6 +254,23 @@
         0%, 80%, 100% { opacity: 0.3; }
         40% { opacity: 1; }
     }
+    @media (max-width: 900px) {
+        .app-shell {
+            grid-template-columns: 1fr;
+        }
+        .sidebar {
+            position: relative;
+            height: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        .content {
+            padding: 28px 20px 40px;
+        }
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+    }
 </style>
 </head>
 
@@ -240,22 +292,21 @@
 <div class="app-shell">
     <aside class="sidebar">
         <div class="brand-lockup">
-            <div class="brand-dot"></div>
-            <div class="brand-title">Okta Suite</div>
+            <img class="brand-logo" src="/assets/oktaverse-logo.png" alt="OktaVerse">
         </div>
         <div class="tool-list" role="tablist" aria-label="Okta tools">
-            <button class="tool-button active" data-tool="compare" role="tab" aria-selected="true">
+            <a class="tool-button active" href="/" role="tab" aria-selected="true">
                 OktaCompare <span class="tool-pill">Live</span>
-            </button>
-            <button class="tool-button" data-tool="view" role="tab" aria-selected="false">
+            </a>
+            <a class="tool-button" href="/view" role="tab" aria-selected="false">
                 OktaView <span class="tool-pill">Beta</span>
-            </button>
-            <button class="tool-button" data-tool="evaluate" role="tab" aria-selected="false">
+            </a>
+            <a class="tool-button" href="/evaluate" role="tab" aria-selected="false">
                 OktaEvaluate <span class="tool-pill">Soon</span>
-            </button>
-            <button class="tool-button" data-tool="migrate" role="tab" aria-selected="false">
+            </a>
+            <a class="tool-button" href="/migrate" role="tab" aria-selected="false">
                 OktaMigrate <span class="tool-pill">Soon</span>
-            </button>
+            </a>
         </div>
     </aside>
     <main class="content">
@@ -266,63 +317,47 @@
             </div>
         </div>
 
-        <section class="card tool-panel" data-panel="compare">
-            <h2 class="section-title">Environment A</h2>
+        <section class="card">
             <form method="POST" id="compare-form">
-                <label>Environment A Domain</label>
-                <input type="text" name="envA_domain" placeholder="{{ defaultA }}">
-                <label>Environment A API Token</label>
-                <input type="password" name="envA_token" placeholder="Leave blank to use default">
-
-                <h2 class="section-title">Environment B</h2>
-                <label>Environment B Domain</label>
-                <input type="text" name="envB_domain" placeholder="{{ defaultB }}">
-                <label>Environment B API Token</label>
-                <input type="password" name="envB_token" placeholder="Leave blank to use default">
+                <div class="form-grid">
+                    <div class="env-card">
+                        <h2 class="section-title">Environment A</h2>
+                        <div class="field-group">
+                            <label>Environment A Domain</label>
+                            <input type="text" name="envA_domain" placeholder="{{ defaultA }}">
+                            <span class="field-hint">Enter only the domain, e.g. <strong>acme.okta.com</strong> (no https://).</span>
+                        </div>
+                        <div class="field-group" style="margin-top: 18px;">
+                            <label>Environment A API Token</label>
+                            <input type="password" name="envA_token" placeholder="Leave blank to use default">
+                        </div>
+                    </div>
+                    <div class="env-card">
+                        <h2 class="section-title">Environment B</h2>
+                        <div class="field-group">
+                            <label>Environment B Domain</label>
+                            <input type="text" name="envB_domain" placeholder="{{ defaultB }}">
+                            <span class="field-hint">Enter only the domain, e.g. <strong>acme.oktapreview.com</strong> (no https://).</span>
+                        </div>
+                        <div class="field-group" style="margin-top: 18px;">
+                            <label>Environment B API Token</label>
+                            <input type="password" name="envB_token" placeholder="Leave blank to use default">
+                        </div>
+                    </div>
+                </div>
 
                 <div class="button-wrapper">
                     <button type="submit">Compare Environments</button>
                 </div>
             </form>
         </section>
-
-        <section class="card tool-panel" data-panel="view" style="display:none;">
-            <h2 class="section-title">OktaView</h2>
-            <p>Inventory and visualize tenant configuration in a single place. Coming soon.</p>
-        </section>
-
-        <section class="card tool-panel" data-panel="evaluate" style="display:none;">
-            <h2 class="section-title">OktaEvaluate</h2>
-            <p>Run readiness checks and drift analysis with guided recommendations. Coming soon.</p>
-        </section>
-
-        <section class="card tool-panel" data-panel="migrate" style="display:none;">
-            <h2 class="section-title">OktaMigrate</h2>
-            <p>Plan and orchestrate environment migrations safely. Coming soon.</p>
-        </section>
     </main>
 </div>
 <script>
     const form = document.getElementById("compare-form");
     const loader = document.getElementById("loader");
-    const toolButtons = document.querySelectorAll(".tool-button");
-    const toolPanels = document.querySelectorAll(".tool-panel");
-
     form.addEventListener("submit", () => {
         loader.style.display = "flex";
-    });
-
-    toolButtons.forEach((button) => {
-        button.addEventListener("click", () => {
-            const target = button.dataset.tool;
-            toolButtons.forEach((btn) => {
-                btn.classList.toggle("active", btn === button);
-                btn.setAttribute("aria-selected", btn === button ? "true" : "false");
-            });
-            toolPanels.forEach((panel) => {
-                panel.style.display = panel.dataset.panel === target ? "block" : "none";
-            });
-        });
     });
 </script>
 </body>

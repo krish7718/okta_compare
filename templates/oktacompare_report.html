@@ -32,12 +32,22 @@ body {
   align-items: center;
   gap: 10px;
   margin-bottom: 22px;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 14px;
+  justify-content: center;
+  box-shadow: 0 8px 18px rgba(4, 10, 40, 0.18);
 }
 .brand-dot {
   width: 36px;
   height: 36px;
   border-radius: 50%;
   background: linear-gradient(135deg, #ff7a59, #ffb347);
+}
+.brand-logo {
+  width: 120px;
+  height: auto;
+  display: block;
 }
 .brand-title {
   font-size: 18px;
@@ -61,6 +71,7 @@ body {
   color: #dbe7ff;
   font-size: 14px;
   font-weight: 600;
+  text-decoration: none;
 }
 .tool-button.active {
   background: #ffffff;
@@ -137,7 +148,7 @@ body {
     margin: 10px 0 30px;
 }
 .summary-card {
-    background: #ffffff;
+    background: #f4f7ff;
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(15, 23, 42, 0.08);
     padding: 16px 18px;
@@ -226,6 +237,25 @@ hr {
     border-top: 1px solid #e5e7eb;
     margin: 20px 0;
 }
+@media (max-width: 900px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+  }
+  .sidebar {
+    position: relative;
+    height: auto;
+  }
+  .content {
+    padding: 28px 20px 40px;
+  }
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .export-section {
+    text-align: left;
+  }
+}
 </style>
 </head>
 
@@ -234,22 +264,21 @@ hr {
 <div class="app-shell">
   <aside class="sidebar">
     <div class="brand-lockup">
-      <div class="brand-dot"></div>
-      <div class="brand-title">Okta Suite</div>
+      <img class="brand-logo" src="/assets/oktaverse-logo.png" alt="OktaVerse">
     </div>
     <div class="tool-list">
-      <div class="tool-button active">
+      <a class="tool-button active" href="/">
         OktaCompare <span class="tool-pill">Live</span>
-      </div>
-      <div class="tool-button">
+      </a>
+      <a class="tool-button" href="/view">
         OktaView <span class="tool-pill">Beta</span>
-      </div>
-      <div class="tool-button">
+      </a>
+      <a class="tool-button" href="/evaluate">
         OktaEvaluate <span class="tool-pill">Soon</span>
-      </div>
-      <div class="tool-button">
+      </a>
+      <a class="tool-button" href="/migrate">
         OktaMigrate <span class="tool-pill">Soon</span>
-      </div>
+      </a>
     </div>
   </aside>
   <main class="content">
@@ -260,8 +289,7 @@ hr {
       </div>
       <div class="export-section">
         <button onclick="window.location.href='/'">Home</button>
-        <button onclick="window.location.href='/export_differences'">Export Differences CSV</button>
-        <button onclick="window.location.href='/export_matches'">Export Matches CSV</button>
+        <button onclick="window.location.href='/export_report'">Export Comparison Report</button>
       </div>
     </div>
     <div class="card">
@@ -437,6 +465,32 @@ hr {
         <div class="badge">🟡 Low: {{ brand_email_summary_counts.get('🟡 Low', 0) }}</div>
       </div>
       <button onclick="viewDetails('brandemail')">View Details</button>
+  </div>
+
+  <!-- Authorization Servers - Settings -->
+  <div class="summary-card">
+      <div class="entity-label">Entity</div>
+      <h4>Authorization Servers - Settings</h4>
+      <div class="total">Total Differences: <strong>{{ authz_total_diff }}</strong></div>
+      <div class="counts">
+        <div class="badge">🔴 Critical: {{ authz_summary_counts.get('🔴 Critical', 0) }}</div>
+        <div class="badge">🟠 Medium: {{ authz_summary_counts.get('🟠 Medium', 0) }}</div>
+        <div class="badge">🟡 Low: {{ authz_summary_counts.get('🟡 Low', 0) }}</div>
+      </div>
+      <button onclick="viewDetails('authz')">View Details</button>
+  </div>
+
+  <!-- Authorization Servers - Access Policies -->
+  <div class="summary-card">
+      <div class="entity-label">Entity</div>
+      <h4>Authorization Servers - Access Policies</h4>
+      <div class="total">Total Differences: <strong>{{ authz_policy_total_diff }}</strong></div>
+      <div class="counts">
+        <div class="badge">🔴 Critical: {{ authz_policy_summary_counts.get('🔴 Critical', 0) }}</div>
+        <div class="badge">🟠 Medium: {{ authz_policy_summary_counts.get('🟠 Medium', 0) }}</div>
+        <div class="badge">🟡 Low: {{ authz_policy_summary_counts.get('🟡 Low', 0) }}</div>
+      </div>
+      <button onclick="viewDetails('authzpol')">View Details</button>
   </div>
 
   <!-- Global Session Policies (combined) -->
@@ -932,6 +986,86 @@ hr {
     </table>
     {% else %}
       <p>No brand email template differences detected.</p>
+    {% endif %}
+  </div>
+</section>
+
+<!-- AUTHORIZATION SERVERS SETTINGS DETAIL -->
+<section id="authz-section" style="margin-top: 30px;">
+  <div id="authz-toggle" class="toggle-header" onclick="toggleSection('authz')">
+      <span class="chevron">▶</span> Entity: Authorization Servers – Settings Comparison
+  </div>
+
+  <div id="authz-comparison" style="display:none; margin-top: 10px;">
+    {% if authz_df %}
+    <table>
+      <tr>
+        <th>Category</th><th>Object</th><th>Attribute</th>
+        <th>Env A Value</th><th>Env B Value</th>
+        <th>Difference Type</th><th>Impact</th>
+        <th>Recommended Action</th><th>Priority</th>
+      </tr>
+      {% for row in authz_df %}
+      <tr class="
+          {% if '🔴' in row['Priority'] %}table-row-critical
+          {% elif '🟠' in row['Priority'] %}table-row-medium
+          {% elif '🟡' in row['Priority'] %}table-row-low
+          {% else %}table-row-matched{% endif %}
+      ">
+        <td>{{ row['Category'] }}</td>
+        <td>{{ row['Object'] }}</td>
+        <td>{{ row['Attribute'] }}</td>
+        <td>{{ row['Env A Value'] }}</td>
+        <td>{{ row['Env B Value'] }}</td>
+        <td>{{ row['Difference Type'] }}</td>
+        <td>{{ row['Impact'] }}</td>
+        <td>{{ row['Recommended Action'] }}</td>
+        <td>{{ row['Priority'] }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}
+      <p>No authorization server settings differences detected.</p>
+    {% endif %}
+  </div>
+</section>
+
+<!-- AUTHORIZATION SERVERS ACCESS POLICIES DETAIL -->
+<section id="authzpol-section" style="margin-top: 30px;">
+  <div id="authzpol-toggle" class="toggle-header" onclick="toggleSection('authzpol')">
+      <span class="chevron">▶</span> Entity: Authorization Servers – Access Policies Comparison
+  </div>
+
+  <div id="authzpol-comparison" style="display:none; margin-top: 10px;">
+    {% if authz_policy_df %}
+    <table>
+      <tr>
+        <th>Category</th><th>Object</th><th>Attribute</th>
+        <th>Env A Value</th><th>Env B Value</th>
+        <th>Difference Type</th><th>Impact</th>
+        <th>Recommended Action</th><th>Priority</th>
+      </tr>
+      {% for row in authz_policy_df %}
+      <tr class="
+          {% if '🔴' in row['Priority'] %}table-row-critical
+          {% elif '🟠' in row['Priority'] %}table-row-medium
+          {% elif '🟡' in row['Priority'] %}table-row-low
+          {% else %}table-row-matched{% endif %}
+      ">
+        <td>{{ row['Category'] }}</td>
+        <td>{{ row['Object'] }}</td>
+        <td>{{ row['Attribute'] }}</td>
+        <td>{{ row['Env A Value'] }}</td>
+        <td>{{ row['Env B Value'] }}</td>
+        <td>{{ row['Difference Type'] }}</td>
+        <td>{{ row['Impact'] }}</td>
+        <td>{{ row['Recommended Action'] }}</td>
+        <td>{{ row['Priority'] }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}
+      <p>No authorization server access policy differences detected.</p>
     {% endif %}
   </div>
 </section>
