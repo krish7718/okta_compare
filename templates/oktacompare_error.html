@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>{{ title }}</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
+<style>
+  body {
+    font-family: 'Space Grotesk', sans-serif;
+    background: radial-gradient(1200px 600px at 10% 10%, #e6f0ff 0%, #f3f6fb 60%, #f7f9fc 100%);
+    margin: 0;
+    padding: 0;
+    color: #1f2937;
+  }
+  .app-shell {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    min-height: 100vh;
+  }
+  .sidebar {
+    background: linear-gradient(180deg, #1b2a6b 0%, #0f1b3d 100%);
+    color: #dbe7ff;
+    padding: 26px 18px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.06);
+  }
+  .brand-lockup {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 22px;
+    padding: 10px 12px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 14px;
+    justify-content: center;
+    box-shadow: 0 8px 18px rgba(4, 10, 40, 0.18);
+  }
+  .brand-logo {
+    width: 120px;
+    height: auto;
+    display: block;
+  }
+  .tool-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 14px;
+  }
+  .tool-button {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid transparent;
+    color: #dbe7ff;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .tool-button.active {
+    background: #ffffff;
+    color: #1b2a6b;
+    border-color: rgba(255, 255, 255, 0.65);
+    box-shadow: 0 8px 18px rgba(4, 10, 40, 0.2);
+  }
+  .tool-pill {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.18);
+    color: #ffffff;
+    font-weight: 600;
+  }
+  .tool-button.active .tool-pill {
+    background: rgba(27, 42, 107, 0.15);
+    color: #1b2a6b;
+  }
+  .content {
+    padding: 34px 48px 60px;
+  }
+  .card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 28px 32px;
+    box-shadow: 0 14px 32px rgba(17, 24, 39, 0.08);
+    border: 1px solid #eef1f7;
+  }
+  .error-title {
+    font-size: 26px;
+    color: #0f1b3d;
+    margin: 0 0 10px;
+  }
+  .error-text {
+    font-size: 14px;
+    color: #4b5563;
+    margin: 0 0 22px;
+  }
+  .error-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .error-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 16px;
+    border-radius: 8px;
+    background: #1b2a6b;
+    color: #ffffff;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .error-button.secondary {
+    background: #f4f7ff;
+    color: #1b2a6b;
+    border: 1px solid #d9e1f4;
+  }
+  @media (max-width: 900px) {
+    .app-shell {
+      grid-template-columns: 1fr;
+    }
+    .sidebar {
+      position: relative;
+      height: auto;
+    }
+    .content {
+      padding: 28px 20px 40px;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand-lockup">
+      <img class="brand-logo" src="/assets/oktaverse-logo.png" alt="OktaVerse">
+    </div>
+    <div class="tool-list">
+      <a class="tool-button active" href="/">OktaCompare <span class="tool-pill">Live</span></a>
+      <a class="tool-button" href="/view">OktaView <span class="tool-pill">Beta</span></a>
+      <a class="tool-button" href="/evaluate">OktaEvaluate <span class="tool-pill">Soon</span></a>
+      <a class="tool-button" href="/migrate">OktaMigrate <span class="tool-pill">Soon</span></a>
+    </div>
+  </aside>
+  <main class="content">
+    <section class="card">
+      <h1 class="error-title">{{ title }}</h1>
+      <p class="error-text">{{ message }}</p>
+      <div class="error-actions">
+        <a class="error-button" href="/">Back to OktaCompare</a>
+        <a class="error-button secondary" href="javascript:window.location.reload()">Try Again</a>
+      </div>
+    </section>
+  </main>
+</div>
+</body>
+</html>

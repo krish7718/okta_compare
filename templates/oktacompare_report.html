@@ -493,6 +493,162 @@ hr {
       <button onclick="viewDetails('authzpol')">View Details</button>
   </div>
 
+  <!-- Custom Admin Roles -->
+  <div class="summary-card">
+      <div class="entity-label">Entity</div>
+      <h4>Custom Admin Roles</h4>
+      <div class="total">Total Differences: <strong>{{ admin_role_total_diff }}</strong></div>
+      <div class="counts">
+        <div class="badge">🔴 Critical: {{ admin_role_summary_counts.get('🔴 Critical', 0) }}</div>
+        <div class="badge">🟠 Medium: {{ admin_role_summary_counts.get('🟠 Medium', 0) }}</div>
+        <div class="badge">🟡 Low: {{ admin_role_summary_counts.get('🟡 Low', 0) }}</div>
+      </div>
+      <button onclick="viewDetails('adminroles')">View Details</button>
+  </div>
+
+  <!-- Resource Sets -->
+  <div class="summary-card">
+      <div class="entity-label">Entity</div>
+      <h4>Resource Sets</h4>
+      <div class="total">Total Differences: <strong>{{ resource_set_total_diff }}</strong></div>
+      <div class="counts">
+        <div class="badge">🔴 Critical: {{ resource_set_summary_counts.get('🔴 Critical', 0) }}</div>
+        <div class="badge">🟠 Medium: {{ resource_set_summary_counts.get('🟠 Medium', 0) }}</div>
+        <div class="badge">🟡 Low: {{ resource_set_summary_counts.get('🟡 Low', 0) }}</div>
+      </div>
+      <button onclick="viewDetails('resourcesets')">View Details</button>
+  </div>
+
+  <!-- Admin Assignments -->
+  <div class="summary-card">
+      <div class="entity-label">Entity</div>
+      <h4>Admin Assignments</h4>
+      <div class="total">Total Differences: <strong>{{ admin_assign_total_diff }}</strong></div>
+      <div class="counts">
+        <div class="badge">🔴 Critical: {{ admin_assign_summary_counts.get('🔴 Critical', 0) }}</div>
+        <div class="badge">🟠 Medium: {{ admin_assign_summary_counts.get('🟠 Medium', 0) }}</div>
+        <div class="badge">🟡 Low: {{ admin_assign_summary_counts.get('🟡 Low', 0) }}</div>
+      </div>
+      <button onclick="viewDetails('adminassign')">View Details</button>
+  </div>
+
+  <!-- API Tokens -->
+  <div class="summary-card">
+      <div class="entity-label">Entity</div>
+      <h4>API Tokens</h4>
+      <div class="total">Total Differences: <strong>{{ api_token_total_diff }}</strong></div>
+      <div class="counts">
+        <div class="badge">🔴 Critical: {{ api_token_summary_counts.get('🔴 Critical', 0) }}</div>
+        <div class="badge">🟠 Medium: {{ api_token_summary_counts.get('🟠 Medium', 0) }}</div>
+        <div class="badge">🟡 Low: {{ api_token_summary_counts.get('🟡 Low', 0) }}</div>
+      </div>
+      <button onclick="viewDetails('apitokens')">View Details</button>
+  </div>
+
+  <!-- Security General Settings -->
+  <div class="summary-card">
+      <div class="entity-label">Entity</div>
+      <h4>Security General Settings</h4>
+      <div class="total">Total Differences: <strong>{{ sec_total_diff }}</strong></div>
+      <div class="counts">
+        <div class="badge">🔴 Critical: {{ sec_summary_counts.get('🔴 Critical', 0) }}</div>
+        <div class="badge">🟠 Medium: {{ sec_summary_counts.get('🟠 Medium', 0) }}</div>
+        <div class="badge">🟡 Low: {{ sec_summary_counts.get('🟡 Low', 0) }}</div>
+      </div>
+      <button onclick="viewDetails('security')">View Details</button>
+  </div>
+
+  <!-- Org General Settings -->
+  <div class="summary-card">
+      <div class="entity-label">Entity</div>
+      <h4>Org General Settings</h4>
+      <div class="total">Total Differences: <strong>{{ org_total_diff }}</strong></div>
+      <div class="counts">
+        <div class="badge">🔴 Critical: {{ org_summary_counts.get('🔴 Critical', 0) }}</div>
+        <div class="badge">🟠 Medium: {{ org_summary_counts.get('🟠 Medium', 0) }}</div>
+        <div class="badge">🟡 Low: {{ org_summary_counts.get('🟡 Low', 0) }}</div>
+      </div>
+      <button onclick="viewDetails('orgsettings')">View Details</button>
+  </div>
+
+  <!-- Identity Providers -->
+  <div class="summary-card">
+      <div class="entity-label">Entity</div>
+      <h4>Identity Providers</h4>
+      <div class="total">Total Differences: <strong>{{ idp_provider_total_diff }}</strong></div>
+      <div class="counts">
+        <div class="badge">🔴 Critical: {{ idp_provider_summary_counts.get('🔴 Critical', 0) }}</div>
+        <div class="badge">🟠 Medium: {{ idp_provider_summary_counts.get('🟠 Medium', 0) }}</div>
+        <div class="badge">🟡 Low: {{ idp_provider_summary_counts.get('🟡 Low', 0) }}</div>
+      </div>
+      <button onclick="viewDetails('idpproviders')">View Details</button>
+  </div>
+
+  <!-- Realms -->
+  <div class="summary-card">
+      <div class="entity-label">Entity</div>
+      <h4>Realms</h4>
+      <div class="total">Total Differences: <strong>{{ realm_total_diff }}</strong></div>
+      <div class="counts">
+        <div class="badge">🔴 Critical: {{ realm_summary_counts.get('🔴 Critical', 0) }}</div>
+        <div class="badge">🟠 Medium: {{ realm_summary_counts.get('🟠 Medium', 0) }}</div>
+        <div class="badge">🟡 Low: {{ realm_summary_counts.get('🟡 Low', 0) }}</div>
+      </div>
+      <button onclick="viewDetails('realms')">View Details</button>
+  </div>
+
+  <!-- Realm Assignments -->
+  <div class="summary-card">
+      <div class="entity-label">Entity</div>
+      <h4>Realm Assignments</h4>
+      <div class="total">Total Differences: <strong>{{ realm_assign_total_diff }}</strong></div>
+      <div class="counts">
+        <div class="badge">🔴 Critical: {{ realm_assign_summary_counts.get('🔴 Critical', 0) }}</div>
+        <div class="badge">🟠 Medium: {{ realm_assign_summary_counts.get('🟠 Medium', 0) }}</div>
+        <div class="badge">🟡 Low: {{ realm_assign_summary_counts.get('🟡 Low', 0) }}</div>
+      </div>
+      <button onclick="viewDetails('realmassign')">View Details</button>
+  </div>
+
+  <!-- Profile Schema - User -->
+  <div class="summary-card">
+      <div class="entity-label">Entity</div>
+      <h4>Profile Schema - User</h4>
+      <div class="total">Total Differences: <strong>{{ schema_total_diff }}</strong></div>
+      <div class="counts">
+        <div class="badge">🔴 Critical: {{ schema_summary_counts.get('🔴 Critical', 0) }}</div>
+        <div class="badge">🟠 Medium: {{ schema_summary_counts.get('🟠 Medium', 0) }}</div>
+        <div class="badge">🟡 Low: {{ schema_summary_counts.get('🟡 Low', 0) }}</div>
+      </div>
+      <button onclick="viewDetails('profileschema')">View Details</button>
+  </div>
+
+  <!-- Profile Mappings -->
+  <div class="summary-card">
+      <div class="entity-label">Entity</div>
+      <h4>Profile Mappings</h4>
+      <div class="total">Total Differences: <strong>{{ mapping_total_diff }}</strong></div>
+      <div class="counts">
+        <div class="badge">🔴 Critical: {{ mapping_summary_counts.get('🔴 Critical', 0) }}</div>
+        <div class="badge">🟠 Medium: {{ mapping_summary_counts.get('🟠 Medium', 0) }}</div>
+        <div class="badge">🟡 Low: {{ mapping_summary_counts.get('🟡 Low', 0) }}</div>
+      </div>
+      <button onclick="viewDetails('profilemappings')">View Details</button>
+  </div>
+
+  <!-- Trusted Origins -->
+  <div class="summary-card">
+      <div class="entity-label">Entity</div>
+      <h4>Trusted Origins</h4>
+      <div class="total">Total Differences: <strong>{{ origin_total_diff }}</strong></div>
+      <div class="counts">
+        <div class="badge">🔴 Critical: {{ origin_summary_counts.get('🔴 Critical', 0) }}</div>
+        <div class="badge">🟠 Medium: {{ origin_summary_counts.get('🟠 Medium', 0) }}</div>
+        <div class="badge">🟡 Low: {{ origin_summary_counts.get('🟡 Low', 0) }}</div>
+      </div>
+      <button onclick="viewDetails('origins')">View Details</button>
+  </div>
+
   <!-- Global Session Policies (combined) -->
   <div class="summary-card">
       <div class="entity-label">Entity</div>
@@ -1066,6 +1222,486 @@ hr {
     </table>
     {% else %}
       <p>No authorization server access policy differences detected.</p>
+    {% endif %}
+  </div>
+</section>
+
+<!-- CUSTOM ADMIN ROLES DETAIL -->
+<section id="adminroles-section" style="margin-top: 30px;">
+  <div id="adminroles-toggle" class="toggle-header" onclick="toggleSection('adminroles')">
+      <span class="chevron">▶</span> Entity: Custom Admin Roles – Detailed Comparison
+  </div>
+
+  <div id="adminroles-comparison" style="display:none; margin-top: 10px;">
+    {% if admin_role_df %}
+    <table>
+      <tr>
+        <th>Category</th><th>Object</th><th>Attribute</th>
+        <th>Env A Value</th><th>Env B Value</th>
+        <th>Difference Type</th><th>Impact</th>
+        <th>Recommended Action</th><th>Priority</th>
+      </tr>
+      {% for row in admin_role_df %}
+      <tr class="
+          {% if '🔴' in row['Priority'] %}table-row-critical
+          {% elif '🟠' in row['Priority'] %}table-row-medium
+          {% elif '🟡' in row['Priority'] %}table-row-low
+          {% else %}table-row-matched{% endif %}
+      ">
+        <td>{{ row['Category'] }}</td>
+        <td>{{ row['Object'] }}</td>
+        <td>{{ row['Attribute'] }}</td>
+        <td>{{ row['Env A Value'] }}</td>
+        <td>{{ row['Env B Value'] }}</td>
+        <td>{{ row['Difference Type'] }}</td>
+        <td>{{ row['Impact'] }}</td>
+        <td>{{ row['Recommended Action'] }}</td>
+        <td>{{ row['Priority'] }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}
+      <p>No custom admin role differences detected.</p>
+    {% endif %}
+  </div>
+</section>
+
+<!-- RESOURCE SETS DETAIL -->
+<section id="resourcesets-section" style="margin-top: 30px;">
+  <div id="resourcesets-toggle" class="toggle-header" onclick="toggleSection('resourcesets')">
+      <span class="chevron">▶</span> Entity: Resource Sets – Detailed Comparison
+  </div>
+
+  <div id="resourcesets-comparison" style="display:none; margin-top: 10px;">
+    {% if resource_set_df %}
+    <table>
+      <tr>
+        <th>Category</th><th>Object</th><th>Attribute</th>
+        <th>Env A Value</th><th>Env B Value</th>
+        <th>Difference Type</th><th>Impact</th>
+        <th>Recommended Action</th><th>Priority</th>
+      </tr>
+      {% for row in resource_set_df %}
+      <tr class="
+          {% if '🔴' in row['Priority'] %}table-row-critical
+          {% elif '🟠' in row['Priority'] %}table-row-medium
+          {% elif '🟡' in row['Priority'] %}table-row-low
+          {% else %}table-row-matched{% endif %}
+      ">
+        <td>{{ row['Category'] }}</td>
+        <td>{{ row['Object'] }}</td>
+        <td>{{ row['Attribute'] }}</td>
+        <td>{{ row['Env A Value'] }}</td>
+        <td>{{ row['Env B Value'] }}</td>
+        <td>{{ row['Difference Type'] }}</td>
+        <td>{{ row['Impact'] }}</td>
+        <td>{{ row['Recommended Action'] }}</td>
+        <td>{{ row['Priority'] }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}
+      <p>No resource set differences detected.</p>
+    {% endif %}
+  </div>
+</section>
+
+<!-- ADMIN ASSIGNMENTS DETAIL -->
+<section id="adminassign-section" style="margin-top: 30px;">
+  <div id="adminassign-toggle" class="toggle-header" onclick="toggleSection('adminassign')">
+      <span class="chevron">▶</span> Entity: Admin Assignments – Detailed Comparison
+  </div>
+
+  <div id="adminassign-comparison" style="display:none; margin-top: 10px;">
+    {% if admin_assign_df %}
+    <table>
+      <tr>
+        <th>Category</th><th>Object</th><th>Attribute</th>
+        <th>Env A Value</th><th>Env B Value</th>
+        <th>Difference Type</th><th>Impact</th>
+        <th>Recommended Action</th><th>Priority</th>
+      </tr>
+      {% for row in admin_assign_df %}
+      <tr class="
+          {% if '🔴' in row['Priority'] %}table-row-critical
+          {% elif '🟠' in row['Priority'] %}table-row-medium
+          {% elif '🟡' in row['Priority'] %}table-row-low
+          {% else %}table-row-matched{% endif %}
+      ">
+        <td>{{ row['Category'] }}</td>
+        <td>{{ row['Object'] }}</td>
+        <td>{{ row['Attribute'] }}</td>
+        <td>{{ row['Env A Value'] }}</td>
+        <td>{{ row['Env B Value'] }}</td>
+        <td>{{ row['Difference Type'] }}</td>
+        <td>{{ row['Impact'] }}</td>
+        <td>{{ row['Recommended Action'] }}</td>
+        <td>{{ row['Priority'] }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}
+      <p>No admin assignment differences detected.</p>
+    {% endif %}
+  </div>
+</section>
+
+<!-- API TOKENS DETAIL -->
+<section id="apitokens-section" style="margin-top: 30px;">
+  <div id="apitokens-toggle" class="toggle-header" onclick="toggleSection('apitokens')">
+      <span class="chevron">▶</span> Entity: API Tokens – Detailed Comparison
+  </div>
+
+  <div id="apitokens-comparison" style="display:none; margin-top: 10px;">
+    {% if api_token_df %}
+    <table>
+      <tr>
+        <th>Category</th><th>Object</th><th>Attribute</th>
+        <th>Env A Value</th><th>Env B Value</th>
+        <th>Difference Type</th><th>Impact</th>
+        <th>Recommended Action</th><th>Priority</th>
+      </tr>
+      {% for row in api_token_df %}
+      <tr class="
+          {% if '🔴' in row['Priority'] %}table-row-critical
+          {% elif '🟠' in row['Priority'] %}table-row-medium
+          {% elif '🟡' in row['Priority'] %}table-row-low
+          {% else %}table-row-matched{% endif %}
+      ">
+        <td>{{ row['Category'] }}</td>
+        <td>{{ row['Object'] }}</td>
+        <td>{{ row['Attribute'] }}</td>
+        <td>{{ row['Env A Value'] }}</td>
+        <td>{{ row['Env B Value'] }}</td>
+        <td>{{ row['Difference Type'] }}</td>
+        <td>{{ row['Impact'] }}</td>
+        <td>{{ row['Recommended Action'] }}</td>
+        <td>{{ row['Priority'] }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}
+      <p>No API token differences detected.</p>
+    {% endif %}
+  </div>
+</section>
+
+<!-- SECURITY GENERAL SETTINGS DETAIL -->
+<section id="security-section" style="margin-top: 30px;">
+  <div id="security-toggle" class="toggle-header" onclick="toggleSection('security')">
+      <span class="chevron">▶</span> Entity: Security General Settings – Detailed Comparison
+  </div>
+
+  <div id="security-comparison" style="display:none; margin-top: 10px;">
+    {% if sec_df %}
+    <table>
+      <tr>
+        <th>Category</th><th>Object</th><th>Attribute</th>
+        <th>Env A Value</th><th>Env B Value</th>
+        <th>Difference Type</th><th>Impact</th>
+        <th>Recommended Action</th><th>Priority</th>
+      </tr>
+      {% for row in sec_df %}
+      <tr class="
+          {% if '🔴' in row['Priority'] %}table-row-critical
+          {% elif '🟠' in row['Priority'] %}table-row-medium
+          {% elif '🟡' in row['Priority'] %}table-row-low
+          {% else %}table-row-matched{% endif %}
+      ">
+        <td>{{ row['Category'] }}</td>
+        <td>{{ row['Object'] }}</td>
+        <td>{{ row['Attribute'] }}</td>
+        <td>{{ row['Env A Value'] }}</td>
+        <td>{{ row['Env B Value'] }}</td>
+        <td>{{ row['Difference Type'] }}</td>
+        <td>{{ row['Impact'] }}</td>
+        <td>{{ row['Recommended Action'] }}</td>
+        <td>{{ row['Priority'] }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}
+      <p>No security general settings differences detected.</p>
+    {% endif %}
+  </div>
+</section>
+
+<!-- ORG GENERAL SETTINGS DETAIL -->
+<section id="orgsettings-section" style="margin-top: 30px;">
+  <div id="orgsettings-toggle" class="toggle-header" onclick="toggleSection('orgsettings')">
+      <span class="chevron">▶</span> Entity: Org General Settings – Detailed Comparison
+  </div>
+
+  <div id="orgsettings-comparison" style="display:none; margin-top: 10px;">
+    {% if org_df %}
+    <table>
+      <tr>
+        <th>Category</th><th>Object</th><th>Attribute</th>
+        <th>Env A Value</th><th>Env B Value</th>
+        <th>Difference Type</th><th>Impact</th>
+        <th>Recommended Action</th><th>Priority</th>
+      </tr>
+      {% for row in org_df %}
+      <tr class="
+          {% if '🔴' in row['Priority'] %}table-row-critical
+          {% elif '🟠' in row['Priority'] %}table-row-medium
+          {% elif '🟡' in row['Priority'] %}table-row-low
+          {% else %}table-row-matched{% endif %}
+      ">
+        <td>{{ row['Category'] }}</td>
+        <td>{{ row['Object'] }}</td>
+        <td>{{ row['Attribute'] }}</td>
+        <td>{{ row['Env A Value'] }}</td>
+        <td>{{ row['Env B Value'] }}</td>
+        <td>{{ row['Difference Type'] }}</td>
+        <td>{{ row['Impact'] }}</td>
+        <td>{{ row['Recommended Action'] }}</td>
+        <td>{{ row['Priority'] }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}
+      <p>No org general settings differences detected.</p>
+    {% endif %}
+  </div>
+</section>
+
+<!-- IDENTITY PROVIDERS DETAIL -->
+<section id="idpproviders-section" style="margin-top: 30px;">
+  <div id="idpproviders-toggle" class="toggle-header" onclick="toggleSection('idpproviders')">
+      <span class="chevron">▶</span> Entity: Identity Providers – Detailed Comparison
+  </div>
+
+  <div id="idpproviders-comparison" style="display:none; margin-top: 10px;">
+    {% if idp_provider_df %}
+    <table>
+      <tr>
+        <th>Category</th><th>Object</th><th>Attribute</th>
+        <th>Env A Value</th><th>Env B Value</th>
+        <th>Difference Type</th><th>Impact</th>
+        <th>Recommended Action</th><th>Priority</th>
+      </tr>
+      {% for row in idp_provider_df %}
+      <tr class="
+          {% if '🔴' in row['Priority'] %}table-row-critical
+          {% elif '🟠' in row['Priority'] %}table-row-medium
+          {% elif '🟡' in row['Priority'] %}table-row-low
+          {% else %}table-row-matched{% endif %}
+      ">
+        <td>{{ row['Category'] }}</td>
+        <td>{{ row['Object'] }}</td>
+        <td>{{ row['Attribute'] }}</td>
+        <td>{{ row['Env A Value'] }}</td>
+        <td>{{ row['Env B Value'] }}</td>
+        <td>{{ row['Difference Type'] }}</td>
+        <td>{{ row['Impact'] }}</td>
+        <td>{{ row['Recommended Action'] }}</td>
+        <td>{{ row['Priority'] }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}
+      <p>No identity provider differences detected.</p>
+    {% endif %}
+  </div>
+</section>
+
+<!-- REALMS DETAIL -->
+<section id="realms-section" style="margin-top: 30px;">
+  <div id="realms-toggle" class="toggle-header" onclick="toggleSection('realms')">
+      <span class="chevron">▶</span> Entity: Realms – Detailed Comparison
+  </div>
+
+  <div id="realms-comparison" style="display:none; margin-top: 10px;">
+    {% if realm_df %}
+    <table>
+      <tr>
+        <th>Category</th><th>Object</th><th>Attribute</th>
+        <th>Env A Value</th><th>Env B Value</th>
+        <th>Difference Type</th><th>Impact</th>
+        <th>Recommended Action</th><th>Priority</th>
+      </tr>
+      {% for row in realm_df %}
+      <tr class="
+          {% if '🔴' in row['Priority'] %}table-row-critical
+          {% elif '🟠' in row['Priority'] %}table-row-medium
+          {% elif '🟡' in row['Priority'] %}table-row-low
+          {% else %}table-row-matched{% endif %}
+      ">
+        <td>{{ row['Category'] }}</td>
+        <td>{{ row['Object'] }}</td>
+        <td>{{ row['Attribute'] }}</td>
+        <td>{{ row['Env A Value'] }}</td>
+        <td>{{ row['Env B Value'] }}</td>
+        <td>{{ row['Difference Type'] }}</td>
+        <td>{{ row['Impact'] }}</td>
+        <td>{{ row['Recommended Action'] }}</td>
+        <td>{{ row['Priority'] }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}
+      <p>No realm differences detected.</p>
+    {% endif %}
+  </div>
+</section>
+
+<!-- REALM ASSIGNMENTS DETAIL -->
+<section id="realmassign-section" style="margin-top: 30px;">
+  <div id="realmassign-toggle" class="toggle-header" onclick="toggleSection('realmassign')">
+      <span class="chevron">▶</span> Entity: Realm Assignments – Detailed Comparison
+  </div>
+
+  <div id="realmassign-comparison" style="display:none; margin-top: 10px;">
+    {% if realm_assign_df %}
+    <table>
+      <tr>
+        <th>Category</th><th>Object</th><th>Attribute</th>
+        <th>Env A Value</th><th>Env B Value</th>
+        <th>Difference Type</th><th>Impact</th>
+        <th>Recommended Action</th><th>Priority</th>
+      </tr>
+      {% for row in realm_assign_df %}
+      <tr class="
+          {% if '🔴' in row['Priority'] %}table-row-critical
+          {% elif '🟠' in row['Priority'] %}table-row-medium
+          {% elif '🟡' in row['Priority'] %}table-row-low
+          {% else %}table-row-matched{% endif %}
+      ">
+        <td>{{ row['Category'] }}</td>
+        <td>{{ row['Object'] }}</td>
+        <td>{{ row['Attribute'] }}</td>
+        <td>{{ row['Env A Value'] }}</td>
+        <td>{{ row['Env B Value'] }}</td>
+        <td>{{ row['Difference Type'] }}</td>
+        <td>{{ row['Impact'] }}</td>
+        <td>{{ row['Recommended Action'] }}</td>
+        <td>{{ row['Priority'] }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}
+      <p>No realm assignment differences detected.</p>
+    {% endif %}
+  </div>
+</section>
+
+<!-- PROFILE SCHEMA DETAIL -->
+<section id="profileschema-section" style="margin-top: 30px;">
+  <div id="profileschema-toggle" class="toggle-header" onclick="toggleSection('profileschema')">
+      <span class="chevron">▶</span> Entity: Profile Schema – User Detailed Comparison
+  </div>
+
+  <div id="profileschema-comparison" style="display:none; margin-top: 10px;">
+    {% if schema_df %}
+    <table>
+      <tr>
+        <th>Category</th><th>Object</th><th>Attribute</th>
+        <th>Env A Value</th><th>Env B Value</th>
+        <th>Difference Type</th><th>Impact</th>
+        <th>Recommended Action</th><th>Priority</th>
+      </tr>
+      {% for row in schema_df %}
+      <tr class="
+          {% if '🔴' in row['Priority'] %}table-row-critical
+          {% elif '🟠' in row['Priority'] %}table-row-medium
+          {% elif '🟡' in row['Priority'] %}table-row-low
+          {% else %}table-row-matched{% endif %}
+      ">
+        <td>{{ row['Category'] }}</td>
+        <td>{{ row['Object'] }}</td>
+        <td>{{ row['Attribute'] }}</td>
+        <td>{{ row['Env A Value'] }}</td>
+        <td>{{ row['Env B Value'] }}</td>
+        <td>{{ row['Difference Type'] }}</td>
+        <td>{{ row['Impact'] }}</td>
+        <td>{{ row['Recommended Action'] }}</td>
+        <td>{{ row['Priority'] }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}
+      <p>No user profile schema differences detected.</p>
+    {% endif %}
+  </div>
+</section>
+
+<!-- PROFILE MAPPINGS DETAIL -->
+<section id="profilemappings-section" style="margin-top: 30px;">
+  <div id="profilemappings-toggle" class="toggle-header" onclick="toggleSection('profilemappings')">
+      <span class="chevron">▶</span> Entity: Profile Mappings – Detailed Comparison
+  </div>
+
+  <div id="profilemappings-comparison" style="display:none; margin-top: 10px;">
+    {% if mapping_df %}
+    <table>
+      <tr>
+        <th>Category</th><th>Object</th><th>Attribute</th>
+        <th>Env A Value</th><th>Env B Value</th>
+        <th>Difference Type</th><th>Impact</th>
+        <th>Recommended Action</th><th>Priority</th>
+      </tr>
+      {% for row in mapping_df %}
+      <tr class="
+          {% if '🔴' in row['Priority'] %}table-row-critical
+          {% elif '🟠' in row['Priority'] %}table-row-medium
+          {% elif '🟡' in row['Priority'] %}table-row-low
+          {% else %}table-row-matched{% endif %}
+      ">
+        <td>{{ row['Category'] }}</td>
+        <td>{{ row['Object'] }}</td>
+        <td>{{ row['Attribute'] }}</td>
+        <td>{{ row['Env A Value'] }}</td>
+        <td>{{ row['Env B Value'] }}</td>
+        <td>{{ row['Difference Type'] }}</td>
+        <td>{{ row['Impact'] }}</td>
+        <td>{{ row['Recommended Action'] }}</td>
+        <td>{{ row['Priority'] }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}
+      <p>No profile mapping differences detected.</p>
+    {% endif %}
+  </div>
+</section>
+
+<!-- TRUSTED ORIGINS DETAIL -->
+<section id="origins-section" style="margin-top: 30px;">
+  <div id="origins-toggle" class="toggle-header" onclick="toggleSection('origins')">
+      <span class="chevron">▶</span> Entity: Trusted Origins – Detailed Comparison
+  </div>
+
+  <div id="origins-comparison" style="display:none; margin-top: 10px;">
+    {% if origin_df %}
+    <table>
+      <tr>
+        <th>Category</th><th>Object</th><th>Attribute</th>
+        <th>Env A Value</th><th>Env B Value</th>
+        <th>Difference Type</th><th>Impact</th>
+        <th>Recommended Action</th><th>Priority</th>
+      </tr>
+      {% for row in origin_df %}
+      <tr class="
+          {% if '🔴' in row['Priority'] %}table-row-critical
+          {% elif '🟠' in row['Priority'] %}table-row-medium
+          {% elif '🟡' in row['Priority'] %}table-row-low
+          {% else %}table-row-matched{% endif %}
+      ">
+        <td>{{ row['Category'] }}</td>
+        <td>{{ row['Object'] }}</td>
+        <td>{{ row['Attribute'] }}</td>
+        <td>{{ row['Env A Value'] }}</td>
+        <td>{{ row['Env B Value'] }}</td>
+        <td>{{ row['Difference Type'] }}</td>
+        <td>{{ row['Impact'] }}</td>
+        <td>{{ row['Recommended Action'] }}</td>
+        <td>{{ row['Priority'] }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}
+      <p>No trusted origin differences detected.</p>
     {% endif %}
   </div>
 </section>

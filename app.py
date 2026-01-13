@@ -1,4 +1,5 @@
 import logging
+import json
 import requests
 import pandas as pd
 import io
@@ -24,6 +25,17 @@ from modules.brand_pages import compare_brand_pages
 from modules.brand_email_templates import compare_brand_email_templates
 from modules.authorization_servers_settings import compare_authorization_servers_settings
 from modules.authorization_servers_access_policies import compare_authorization_servers_access_policies
+from modules.custom_admin_roles import compare_custom_admin_roles
+from modules.resource_sets import compare_resource_sets
+from modules.admin_assignments import compare_admin_assignments
+from modules.api_tokens import compare_api_tokens
+from modules.security_general_settings import compare_security_general_settings
+from modules.org_settings import compare_org_settings
+from modules.identity_providers import compare_identity_providers
+from modules.realms import compare_realms, compare_realm_assignments
+from modules.profile_schema_user import compare_user_profile_schema
+from modules.profile_mappings import compare_profile_mappings
+from modules.trusted_origins import compare_trusted_origins
 
 # ----------------------------------------------------
 # Extractor modules
@@ -127,6 +139,7 @@ def compare_groups(groupsA, groupsB):
 def index():
     logger.info("Index request received: method=%s", request.method)
     if request.method == "POST":
+        session.clear()
 
         # -------------
         # Inputs
@@ -587,6 +600,414 @@ def index():
             len(authz_policy_matches_raw),
         )
 
+        # ===================================================
+        # CUSTOM ADMIN ROLES
+        # ===================================================
+        logger.info("Comparing custom admin roles.")
+        admin_role_diffs, admin_role_matches_raw = compare_custom_admin_roles(
+            envA_domain, envA_token,
+            envB_domain, envB_token
+        )
+
+        admin_role_matches_display = [
+            {
+                "Category": m["Category"],
+                "Object": m["Object"],
+                "Attribute": m["Attribute"],
+                "Env A Value": m["Value"],
+                "Env B Value": m["Value"],
+                "Difference Type": "Match",
+                "Impact": "",
+                "Recommended Action": "",
+                "Priority": "🟢 Match"
+            } for m in admin_role_matches_raw
+        ]
+
+        admin_role_df = pd.DataFrame(admin_role_diffs + admin_role_matches_display)
+        admin_role_summary_counts = (
+            pd.DataFrame(admin_role_diffs)["Priority"].value_counts().to_dict() if admin_role_diffs else {}
+        )
+        admin_role_total_diff = len(admin_role_diffs)
+        logger.info(
+            "Custom admin roles comparison complete: diffs=%s matches=%s",
+            len(admin_role_diffs),
+            len(admin_role_matches_raw),
+        )
+
+        # ===================================================
+        # RESOURCE SETS
+        # ===================================================
+        logger.info("Comparing resource sets.")
+        resource_set_diffs, resource_set_matches_raw = compare_resource_sets(
+            envA_domain, envA_token,
+            envB_domain, envB_token
+        )
+
+        resource_set_matches_display = [
+            {
+                "Category": m["Category"],
+                "Object": m["Object"],
+                "Attribute": m["Attribute"],
+                "Env A Value": m["Value"],
+                "Env B Value": m["Value"],
+                "Difference Type": "Match",
+                "Impact": "",
+                "Recommended Action": "",
+                "Priority": "🟢 Match"
+            } for m in resource_set_matches_raw
+        ]
+
+        resource_set_df = pd.DataFrame(resource_set_diffs + resource_set_matches_display)
+        resource_set_summary_counts = (
+            pd.DataFrame(resource_set_diffs)["Priority"].value_counts().to_dict() if resource_set_diffs else {}
+        )
+        resource_set_total_diff = len(resource_set_diffs)
+        logger.info(
+            "Resource sets comparison complete: diffs=%s matches=%s",
+            len(resource_set_diffs),
+            len(resource_set_matches_raw),
+        )
+
+        # ===================================================
+        # ADMIN ASSIGNMENTS
+        # ===================================================
+        logger.info("Comparing admin assignments.")
+        admin_assign_diffs, admin_assign_matches_raw = compare_admin_assignments(
+            envA_domain, envA_token,
+            envB_domain, envB_token
+        )
+
+        admin_assign_matches_display = [
+            {
+                "Category": m["Category"],
+                "Object": m["Object"],
+                "Attribute": m["Attribute"],
+                "Env A Value": m["Value"],
+                "Env B Value": m["Value"],
+                "Difference Type": "Match",
+                "Impact": "",
+                "Recommended Action": "",
+                "Priority": "🟢 Match"
+            } for m in admin_assign_matches_raw
+        ]
+
+        admin_assign_df = pd.DataFrame(admin_assign_diffs + admin_assign_matches_display)
+        admin_assign_summary_counts = (
+            pd.DataFrame(admin_assign_diffs)["Priority"].value_counts().to_dict() if admin_assign_diffs else {}
+        )
+        admin_assign_total_diff = len(admin_assign_diffs)
+        logger.info(
+            "Admin assignments comparison complete: diffs=%s matches=%s",
+            len(admin_assign_diffs),
+            len(admin_assign_matches_raw),
+        )
+
+        # ===================================================
+        # API TOKENS
+        # ===================================================
+        logger.info("Comparing API tokens.")
+        api_token_diffs, api_token_matches_raw = compare_api_tokens(
+            envA_domain, envA_token,
+            envB_domain, envB_token
+        )
+
+        api_token_matches_display = [
+            {
+                "Category": m["Category"],
+                "Object": m["Object"],
+                "Attribute": m["Attribute"],
+                "Env A Value": m["Value"],
+                "Env B Value": m["Value"],
+                "Difference Type": "Match",
+                "Impact": "",
+                "Recommended Action": "",
+                "Priority": "🟢 Match"
+            } for m in api_token_matches_raw
+        ]
+
+        api_token_df = pd.DataFrame(api_token_diffs + api_token_matches_display)
+        api_token_summary_counts = (
+            pd.DataFrame(api_token_diffs)["Priority"].value_counts().to_dict() if api_token_diffs else {}
+        )
+        api_token_total_diff = len(api_token_diffs)
+        logger.info(
+            "API tokens comparison complete: diffs=%s matches=%s",
+            len(api_token_diffs),
+            len(api_token_matches_raw),
+        )
+
+        # ===================================================
+        # SECURITY GENERAL SETTINGS
+        # ===================================================
+        logger.info("Comparing security general settings.")
+        sec_diffs, sec_matches_raw = compare_security_general_settings(
+            envA_domain, envA_token,
+            envB_domain, envB_token
+        )
+
+        sec_matches_display = [
+            {
+                "Category": m["Category"],
+                "Object": m["Object"],
+                "Attribute": m["Attribute"],
+                "Env A Value": m["Value"],
+                "Env B Value": m["Value"],
+                "Difference Type": "Match",
+                "Impact": "",
+                "Recommended Action": "",
+                "Priority": "🟢 Match"
+            } for m in sec_matches_raw
+        ]
+
+        sec_df = pd.DataFrame(sec_diffs + sec_matches_display)
+        sec_summary_counts = (
+            pd.DataFrame(sec_diffs)["Priority"].value_counts().to_dict() if sec_diffs else {}
+        )
+        sec_total_diff = len(sec_diffs)
+        logger.info(
+            "Security general settings comparison complete: diffs=%s matches=%s",
+            len(sec_diffs),
+            len(sec_matches_raw),
+        )
+
+        # ===================================================
+        # ORG GENERAL SETTINGS
+        # ===================================================
+        logger.info("Comparing org general settings.")
+        org_diffs, org_matches_raw = compare_org_settings(
+            envA_domain, envA_token,
+            envB_domain, envB_token
+        )
+
+        org_matches_display = [
+            {
+                "Category": m["Category"],
+                "Object": m["Object"],
+                "Attribute": m["Attribute"],
+                "Env A Value": m["Value"],
+                "Env B Value": m["Value"],
+                "Difference Type": "Match",
+                "Impact": "",
+                "Recommended Action": "",
+                "Priority": "🟢 Match"
+            } for m in org_matches_raw
+        ]
+
+        org_df = pd.DataFrame(org_diffs + org_matches_display)
+        org_summary_counts = (
+            pd.DataFrame(org_diffs)["Priority"].value_counts().to_dict() if org_diffs else {}
+        )
+        org_total_diff = len(org_diffs)
+        logger.info(
+            "Org general settings comparison complete: diffs=%s matches=%s",
+            len(org_diffs),
+            len(org_matches_raw),
+        )
+
+        # ===================================================
+        # IDENTITY PROVIDERS
+        # ===================================================
+        logger.info("Comparing identity providers.")
+        idp_provider_diffs, idp_provider_matches_raw = compare_identity_providers(
+            envA_domain, envA_token,
+            envB_domain, envB_token
+        )
+
+        idp_provider_matches_display = [
+            {
+                "Category": m["Category"],
+                "Object": m["Object"],
+                "Attribute": m["Attribute"],
+                "Env A Value": m["Value"],
+                "Env B Value": m["Value"],
+                "Difference Type": "Match",
+                "Impact": "",
+                "Recommended Action": "",
+                "Priority": "🟢 Match"
+            } for m in idp_provider_matches_raw
+        ]
+
+        idp_provider_df = pd.DataFrame(idp_provider_diffs + idp_provider_matches_display)
+        idp_provider_summary_counts = (
+            pd.DataFrame(idp_provider_diffs)["Priority"].value_counts().to_dict() if idp_provider_diffs else {}
+        )
+        idp_provider_total_diff = len(idp_provider_diffs)
+        logger.info(
+            "Identity providers comparison complete: diffs=%s matches=%s",
+            len(idp_provider_diffs),
+            len(idp_provider_matches_raw),
+        )
+
+        # ===================================================
+        # REALMS
+        # ===================================================
+        logger.info("Comparing realms.")
+        realm_diffs, realm_matches_raw = compare_realms(
+            envA_domain, envA_token,
+            envB_domain, envB_token
+        )
+
+        realm_matches_display = [
+            {
+                "Category": m["Category"],
+                "Object": m["Object"],
+                "Attribute": m["Attribute"],
+                "Env A Value": m["Value"],
+                "Env B Value": m["Value"],
+                "Difference Type": "Match",
+                "Impact": "",
+                "Recommended Action": "",
+                "Priority": "🟢 Match"
+            } for m in realm_matches_raw
+        ]
+
+        realm_df = pd.DataFrame(realm_diffs + realm_matches_display)
+        realm_summary_counts = (
+            pd.DataFrame(realm_diffs)["Priority"].value_counts().to_dict() if realm_diffs else {}
+        )
+        realm_total_diff = len(realm_diffs)
+        logger.info(
+            "Realms comparison complete: diffs=%s matches=%s",
+            len(realm_diffs),
+            len(realm_matches_raw),
+        )
+
+        # ===================================================
+        # REALM ASSIGNMENTS
+        # ===================================================
+        logger.info("Comparing realm assignments.")
+        realm_assign_diffs, realm_assign_matches_raw = compare_realm_assignments(
+            envA_domain, envA_token,
+            envB_domain, envB_token
+        )
+
+        realm_assign_matches_display = [
+            {
+                "Category": m["Category"],
+                "Object": m["Object"],
+                "Attribute": m["Attribute"],
+                "Env A Value": m["Value"],
+                "Env B Value": m["Value"],
+                "Difference Type": "Match",
+                "Impact": "",
+                "Recommended Action": "",
+                "Priority": "🟢 Match"
+            } for m in realm_assign_matches_raw
+        ]
+
+        realm_assign_df = pd.DataFrame(realm_assign_diffs + realm_assign_matches_display)
+        realm_assign_summary_counts = (
+            pd.DataFrame(realm_assign_diffs)["Priority"].value_counts().to_dict() if realm_assign_diffs else {}
+        )
+        realm_assign_total_diff = len(realm_assign_diffs)
+        logger.info(
+            "Realm assignments comparison complete: diffs=%s matches=%s",
+            len(realm_assign_diffs),
+            len(realm_assign_matches_raw),
+        )
+
+        # ===================================================
+        # PROFILE SCHEMA - USER
+        # ===================================================
+        logger.info("Comparing user profile schema.")
+        schema_diffs, schema_matches_raw = compare_user_profile_schema(
+            envA_domain, envA_token,
+            envB_domain, envB_token
+        )
+
+        schema_matches_display = [
+            {
+                "Category": m["Category"],
+                "Object": m["Object"],
+                "Attribute": m["Attribute"],
+                "Env A Value": m["Value"],
+                "Env B Value": m["Value"],
+                "Difference Type": "Match",
+                "Impact": "",
+                "Recommended Action": "",
+                "Priority": "🟢 Match"
+            } for m in schema_matches_raw
+        ]
+
+        schema_df = pd.DataFrame(schema_diffs + schema_matches_display)
+        schema_summary_counts = (
+            pd.DataFrame(schema_diffs)["Priority"].value_counts().to_dict() if schema_diffs else {}
+        )
+        schema_total_diff = len(schema_diffs)
+        logger.info(
+            "User profile schema comparison complete: diffs=%s matches=%s",
+            len(schema_diffs),
+            len(schema_matches_raw),
+        )
+
+        # ===================================================
+        # PROFILE MAPPINGS
+        # ===================================================
+        logger.info("Comparing profile mappings.")
+        mapping_diffs, mapping_matches_raw = compare_profile_mappings(
+            envA_domain, envA_token,
+            envB_domain, envB_token
+        )
+
+        mapping_matches_display = [
+            {
+                "Category": m["Category"],
+                "Object": m["Object"],
+                "Attribute": m["Attribute"],
+                "Env A Value": m["Value"],
+                "Env B Value": m["Value"],
+                "Difference Type": "Match",
+                "Impact": "",
+                "Recommended Action": "",
+                "Priority": "🟢 Match"
+            } for m in mapping_matches_raw
+        ]
+
+        mapping_df = pd.DataFrame(mapping_diffs + mapping_matches_display)
+        mapping_summary_counts = (
+            pd.DataFrame(mapping_diffs)["Priority"].value_counts().to_dict() if mapping_diffs else {}
+        )
+        mapping_total_diff = len(mapping_diffs)
+        logger.info(
+            "Profile mappings comparison complete: diffs=%s matches=%s",
+            len(mapping_diffs),
+            len(mapping_matches_raw),
+        )
+
+        # ===================================================
+        # TRUSTED ORIGINS
+        # ===================================================
+        logger.info("Comparing trusted origins.")
+        origin_diffs, origin_matches_raw = compare_trusted_origins(
+            envA_domain, envA_token,
+            envB_domain, envB_token
+        )
+
+        origin_matches_display = [
+            {
+                "Category": m["Category"],
+                "Object": m["Object"],
+                "Attribute": m["Attribute"],
+                "Env A Value": m["Value"],
+                "Env B Value": m["Value"],
+                "Difference Type": "Match",
+                "Impact": "",
+                "Recommended Action": "",
+                "Priority": "🟢 Match"
+            } for m in origin_matches_raw
+        ]
+
+        origin_df = pd.DataFrame(origin_diffs + origin_matches_display)
+        origin_summary_counts = (
+            pd.DataFrame(origin_diffs)["Priority"].value_counts().to_dict() if origin_diffs else {}
+        )
+        origin_total_diff = len(origin_diffs)
+        logger.info(
+            "Trusted origins comparison complete: diffs=%s matches=%s",
+            len(origin_diffs),
+            len(origin_matches_raw),
+        )
+
 
         # ===================================================
         # GLOBAL SESSION POLICIES (policies + rules together)
@@ -639,6 +1060,18 @@ def index():
             + brand_email_diffs
             + authz_diffs
             + authz_policy_diffs
+            + admin_role_diffs
+            + resource_set_diffs
+            + admin_assign_diffs
+            + api_token_diffs
+            + sec_diffs
+            + org_diffs
+            + idp_provider_diffs
+            + realm_diffs
+            + realm_assign_diffs
+            + schema_diffs
+            + mapping_diffs
+            + origin_diffs
         )
         all_matches_raw = (
             group_matches_raw
@@ -657,11 +1090,26 @@ def index():
             + brand_email_matches_raw
             + authz_matches_raw
             + authz_policy_matches_raw
+            + admin_role_matches_raw
+            + resource_set_matches_raw
+            + admin_assign_matches_raw
+            + api_token_matches_raw
+            + sec_matches_raw
+            + org_matches_raw
+            + idp_provider_matches_raw
+            + realm_matches_raw
+            + realm_assign_matches_raw
+            + schema_matches_raw
+            + mapping_matches_raw
+            + origin_matches_raw
         )
-        session["all_diffs"] = all_diffs
-        session["all_matches"] = all_matches_raw
         LAST_EXPORT["diffs"] = all_diffs
         LAST_EXPORT["matches"] = all_matches_raw
+        export_bytes = (
+            len(json.dumps(all_diffs, default=str).encode("utf-8"))
+            + len(json.dumps(all_matches_raw, default=str).encode("utf-8"))
+        )
+        logger.info("Export payload size: %.2f KB", export_bytes / 1024)
 
 
         # ===================================================
@@ -745,6 +1193,66 @@ def index():
             authz_policy_df=authz_policy_df.to_dict(orient="records"),
             authz_policy_summary_counts=authz_policy_summary_counts,
             authz_policy_total_diff=authz_policy_total_diff,
+
+            # Custom Admin Roles
+            admin_role_df=admin_role_df.to_dict(orient="records"),
+            admin_role_summary_counts=admin_role_summary_counts,
+            admin_role_total_diff=admin_role_total_diff,
+
+            # Resource Sets
+            resource_set_df=resource_set_df.to_dict(orient="records"),
+            resource_set_summary_counts=resource_set_summary_counts,
+            resource_set_total_diff=resource_set_total_diff,
+
+            # Admin Assignments
+            admin_assign_df=admin_assign_df.to_dict(orient="records"),
+            admin_assign_summary_counts=admin_assign_summary_counts,
+            admin_assign_total_diff=admin_assign_total_diff,
+
+            # API Tokens
+            api_token_df=api_token_df.to_dict(orient="records"),
+            api_token_summary_counts=api_token_summary_counts,
+            api_token_total_diff=api_token_total_diff,
+
+            # Security General Settings
+            sec_df=sec_df.to_dict(orient="records"),
+            sec_summary_counts=sec_summary_counts,
+            sec_total_diff=sec_total_diff,
+
+            # Org General Settings
+            org_df=org_df.to_dict(orient="records"),
+            org_summary_counts=org_summary_counts,
+            org_total_diff=org_total_diff,
+
+            # Identity Providers
+            idp_provider_df=idp_provider_df.to_dict(orient="records"),
+            idp_provider_summary_counts=idp_provider_summary_counts,
+            idp_provider_total_diff=idp_provider_total_diff,
+
+            # Realms
+            realm_df=realm_df.to_dict(orient="records"),
+            realm_summary_counts=realm_summary_counts,
+            realm_total_diff=realm_total_diff,
+
+            # Realm Assignments
+            realm_assign_df=realm_assign_df.to_dict(orient="records"),
+            realm_assign_summary_counts=realm_assign_summary_counts,
+            realm_assign_total_diff=realm_assign_total_diff,
+
+            # Profile Schema - User
+            schema_df=schema_df.to_dict(orient="records"),
+            schema_summary_counts=schema_summary_counts,
+            schema_total_diff=schema_total_diff,
+
+            # Profile Mappings
+            mapping_df=mapping_df.to_dict(orient="records"),
+            mapping_summary_counts=mapping_summary_counts,
+            mapping_total_diff=mapping_total_diff,
+
+            # Trusted Origins
+            origin_df=origin_df.to_dict(orient="records"),
+            origin_summary_counts=origin_summary_counts,
+            origin_total_diff=origin_total_diff,
 
             # Global Session Policies (combined)
             session_df=session_df.to_dict(orient="records"),
@@ -866,8 +1374,8 @@ def _export_comparison_rows(diffs, matches):
 
 @app.route("/export_report")
 def export_report():
-    diffs = session.get("all_diffs") or LAST_EXPORT.get("diffs", [])
-    matches = session.get("all_matches") or LAST_EXPORT.get("matches", [])
+    diffs = LAST_EXPORT.get("diffs", [])
+    matches = LAST_EXPORT.get("matches", [])
     if not diffs and not matches:
         logger.warning("No comparison data found in session or server cache for export.")
     output = _export_comparison_rows(diffs, matches)
@@ -881,7 +1389,7 @@ def export_report():
 
 @app.route("/export_differences")
 def export_differences():
-    diffs = session.get("all_diffs") or LAST_EXPORT.get("diffs", [])
+    diffs = LAST_EXPORT.get("diffs", [])
     if not diffs:
         logger.warning("No differences found in session or server cache for export.")
     output = _export_rows(diffs, "diffs")
@@ -895,7 +1403,7 @@ def export_differences():
 
 @app.route("/export_matches")
 def export_matches():
-    matches = session.get("all_matches") or LAST_EXPORT.get("matches", [])
+    matches = LAST_EXPORT.get("matches", [])
     if not matches:
         logger.warning("No matches found in session or server cache for export.")
     output = _export_rows(matches, "matches")
@@ -905,6 +1413,25 @@ def export_matches():
         as_attachment=True,
         download_name="okta_compare_matches.csv",
     )
+
+@app.errorhandler(requests.exceptions.ReadTimeout)
+def handle_read_timeout(error):
+    logger.error("Upstream timeout: %s", error)
+    return render_template(
+        "oktacompare_error.html",
+        title="Request Timed Out",
+        message="Okta took too long to respond. Please try again in a moment.",
+    ), 504
+
+
+@app.errorhandler(Exception)
+def handle_unexpected_error(error):
+    logger.exception("Unhandled error: %s", error)
+    return render_template(
+        "oktacompare_error.html",
+        title="Something Went Wrong",
+        message="We hit an unexpected error while building the report. Please retry.",
+    ), 500
 
 @app.route("/view", methods=["GET"])
 def okta_view():
@@ -934,4 +1461,4 @@ def assets(filename):
 # ---------------------------------------------------
 if __name__ == "__main__":
     logger.info("Starting OktaCompare Flask app.")
-    app.run(debug=True, port=5000)
+    app.run(debug=False, port=5000)

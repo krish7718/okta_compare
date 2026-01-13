@@ -10,22 +10,17 @@ def _normalize_policy_name(policy):
     return policy.get("name") or policy.get("id")
 
 
-def _normalize_rules(rules):
-    normalized = []
-    for rule in rules or []:
-        normalized.append({
-            "name": rule.get("name"),
-            "status": rule.get("status"),
-            "priority": rule.get("priority"),
-            "conditions": rule.get("conditions"),
-            "actions": rule.get("actions"),
-        })
-    normalized.sort(key=lambda r: (r.get("priority") or 0, r.get("name") or ""))
-    return normalized
+def _rule_key(rule):
+    return rule.get("name") or rule.get("id")
 
 
-def _rules_signature(rules):
-    return json.dumps(_normalize_rules(rules), sort_keys=True, default=str)
+def _rule_signature(rule):
+    payload = {
+        "status": rule.get("status"),
+        "conditions": rule.get("conditions"),
+        "actions": rule.get("actions"),
+    }
+    return json.dumps(payload, sort_keys=True, default=str)
 
 
 def compare_idp_discovery_policies(envA_domain, envA_token, envB_domain, envB_token, limit=200):
@@ -62,28 +57,61 @@ def compare_idp_discovery_policies(envA_domain, envA_token, envB_domain, envB_to
             continue
 
         polB = dictB[name]
-        rulesA = get_idp_discovery_policy_rules(baseA, envA_token, polA.get("id"))
-        rulesB = get_idp_discovery_policy_rules(baseB, envB_token, polB.get("id"))
+        rulesA = get_idp_discovery_policy_rules(baseA, envA_token, polA.get("id")) or []
+        rulesB = get_idp_discovery_policy_rules(baseB, envB_token, polB.get("id")) or []
 
-        if _rules_signature(rulesA) != _rules_signature(rulesB):
-            diffs.append({
-                "Category": "IDP Discovery Policies",
-                "Object": name,
-                "Attribute": "Rules",
-                "Env A Value": "Different",
-                "Env B Value": "Different",
-                "Difference Type": "Mismatch",
-                "Impact": "IdP Routing Drift",
-                "Recommended Action": f"Align IDP discovery rules for '{name}'",
-                "Priority": "🟠 Medium"
-            })
-        else:
-            matches.append({
-                "Category": "IDP Discovery Policies",
-                "Object": name,
-                "Attribute": "Rules",
-                "Value": "Match"
-            })
+        rulesA_map = {_rule_key(r): r for r in rulesA if _rule_key(r)}
+        rulesB_map = {_rule_key(r): r for r in rulesB if _rule_key(r)}
+
+        for rule_name, ruleA in rulesA_map.items():
+            if rule_name not in rulesB_map:
+                diffs.append({
+                    "Category": "IDP Discovery Policies",
+                    "Object": name,
+                    "Attribute": f"Rule: {rule_name}",
+                    "Env A Value": "Exists",
+                    "Env B Value": "Missing",
+                    "Difference Type": "Missing in Env B",
+                    "Impact": "IdP Routing Drift",
+                    "Recommended Action": f"Create rule '{rule_name}' for policy '{name}' in Env B",
+                    "Priority": "🟠 Medium"
+                })
+                continue
+
+            ruleB = rulesB_map[rule_name]
+            if _rule_signature(ruleA) != _rule_signature(ruleB):
+                diffs.append({
+                    "Category": "IDP Discovery Policies",
+                    "Object": name,
+                    "Attribute": f"Rule: {rule_name}",
+                    "Env A Value": "Different",
+                    "Env B Value": "Different",
+                    "Difference Type": "Mismatch",
+                    "Impact": "IdP Routing Drift",
+                    "Recommended Action": f"Align rule '{rule_name}' for policy '{name}'",
+                    "Priority": "🟠 Medium"
+                })
+            else:
+                matches.append({
+                    "Category": "IDP Discovery Policies",
+                    "Object": name,
+                    "Attribute": f"Rule: {rule_name}",
+                    "Value": "Match"
+                })
+
+        for rule_name in rulesB_map:
+            if rule_name not in rulesA_map:
+                diffs.append({
+                    "Category": "IDP Discovery Policies",
+                    "Object": name,
+                    "Attribute": f"Rule: {rule_name}",
+                    "Env A Value": "Missing",
+                    "Env B Value": "Exists",
+                    "Difference Type": "Extra in Env B",
+                    "Impact": "IdP Routing Drift",
+                    "Recommended Action": f"Review extra rule '{rule_name}' for policy '{name}' in Env B",
+                    "Priority": "🟡 Low"
+                })
 
     for name in dictB:
         if name not in dictA:

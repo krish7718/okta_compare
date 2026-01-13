@@ -1,2 +1,6 @@
 scripts/.DS_Store
 .DS_Store
+modules/__pycache__/*
+scripts/__pycache__/*
+
+
