@@ -1,0 +1,4 @@
+Rule ID,Rule Name,Status,Conditions,Actions,Created At,Last Updated At
+0prchgr680f4ugLhX1d7,Assign GROW employees to GROW group,ACTIVE,"String.stringContains(user.login,""@grow.com"")",{'assignUserToGroups': {'groupIds': ['00gchgndu1S1t6Q9M1d7']}},2024-01-23T23:33:47.000Z,2024-01-24T00:16:17.000Z
+0prchgqbvbCPJZHrZ1d7,Assign HESTA employees to HESTA group,ACTIVE,"String.stringContains(user.login,""@hesta.com"")",{'assignUserToGroups': {'groupIds': ['00gchgnnjfnKQ73t21d7']}},2024-01-23T23:33:02.000Z,2024-01-23T23:33:06.000Z
+0prcv8vyhcVcuyN7Y1d7,Assign users to Concentrix Users,ACTIVE,"String.stringContains(user.login,""@concentrix.com"")",{'assignUserToGroups': {'groupIds': ['00gcv8rf72LDpNaPd1d7']}},2024-02-13T00:20:15.000Z,2024-02-13T00:20:20.000Z

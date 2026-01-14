@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Configuration Guide</title>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Configuration Guide</h1> 
+        <button id="download">Download as PDF</button>
+        <button id="print">Print</button>
+        <h2>Overview</h2>
+        <p>Obtain a detailed understanding of your Okta organization's settings, applications, policies, and more.</p>
+        <!-- Include the other templates here -->
+        {% include 'org_settings.html' %}
+        {% include 'group_rules.html' %}
+        {% include 'policies.html' %}
+        {% include 'network_zones.html' %}
+        {% include 'identity_providers.html' %}
+        {% include 'authorization_servers.html' %}
+        {% include 'password_policies.html' %}
+        {% include 'applications.html' %}
+    </div>
+</body>
+    <script>
+    $('#download').click(function () {
+        var pdf = new jsPDF({
+            orientation: 'landscape', // Set orientation to landscape for wider pages
+            unit: 'mm', // Set unit to millimeters (adjust as needed)
+            format: [210, 297] // Set page size to A4 (adjust as needed)
+        });
+        
+        pdf.addHTML($('#content'), function() {
+        pdf.addPage();
+        });
+        
+        pdf.addHTML(document.body, function () {
+            pdf.save('Okta-Configuration-Guide.pdf');
+        });
+    });
+
+    $('#print').click(function () {
+        window.print();
+    });
+</script>
+</html>

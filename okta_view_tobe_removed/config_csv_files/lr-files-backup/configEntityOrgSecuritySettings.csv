@@ -1,0 +1,8 @@
+Key,Value
+New sign-on notification email,True
+Password changed notification email,True
+Authenticator enrolled notification email,True
+Authenticator reset notification email,True
+Report suspicious activity via email,True
+ThreatInsight Action,audit
+ThreatInsight Exclude Zones Used,False

@@ -118,6 +118,27 @@ def get_brand_pages(domain_url, api_token, brand_id):
     sign_in, _ = _get_json(sign_in_url, headers, f"Error fetching sign-in page for brand {brand_id}")
     error, _ = _get_json(error_url, headers, f"Error fetching error page for brand {brand_id}")
 
+    def _needs_page_content(payload):
+        if not isinstance(payload, dict):
+            return True
+        return not (payload.get("pageContent") or payload.get("htmlContent"))
+
+    if _needs_page_content(sign_in):
+        default_sign_in_url = f"{base}/api/v1/brands/{brand_id}/pages/sign-in/default"
+        default_sign_in, _ = _get_json(
+            default_sign_in_url, headers, f"Error fetching default sign-in page for brand {brand_id}"
+        )
+        if isinstance(default_sign_in, dict):
+            sign_in = default_sign_in
+
+    if _needs_page_content(error):
+        default_error_url = f"{base}/api/v1/brands/{brand_id}/pages/error/default"
+        default_error, _ = _get_json(
+            default_error_url, headers, f"Error fetching default error page for brand {brand_id}"
+        )
+        if isinstance(default_error, dict):
+            error = default_error
+
     return {
         "sign_in": sign_in or {},
         "error": error or {},
@@ -158,6 +179,7 @@ def get_brand_email_templates(domain_url, api_token, brand_id, limit=200):
             url = None
 
     template_customizations = {}
+    template_defaults = {}
     for template in templates:
         name = template.get("name") or template.get("templateName") or template.get("id")
         if not name:
@@ -171,30 +193,25 @@ def get_brand_email_templates(domain_url, api_token, brand_id, limit=200):
             f"Error fetching email customizations for template {name} (brand {brand_id})",
         )
         if isinstance(data, list):
-            customizations = data
+            template_customizations[name] = data
         elif data is None:
-            customizations = []
+            template_customizations[name] = []
         else:
             logger.error("Unexpected response format for email customizations: %s", type(data))
-            customizations = []
+            template_customizations[name] = []
 
-        detailed_customizations = []
-        for customization in customizations:
-            cust_id = customization.get("id")
-            if not cust_id:
-                detailed_customizations.append(customization)
-                continue
+        default_url = f"{base}/api/v1/brands/{brand_id}/templates/email/{safe_name}/default-content"
+        default_data, _ = _get_json(
+            default_url,
+            headers,
+            f"Error fetching default content for template {name} (brand {brand_id})",
+        )
+        if isinstance(default_data, dict):
+            template_defaults[name] = default_data
+        else:
+            template_defaults[name] = None
 
-            detail_url = (
-                f"{base}/api/v1/brands/{brand_id}/templates/email/{safe_name}/customizations/{cust_id}"
-            )
-            detail, _ = _get_json(
-                detail_url,
-                headers,
-                f"Error fetching email customization detail {cust_id} for template {name} (brand {brand_id})",
-            )
-            detailed_customizations.append(detail or customization)
-
-        template_customizations[name] = detailed_customizations
-
-    return template_customizations
+    return {
+        "customizations": template_customizations,
+        "defaults": template_defaults,
+    }

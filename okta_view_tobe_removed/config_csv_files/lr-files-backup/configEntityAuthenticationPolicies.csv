@@ -1,0 +1,13 @@
+ID,Status,Name,Description,Priority,Conditions,Rules
+rst3skwfl4QVnK2P01d7,ACTIVE,Okta Admin Console,,1,,"Exclude MFA for IDP users, Admin App Policy, Catch-all Rule"
+rst3skwflb5nNUapx1d7,ACTIVE,Okta Dashboard,,1,,"Enforce MFA, Catch-all Rule"
+rst3skwfleXhpKDqH1d7,ACTIVE,Okta Browser Plugin,,1,,Catch-all Rule
+rst3skwfmeSJU5TYo1d7,ACTIVE,Default Policy,,1,,"Exclude Concentrix users from MFA, Catch-all Rule"
+rst3skwfmy7VKkaI91d7,ACTIVE,Any two factors,Require two factors to access.,1,,"One Factor for Federated Grow Employees, Catch-all Rule"
+rst3skwfn0ozDrZW61d7,ACTIVE,Password only,Require only a password. Suggested for low risk or consumer-facing applications.,1,,Catch-all Rule
+rst3skwfn2zjdS8Jy1d7,ACTIVE,One factor access,Allow access with any one factor. Suggested for low risk or consumer-facing applications.,1,,Catch-all Rule
+rst3skwfn4XHNcM8g1d7,ACTIVE,Seamless access based on network context,Require 2FA if the user is off network. Configure your network zones to include them here.,1,,"In network, Off network, Catch-all Rule"
+rst3vz4umlHfnBRqB1d7,ACTIVE,Microsoft Office 365 - rihaan.live,,1,,"Allow Web and Modern Auth, Catch-all Rule"
+rstbyo6vjrfxKkFjL1d7,ACTIVE,Microsoft Office 365 - Adrian - aboog.online,,1,,"Allow Web and Modern Auth, Catch-all Rule"
+rstdgbkev1uECMXrj1d7,ACTIVE,Microsoft Office 365,,1,,"Allow Web and Modern Auth, Catch-all Rule"
+rstj21vi2viYIk9kn1d7,ACTIVE,Okta Account Management Policy,"This policy defines how users must authenticate for authenticator enrollment, password reset, or unlock account. Password policy rules control whether to enforce this policy for password reset and unlock account.",1,,Catch-all Rule

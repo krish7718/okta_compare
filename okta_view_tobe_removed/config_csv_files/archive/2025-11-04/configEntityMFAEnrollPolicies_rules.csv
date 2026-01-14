@@ -1,0 +1,3 @@
+policy_id,policy_name,rule_id,rule_name,status,priority,conditions_people,conditions_network,conditions_authcontext,conditions_risk,conditions_riskScore,conditions_identityprovider,actions
+00pd0kq9ziJiFagWK1d7,Concentrix users,0prd0kiz9h473zfzp1d7,Allow from anywhere,ACTIVE,1,{'users': {'exclude': []}},{'connection': 'ANYWHERE'},{},{},{},{},{'enroll': {'self': 'CHALLENGE'}}
+00p3skwfnwcti53xk1d7,Default Policy,0pr3skwfnx3Ul5u7b1d7,Default Rule,ACTIVE,1,{'users': {'exclude': []}},{'connection': 'ANYWHERE'},{},{},{},{},{'enroll': {'self': 'CHALLENGE'}}

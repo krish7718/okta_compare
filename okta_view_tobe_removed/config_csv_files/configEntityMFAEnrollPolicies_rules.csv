@@ -1,0 +1,10 @@
+policy_id,policy_name,rule_id,rule_name,status,priority,conditions_people,conditions_network,conditions_authcontext,conditions_risk,conditions_riskScore,conditions_identityprovider,actions
+00p6747dc3trAywsV3l7,Okta verify desktop pilot,0pr6747ab2noL4JQu3l7,Default rule,ACTIVE,1,{'users': {'exclude': []}},{'connection': 'ANYWHERE'},{},{},{},{},{'enroll': {'self': 'CHALLENGE'}}
+00p4swlpycu8oEY0x3l7,Okta Administrators,0pr4swlwn98HT0F7z3l7,Allow from anywhere,ACTIVE,1,{'users': {'exclude': []}},{'connection': 'ANYWHERE'},{},{},{},{},{'enroll': {'self': 'CHALLENGE'}}
+00p66i7t3rVWw0Cff3l7,CFA Generic Accounts,0pr66i8lsj1v4RsLw3l7,Default Rule,ACTIVE,1,{'users': {'exclude': []}},{'connection': 'ANYWHERE'},{},{},{},{},{'enroll': {'self': 'CHALLENGE'}}
+00p66i8mcn18dtvWZ3l7,CFA External Vendors,0pr66i8t2g8NmeeCB3l7,Default Rule,ACTIVE,1,{'users': {'exclude': []}},{'connection': 'ANYWHERE'},{},{},{},{},{'enroll': {'self': 'CHALLENGE'}}
+00p4v14cvj9gvjmOh3l7,CFA Volunteers - Hardware Tokens,0pr4v13zzi5gCcOs13l7,Default rule,ACTIVE,1,{'users': {'exclude': []}},{'connection': 'ANYWHERE'},{},{},{},{},{'enroll': {'self': 'CHALLENGE'}}
+00p4v147h3nTzb92I3l7,CFA Volunteers - General,0pr4v13mymuPH0SlS3l7,Default rule,ACTIVE,1,{'users': {'exclude': []}},{'connection': 'ANYWHERE'},{},{},{},{},{'enroll': {'self': 'CHALLENGE'}}
+00p5wul3gokRbgkcE3l7,CFA Staff - SMS,0pr5wukwc49ydkooK3l7,Default Rule,ACTIVE,1,{'users': {'exclude': []}},{'connection': 'ANYWHERE'},{},{},{},{},{'enroll': {'self': 'CHALLENGE'}}
+00p4v15d6zRBGzCax3l7,CFA Staff,0pr4v161op6NWrZ2j3l7,Default rule,ACTIVE,1,{'users': {'exclude': []}},{'connection': 'ANYWHERE'},{},{},{},{},{'enroll': {'self': 'CHALLENGE'}}
+00p4sna9hdVZEB2Dh3l7,Default Policy,0pr4sna9he8mLaR1F3l7,Default Rule,ACTIVE,1,{'users': {'exclude': []}},{'connection': 'ANYWHERE'},{},{},{},{},{'enroll': {'self': 'CHALLENGE'}}

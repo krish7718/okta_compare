@@ -1,0 +1,16 @@
+<h2>Authorization Servers</h2>
+<p>An authorization server is simply an engine for minting OpenID Connect (OIDC) or OAuth 2.0 tokens.</p>
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Value</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for html_table in authorization_servers_data %}
+        {{ html_table | safe }}
+        <br/>
+        {% endfor %}
+    </tbody>
+</table>

@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>OktaSnapshot</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
+<style>
+  body {
+    font-family: 'Space Grotesk', sans-serif;
+    background: radial-gradient(1200px 600px at 10% 10%, #e6f0ff 0%, #f3f6fb 60%, #f7f9fc 100%);
+    margin: 0;
+    padding: 0;
+    color: #1f2937;
+  }
+  .app-shell {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    min-height: 100vh;
+  }
+  .sidebar {
+    background: linear-gradient(180deg, #1b2a6b 0%, #0f1b3d 100%);
+    color: #dbe7ff;
+    padding: 26px 18px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.06);
+  }
+  .brand-lockup {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 22px;
+    padding: 10px 12px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 14px;
+    justify-content: center;
+    box-shadow: 0 8px 18px rgba(4, 10, 40, 0.18);
+  }
+  .brand-logo {
+    width: 120px;
+    height: auto;
+    display: block;
+  }
+  .tool-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 14px;
+  }
+  .tool-button {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid transparent;
+    color: #dbe7ff;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .tool-button.active {
+    background: #ffffff;
+    color: #1b2a6b;
+    border-color: rgba(255, 255, 255, 0.65);
+    box-shadow: 0 8px 18px rgba(4, 10, 40, 0.2);
+  }
+  .tool-pill {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.18);
+    color: #ffffff;
+    font-weight: 600;
+  }
+  .tool-button.active .tool-pill {
+    background: rgba(27, 42, 107, 0.15);
+    color: #1b2a6b;
+  }
+  .content {
+    padding: 34px 48px 60px;
+  }
+  .page-header {
+    margin-bottom: 22px;
+  }
+  .page-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: #0f1b3d;
+    margin: 0 0 6px;
+  }
+  .page-subtitle {
+    margin: 0;
+    color: #4b5563;
+    font-size: 14px;
+  }
+  .guide-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 22px 0 18px;
+  }
+  .guide-note {
+    font-size: 13px;
+    color: #4b5563;
+    margin-top: 6px;
+  }
+  .primary-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 18px;
+    border-radius: 12px;
+    border: none;
+    background: #1b2a6b;
+    color: #ffffff;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.1s ease;
+  }
+  .primary-button:hover {
+    background: #111c4f;
+  }
+  .primary-button:active {
+    transform: scale(0.98);
+  }
+  .secondary-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 18px;
+    border-radius: 12px;
+    border: none;
+    background: #1b2a6b;
+    color: #ffffff;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .secondary-button:hover {
+    background: #111c4f;
+  }
+  .section-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 22px;
+  }
+  .section-chip {
+    text-decoration: none;
+    padding: 8px 12px;
+    border-radius: 999px;
+    border: 1px solid #d6def2;
+    background: #ffffff;
+    color: #1b2a6b;
+    font-weight: 600;
+    font-size: 12px;
+  }
+  .section-chip:hover {
+    background: #f2f5ff;
+  }
+  .guide-actions {
+    display: flex;
+    gap: 10px;
+  }
+  .guide-section {
+    margin-bottom: 20px;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid #e7ecf7;
+    background: #ffffff;
+    box-shadow: 0 10px 24px rgba(17, 24, 39, 0.06);
+  }
+  .toggle-header {
+    width: 100%;
+    border: none;
+    background: #f2f5ff;
+    color: #1b2a6b;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .toggle-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .chevron {
+    font-size: 14px;
+    color: #4156b3;
+  }
+  .section-count {
+    font-size: 12px;
+    color: #6b7280;
+  }
+  .section-body {
+    padding: 16px 18px 20px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    table-layout: fixed;
+  }
+  th, td {
+    padding: 10px 8px;
+    border-bottom: 1px solid #eef1f7;
+    text-align: left;
+    vertical-align: top;
+    word-break: break-word;
+  }
+  .field-col {
+    width: 32%;
+  }
+  .value-col {
+    width: 68%;
+  }
+  th {
+    background: #f7f9ff;
+    color: #1b2a6b;
+    font-weight: 600;
+  }
+  .empty-state {
+    color: #6b7280;
+    font-size: 14px;
+  }
+  @media (max-width: 900px) {
+    .app-shell {
+      grid-template-columns: 1fr;
+    }
+    .sidebar {
+      position: relative;
+      height: auto;
+    }
+    .content {
+      padding: 28px 20px 40px;
+    }
+    .guide-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand-lockup">
+      <img class="brand-logo" src="/assets/oktaverse-logo.png" alt="OktaVerse">
+    </div>
+    <div class="tool-list">
+      <a class="tool-button" href="/">OktaCompare <span class="tool-pill">Live</span></a>
+      <a class="tool-button active" href="/snapshot">OktaSnapshot <span class="tool-pill">Beta</span></a>
+      <a class="tool-button" href="/evaluate">OktaEvaluate <span class="tool-pill">Soon</span></a>
+      <a class="tool-button" href="/migrate">OktaMigrate <span class="tool-pill">Soon</span></a>
+    </div>
+  </aside>
+  <main class="content">
+    <div class="page-header">
+      <h1 class="page-title">OktaSnapshot</h1>
+      <p class="page-subtitle">Generated for <strong>{{ guide_domain }}</strong> on <strong>{{ guide_generated_at }}</strong>.</p>
+    </div>
+
+    <div class="guide-header">
+      <div>
+        <h2>Configuration</h2>
+        <p class="guide-note">This view summarizes the key Okta configuration captured from your tenant. Click Export to generate the configuration PDF.</p>
+      </div>
+      <div class="guide-actions">
+        <a class="secondary-button" href="/snapshot">Home</a>
+        <a class="primary-button" href="/snapshot/export">Export PDF</a>
+      </div>
+    </div>
+
+    {% if guide_sections %}
+    <div class="section-nav">
+      {% for section in guide_sections %}
+      <a class="section-chip" href="#{{ section.id }}">{{ section.title }}</a>
+      {% endfor %}
+    </div>
+    {% for section in guide_sections %}
+    <section class="guide-section" id="{{ section.id }}">
+      <button class="toggle-header" type="button" onclick="toggleSection('{{ section.id }}')">
+        <span class="toggle-left">
+          <span class="chevron" id="{{ section.id }}-chev">▶</span>
+          {{ section.title }}
+        </span>
+        <span class="section-count">{{ section.rows|length }} items</span>
+      </button>
+      <div class="section-body" id="{{ section.id }}-body" style="display: none;">
+        {% if section.rows %}
+        {% if section.id in ["org-settings", "security-settings"] %}
+        <table style="margin-bottom: 16px;">
+          <thead>
+            <tr>
+              <th class="field-col">Setting</th>
+              <th class="value-col">Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in section.rows %}
+            <tr>
+              <td class="field-col">{{ row.get("Setting", "") }}</td>
+              {% set cell = row.get("Value", "") %}
+              <td class="value-col">
+                {% if cell is mapping or (cell is sequence and cell is not string) %}
+                  {{ cell|default({})|tojson }}
+                {% else %}
+                  {{ cell|default("") }}
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        {% for row in section.rows %}
+        {% set columns = row.keys() if section.id == "applications" else section.columns %}
+        <table style="margin-bottom: 16px;">
+          <thead>
+            <tr>
+              <th class="field-col">Field</th>
+              <th class="value-col">Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for col in columns %}
+            <tr>
+              <td class="field-col">{{ col }}</td>
+              {% set cell = row[col] if col in row else "" %}
+              <td class="value-col">
+                {% if cell is mapping or (cell is sequence and cell is not string) %}
+                  {{ cell|default({})|tojson }}
+                {% else %}
+                  {{ cell|default("") }}
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% endfor %}
+        {% endif %}
+        {% else %}
+          <p class="empty-state">No data found.</p>
+        {% endif %}
+      </div>
+    </section>
+    {% endfor %}
+    {% else %}
+      <p class="empty-state">No guide data found. Generate a new guide from the home page.</p>
+    {% endif %}
+  </main>
+</div>
+<script>
+  function toggleSection(sectionId) {
+    const body = document.getElementById(sectionId + "-body");
+    const chevron = document.getElementById(sectionId + "-chev");
+    const isOpen = body.style.display === "block";
+    body.style.display = isOpen ? "none" : "block";
+    chevron.textContent = isOpen ? "▶" : "▼";
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+<h2>Applications</h2>
+<p>Okta app integrations are configured connections between Okta features and external applications that provide a service. App integrations are either prebuilt or can be created by admins or developers to provide users seamless access to their assigned apps.</p>
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Value</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for html_table in applications_data %}
+        {{ html_table | safe }}
+         <br/>
+        {% endfor %}
+    </tbody>
+</table>

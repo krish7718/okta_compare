@@ -1,0 +1,2 @@
+ID,Status,Name,Description,Priority,Conditions,Rules
+00p3skwfhvU3vSPd91d7,ACTIVE,Default Policy,The default policy applies in all situations if no other policy applies.,1,{'people': {'groups': {'include': ['00g3skwfhu5HqakeI1d7']}}},"Test, Demo Everyone, Default Rule"

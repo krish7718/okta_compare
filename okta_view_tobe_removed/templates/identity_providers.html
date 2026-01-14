@@ -1,0 +1,16 @@
+<h2>Identity Providers</h2>
+<p>Identity Providers (IdPs) are services that manage user accounts. Adding IdPs in Okta enables your end users to self-register with your custom applications by first authenticating with a social account or a smart card.</p>
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Value</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for html_table in identity_providers_data %}
+        {{ html_table | safe }}
+        <br/>
+        {% endfor %}
+    </tbody>
+</table>

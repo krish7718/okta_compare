@@ -1,0 +1,11 @@
+ID,Status,Name,Description,Priority,Conditions,Rules
+rst4sna9mi65R8p3v3l7,ACTIVE,Okta Admin Console,,1,,"Admin App Policy, Catch-all Rule"
+rst4sna9mvMvCeOvq3l7,ACTIVE,Okta Agent Registration,,1,,Catch-all Rule
+rst4sna9nwf7EHSyp3l7,ACTIVE,CFA Default policy,,1,,"Okta verify desktop pilot, MFA Exemption, CFA External Vendor Policy, CFA Generic Account Policy, CFA Volunteer Policy, CFA Staff Policy, Okta Admins, Catch-all Rule"
+rst4vqmfqtRMuaPv73l7,ACTIVE,Microsoft Office 365,,1,,"Azure AD Join devices, Allow Web and Modern Auth - Volunteer, Volunteer(Temporary Exemption), Allow Web and Modern Auth - Staff, Allow Web and Modern Auth, Catch-all Rule"
+rst4vqnf9uokAZLdW3l7,ACTIVE,Microsoft Office 365,,1,,"Allow Web and Modern Auth, Catch-all Rule"
+rst4yei4g2WtAO3nC3l7,ACTIVE,CFA Bookmark Apps Policy,,1,,Catch-all Rule
+rst63dim6lbktO9qA3l7,ACTIVE,AAL1 (Low),AAL1,1,,"Deny ServiceNow Users Access, CFA Volunteer Policy, CFA Staff, Catch-all Rule"
+rst63djh6m6duTk0q3l7,ACTIVE,AAL2,AAL2,1,,"CFA External Vendor Policy, CFA Generic Account Policy, CFA Volunteer Policy, CFA Staff, Catch-all Rule"
+rst63djq75P9ulSCh3l7,ACTIVE,CFA - Newly Onboarded Apps (Temp) AAL3,"CFA - Newly Onboarded Apps (Temp) Cloned from Default, changed staff MFA to align with Phase3 MFA from design doc. Only to be used for new apps that are onboarded directly to Okta, not coming across from Azure.",1,,"MFA Exemption, CFA Volunteer Policy, A-CFA Staff Policy, Okta Admins, Catch-all Rule"
+rst66jfu02QHzLSLP3l7,ACTIVE,Okta Account Management Policy,"This policy defines how users must authenticate for authenticator enrollment, password reset, or unlock account. Password policy rules control whether to enforce this policy for password reset and unlock account.",1,,Catch-all Rule

@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>OktaSnapshot</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
+<style>
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    font-family: 'Space Grotesk', sans-serif;
+    background: radial-gradient(1200px 600px at 10% 10%, #e6f0ff 0%, #f3f6fb 60%, #f7f9fc 100%);
+    margin: 0;
+    padding: 0;
+    color: #1f2937;
+  }
+  .app-shell {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    min-height: 100vh;
+  }
+  .sidebar {
+    background: linear-gradient(180deg, #1b2a6b 0%, #0f1b3d 100%);
+    color: #dbe7ff;
+    padding: 26px 18px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.06);
+  }
+  .brand-lockup {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 22px;
+    padding: 10px 12px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 14px;
+    justify-content: center;
+    box-shadow: 0 8px 18px rgba(4, 10, 40, 0.18);
+  }
+  .brand-logo {
+    width: 120px;
+    height: auto;
+    display: block;
+  }
+  .tool-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 14px;
+  }
+  .tool-button {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid transparent;
+    color: #dbe7ff;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .tool-button.active {
+    background: #ffffff;
+    color: #1b2a6b;
+    border-color: rgba(255, 255, 255, 0.65);
+    box-shadow: 0 8px 18px rgba(4, 10, 40, 0.2);
+  }
+  .tool-pill {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.18);
+    color: #ffffff;
+    font-weight: 600;
+  }
+  .tool-button.active .tool-pill {
+    background: rgba(27, 42, 107, 0.15);
+    color: #1b2a6b;
+  }
+  .content {
+    padding: 34px 48px 60px;
+  }
+  .page-header {
+    margin-bottom: 22px;
+  }
+  .page-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: #0f1b3d;
+    margin: 0 0 6px;
+  }
+  .page-subtitle {
+    margin: 0;
+    color: #4b5563;
+    font-size: 14px;
+  }
+  .card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 28px 32px;
+    box-shadow: 0 14px 32px rgba(17, 24, 39, 0.08);
+    border: 1px solid #eef1f7;
+  }
+  .guide-form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  .env-card {
+    background: #f8faff;
+    border: 1px solid #e3e9f7;
+    border-radius: 14px;
+    padding: 18px 20px;
+  }
+  h2.section-title {
+    color: #1b2a6b;
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    border-left: 4px solid #4f7cff;
+    padding-left: 10px;
+    margin-top: 0;
+  }
+  .field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .field-hint {
+    font-size: 12px;
+    color: #6b7280;
+  }
+  label {
+    display: block;
+    margin-top: 0;
+    font-weight: 500;
+    color: #1b2a6b;
+    font-size: 14px;
+  }
+  input[type=text],
+  input[type=password] {
+    width: 100%;
+    padding: 12px 14px;
+    margin-top: 6px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+    background: #f9fafb;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+  }
+  input[type=text]:focus,
+  input[type=password]:focus {
+    border-color: #4f7cff;
+    background: #ffffff;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(79, 124, 255, 0.16);
+  }
+  .primary-button {
+    border: none;
+    background: #1b2a6b;
+    color: #ffffff;
+    font-weight: 600;
+    padding: 12px 18px;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 10px 20px rgba(27, 42, 107, 0.2);
+  }
+  .loader-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 17, 34, 0.55);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    backdrop-filter: blur(2px);
+  }
+  .loader-card {
+    background: #ffffff;
+    padding: 28px 32px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    min-width: 240px;
+  }
+  .loader-icon {
+    width: 72px;
+    height: 72px;
+    margin: 0 auto 12px;
+  }
+  .loader-icon .screen {
+    fill: #0b4aa8;
+  }
+  .loader-icon .base {
+    fill: #1f2937;
+  }
+  .loader-icon .dot {
+    fill: #ffffff;
+    animation: pulse 1.2s infinite ease-in-out;
+  }
+  .loader-icon .dot:nth-child(2) { animation-delay: 0.2s; }
+  .loader-icon .dot:nth-child(3) { animation-delay: 0.4s; }
+  .loader-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #002e5d;
+    margin: 0 0 6px;
+  }
+  .loader-subtitle {
+    font-size: 13px;
+    color: #4b5563;
+    margin: 0;
+  }
+  @keyframes pulse {
+    0%, 80%, 100% { opacity: 0.3; }
+    40% { opacity: 1; }
+  }
+  @media (max-width: 900px) {
+    .app-shell {
+      grid-template-columns: 1fr;
+    }
+    .sidebar {
+      position: relative;
+      height: auto;
+    }
+    .content {
+      padding: 28px 20px 40px;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="loader-overlay" id="loader">
+  <div class="loader-card">
+    <svg class="loader-icon" viewBox="0 0 120 120" aria-hidden="true">
+      <rect class="screen" x="20" y="18" width="80" height="52" rx="6"></rect>
+      <rect class="base" x="12" y="74" width="96" height="10" rx="4"></rect>
+      <rect class="base" x="32" y="86" width="56" height="10" rx="4"></rect>
+      <circle class="dot" cx="46" cy="44" r="4"></circle>
+      <circle class="dot" cx="60" cy="44" r="4"></circle>
+      <circle class="dot" cx="74" cy="44" r="4"></circle>
+    </svg>
+    <p class="loader-title">OktaSnapshot in action</p>
+    <p class="loader-subtitle">Rome wasn’t built in a day... we’re building something even better 😉</p>
+  </div>
+</div>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand-lockup">
+      <img class="brand-logo" src="/assets/oktaverse-logo.png" alt="OktaVerse">
+    </div>
+    <div class="tool-list">
+      <a class="tool-button" href="/">OktaCompare <span class="tool-pill">Live</span></a>
+      <a class="tool-button active" href="/snapshot">OktaSnapshot <span class="tool-pill">Beta</span></a>
+      <a class="tool-button" href="/evaluate">OktaEvaluate <span class="tool-pill">Soon</span></a>
+      <a class="tool-button" href="/migrate">OktaMigrate <span class="tool-pill">Soon</span></a>
+    </div>
+  </aside>
+  <main class="content">
+    <div class="page-header">
+      <h1 class="page-title">OktaSnapshot</h1>
+      <p class="page-subtitle">Inventory and visualize tenant configuration in one place.</p>
+    </div>
+    <section class="card">
+      <form class="guide-form" method="POST" action="/snapshot" id="okta-view-form">
+        <div class="form-grid">
+          <div class="env-card">
+            <h2 class="section-title">OktaSnapshot Environment</h2>
+            <div class="field-group">
+              <label for="domain">Okta Domain</label>
+              <input id="domain" name="domain" type="text" placeholder="acme.okta.com">
+              <span class="field-hint">Enter only the domain, e.g. acme.okta.com (no https://). Leave blank to use the default.</span>
+            </div>
+            <div class="field-group" style="margin-top: 16px;">
+              <label for="api_token">API Token</label>
+              <input id="api_token" name="api_token" type="password" placeholder="Leave blank to use default">
+              <span class="field-hint">Leave blank to use the default token.</span>
+            </div>
+          </div>
+        </div>
+        <button class="primary-button" type="submit">Generate Guide</button>
+      </form>
+    </section>
+    <p class="page-subtitle" style="margin-top: 18px;">Generate a guide to see your Okta configuration here.</p>
+  </main>
+</div>
+<script>
+  const viewForm = document.getElementById("okta-view-form");
+  const viewLoader = document.getElementById("loader");
+  if (viewForm && viewLoader) {
+    viewForm.addEventListener("submit", () => {
+      viewLoader.style.display = "flex";
+    });
+  }
+</script>
+</body>
+</html>

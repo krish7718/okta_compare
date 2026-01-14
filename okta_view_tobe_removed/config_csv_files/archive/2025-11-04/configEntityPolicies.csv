@@ -1,0 +1,19 @@
+rowId,system.updated,ID,Name,Description,Status,Type,Priority,Rule IDs
+75d45e80-c39c-11ed-9f57-655ab8114d96,1678931227758,rst3vz4umlHfnBRqB1d7,Microsoft Office 365 - rihaan.live,,ACTIVE,ACCESS_POLICY,1,"rul3vz4umnWbML3o61d7,rul3vz4ummRIdjIkl1d7"
+604e6ba0-c39c-11ed-a4a0-10586f95b93b,1678931191645,rst3skwfn4XHNcM8g1d7,Seamless access based on network context,Require 2FA if the user is off network. Configure your network zones to include them here.,ACTIVE,ACCESS_POLICY,1,"rul3skwfn5INLjpuh1d7,rul3skwfn6qmhqYLS1d7,rul3skwfn75UatjJe1d7"
+58b42970-c39c-11ed-aee5-27441299d50b,1678931178892,rst3skwfn2zjdS8Jy1d7,One factor access,Allow access with any one factor. Suggested for low risk or consumer-facing applications.,ACTIVE,ACCESS_POLICY,1,rul3skwfn3ti61cbo1d7
+518b94d0-c39c-11ed-a035-53cc4056f4eb,1678931166898,rst3skwfn0ozDrZW61d7,Password only,Require only a password. Suggested for low risk or consumer-facing applications.,ACTIVE,ACCESS_POLICY,1,rul3skwfn1xqhXIRn1d7
+4a38e2f0-c39c-11ed-8b4c-859baa908699,1678931154595,rst3skwfmy7VKkaI91d7,Any two factors,Require two factors to access.,ACTIVE,ACCESS_POLICY,1,rul3skwfmzRirwq941d7
+3bf9e220-c39c-11ed-a814-a98733cdc3a3,1678931130698,rst3skwfmeSJU5TYo1d7,Default Policy,,ACTIVE,ACCESS_POLICY,1,"rul3ux3p9pc3e6D371d7,rul3skwfmfO3QkJuF1d7"
+313959b0-c39c-11ed-aef5-b96b2b4eebf7,1678931112656,rst3skwfleXhpKDqH1d7,Okta Browser Plugin,,ACTIVE,ACCESS_POLICY,1,rul3skwflfe81fT061d7
+23a258b0-c39c-11ed-a076-ab03651fc69b,1678931089854,rst3skwflb5nNUapx1d7,Okta Dashboard,,ACTIVE,ACCESS_POLICY,1,"rul3xy56r4MNctLxb1d7,rul3skwflcCCE0mDl1d7"
+128f9e70-c39c-11ed-ab96-9828d88d873e,1678931061213,rst3skwfl4QVnK2P01d7,Okta Admin Console,,ACTIVE,ACCESS_POLICY,1,"rul3ux2hcpEE8QHxV1d7,rul3skwfl7cUf2LHT1d7,rul3skwfl51jqNoC91d7"
+079408d0-c39c-11ed-a9e6-ba6dc56d2d4b,1678931042785,rst3vz4umlHfnBRqB1d7,Microsoft Office 365 - rihaan.live,,ACTIVE,ACCESS_POLICY,1,"rul3vz4umnWbML3o61d7,rul3vz4ummRIdjIkl1d7"
+f8cc9e20-c39b-11ed-ab9f-890d5ad9a208,1678931018054,rst3skwfn4XHNcM8g1d7,Seamless access based on network context,Require 2FA if the user is off network. Configure your network zones to include them here.,ACTIVE,ACCESS_POLICY,1,"rul3skwfn5INLjpuh1d7,rul3skwfn6qmhqYLS1d7,rul3skwfn75UatjJe1d7"
+f3392870-c39b-11ed-a338-5d9e823da630,1678931008634,rst3skwfn2zjdS8Jy1d7,One factor access,Allow access with any one factor. Suggested for low risk or consumer-facing applications.,ACTIVE,ACCESS_POLICY,1,rul3skwfn3ti61cbo1d7
+ee391920-c39b-11ed-997c-cab98430c3e6,1678931000246,rst3skwfn0ozDrZW61d7,Password only,Require only a password. Suggested for low risk or consumer-facing applications.,ACTIVE,ACCESS_POLICY,1,rul3skwfn1xqhXIRn1d7
+e9969320-c39b-11ed-9fa7-92552d8b19de,1678930992470,rst3skwfmy7VKkaI91d7,Any two factors,Require two factors to access.,ACTIVE,ACCESS_POLICY,1,rul3skwfmzRirwq941d7
+df89a340-c39b-11ed-8cd6-cb24f1c9ebda,1678930975613,rst3skwfmeSJU5TYo1d7,Default Policy,,ACTIVE,ACCESS_POLICY,1,"rul3ux3p9pc3e6D371d7,rul3skwfmfO3QkJuF1d7"
+daf57520-c39b-11ed-9486-e6bfe3ed6909,1678930967946,rst3skwfleXhpKDqH1d7,Okta Browser Plugin,,ACTIVE,ACCESS_POLICY,1,rul3skwflfe81fT061d7
+d2be56b0-c39b-11ed-b4e1-0c044b384d47,1678930954148,rst3skwflb5nNUapx1d7,Okta Dashboard,,ACTIVE,ACCESS_POLICY,1,"rul3xy56r4MNctLxb1d7,rul3skwflcCCE0mDl1d7"
+c6465a40-c39b-11ed-bcd9-168daf732778,1678930933232,rst3skwfl4QVnK2P01d7,Okta Admin Console,,ACTIVE,ACCESS_POLICY,1,"rul3ux2hcpEE8QHxV1d7,rul3skwfl7cUf2LHT1d7,rul3skwfl51jqNoC91d7"

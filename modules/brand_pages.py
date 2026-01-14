@@ -60,8 +60,12 @@ def compare_brand_pages(envA_domain, envA_token, envB_domain, envB_token, limit=
 
         for page_key, label in (("sign_in", "Sign-In Page"), ("error", "Error Page")):
             if page_key == "sign_in":
-                contentA = (pagesA.get(page_key, {}) or {}).get("pageContent")
-                contentB = (pagesB.get(page_key, {}) or {}).get("pageContent")
+                contentA = (pagesA.get(page_key, {}) or {}).get("pageContent") or (
+                    (pagesA.get(page_key, {}) or {}).get("htmlContent")
+                )
+                contentB = (pagesB.get(page_key, {}) or {}).get("pageContent") or (
+                    (pagesB.get(page_key, {}) or {}).get("htmlContent")
+                )
                 if _widget_customizations_signature(pagesA.get(page_key, {})) != _widget_customizations_signature(
                     pagesB.get(page_key, {})
                 ):

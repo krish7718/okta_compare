@@ -1,0 +1,34 @@
+rowId,system.updated,Display Name,Variable Name,Data Type,Description,Enum,Attribute Minimum Length,Attribute required,User permission,Attribute Type,Attribute Maximum Length
+c47afe30-c12c-11ed-92ae-c274c7c46be4,1678663353750,Manager,manager,string,,false,0,,"[{""principal"":""SELF"",""action"":""READ_ONLY""}]","""BASE""",0
+c4331fc0-c12c-11ed-8f49-ff37a395a7f1,1678663353281,ManagerId,managerId,string,,false,0,,"[{""principal"":""SELF"",""action"":""READ_ONLY""}]","""BASE""",0
+c3f72830-c12c-11ed-a836-e545a975e3f4,1678663352888,Department,department,string,,false,0,,"[{""principal"":""SELF"",""action"":""READ_ONLY""}]","""BASE""",0
+c3c542c0-c12c-11ed-99ae-683a104449f8,1678663352560,Division,division,string,,false,0,,"[{""principal"":""SELF"",""action"":""READ_ONLY""}]","""BASE""",0
+c383f400-c12c-11ed-be76-c46c27ff26f9,1678663352132,Organization,organization,string,,false,0,,"[{""principal"":""SELF"",""action"":""READ_ONLY""}]","""BASE""",0
+c347ae50-c12c-11ed-ba70-09080129ad2a,1678663351736,Cost center,costCenter,string,,false,0,,"[{""principal"":""SELF"",""action"":""READ_ONLY""}]","""BASE""",0
+c3113500-c12c-11ed-a455-79e0e1ee4a3a,1678663351379,Employee number,employeeNumber,string,,false,0,,"[{""principal"":""SELF"",""action"":""READ_ONLY""}]","""BASE""",0
+c2d56480-c12c-11ed-b0a4-e3ff065bb6d6,1678663350987,User type,userType,string,,false,0,,"[{""principal"":""SELF"",""action"":""READ_ONLY""}]","""BASE""",0
+c29b41b0-c12c-11ed-851c-8e6d94bdc93b,1678663350606,Time zone,timezone,string,,false,0,,"[{""principal"":""SELF"",""action"":""READ_ONLY""}]","""BASE""",0
+c2645330-c12c-11ed-a894-1b51835b90da,1678663350248,Locale,locale,string,,false,0,,"[{""principal"":""SELF"",""action"":""READ_ONLY""}]","""BASE""",0
+c22e7620-c12c-11ed-a360-5d9336829b0f,1678663349895,Preferred language,preferredLanguage,string,,false,0,,"[{""principal"":""SELF"",""action"":""READ_ONLY""}]","""BASE""",0
+c1f27e90-c12c-11ed-9b34-1f20efcce974,1678663349501,Postal Address,postalAddress,string,,false,0,,"[{""principal"":""SELF"",""action"":""HIDE""}]","""BASE""",0
+c19e4410-c12c-11ed-be3d-b666b75723aa,1678663348950,Country code,countryCode,string,,false,0,,"[{""principal"":""SELF"",""action"":""HIDE""}]","""BASE""",0
+c1699f80-c12c-11ed-bf84-2c09ea38d5a9,1678663348604,Zip code,zipCode,string,,false,0,,"[{""principal"":""SELF"",""action"":""HIDE""}]","""BASE""",0
+c12ce4a0-c12c-11ed-b454-11671acbbe45,1678663348206,State,state,string,,false,0,,"[{""principal"":""SELF"",""action"":""HIDE""}]","""BASE""",0
+c0f72ea0-c12c-11ed-8038-e0b475f5f760,1678663347853,City,city,string,,false,0,,"[{""principal"":""SELF"",""action"":""HIDE""}]","""BASE""",0
+c0c59750-c12c-11ed-bf63-d7c88cfaee1f,1678663347530,Street address,streetAddress,string,,false,0,,"[{""principal"":""SELF"",""action"":""HIDE""}]","""BASE""",0
+c08d9760-c12c-11ed-8215-312c2b42eecd,1678663347164,Primary phone,primaryPhone,string,,false,0,,"[{""principal"":""SELF"",""action"":""HIDE""}]","""BASE""",100
+bfea2b70-c12c-11ed-bc82-70f58e41a56e,1678663346093,Mobile phone,mobilePhone,string,,false,0,,"[{""principal"":""SELF"",""action"":""READ_WRITE""}]","""BASE""",100
+bf3a1550-c12c-11ed-860a-eb28b5c73ace,1678663344937,Secondary email,secondEmail,string,,false,0,,"[{""principal"":""SELF"",""action"":""READ_WRITE""}]","""BASE""",0
+befe6be0-c12c-11ed-a317-7af93d5a953a,1678663344545,Profile Url,profileUrl,string,,false,0,,"[{""principal"":""SELF"",""action"":""READ_ONLY""}]","""BASE""",0
+beb63f50-c12c-11ed-ba0b-c0a693ea33e4,1678663344074,Nickname,nickName,string,,false,0,,"[{""principal"":""SELF"",""action"":""READ_ONLY""}]","""BASE""",0
+be787300-c12c-11ed-bf1f-d2865ab0ed25,1678663343668,Display name,displayName,string,,false,0,,"[{""principal"":""SELF"",""action"":""READ_ONLY""}]","""BASE""",0
+bd831680-c12c-11ed-b748-bbb157563322,1678663342059,Title,title,string,,false,0,,"[{""principal"":""SELF"",""action"":""READ_ONLY""}]","""BASE""",0
+bd4ceb50-c12c-11ed-9dad-cb25a5243ee1,1678663341706,Primary email,email,string,,false,0,true,"[{""principal"":""SELF"",""action"":""READ_WRITE""}]","""BASE""",0
+bd13b2e0-c12c-11ed-b61d-04bf972becf8,1678663341329,Honorific suffix,honorificSuffix,string,,false,0,,"[{""principal"":""SELF"",""action"":""READ_ONLY""}]","""BASE""",0
+bcda7a70-c12c-11ed-8361-c87e4235c119,1678663340955,Honorific prefix,honorificPrefix,string,,false,0,,"[{""principal"":""SELF"",""action"":""READ_ONLY""}]","""BASE""",0
+bc9f1f20-c12c-11ed-bdc5-b22336f29ac2,1678663340565,Middle name,middleName,string,,false,0,,"[{""principal"":""SELF"",""action"":""READ_ONLY""}]","""BASE""",0
+bc62d970-c12c-11ed-bf52-2a10d3c6c273,1678663340171,Last name,lastName,string,,false,1,true,"[{""principal"":""SELF"",""action"":""READ_WRITE""}]","""BASE""",50
+bc2e5bf0-c12c-11ed-b85d-ca7911e39020,1678663339829,First name,firstName,string,,false,1,true,"[{""principal"":""SELF"",""action"":""READ_WRITE""}]","""BASE""",50
+bbf6aa20-c12c-11ed-aa04-746f38577d9b,1678663339465,Username,login,string,,false,5,true,"[{""principal"":""SELF"",""action"":""READ_ONLY""}]","""BASE""",100
+bbb92bf0-c12c-11ed-9391-9f09fc54dd92,1678663339059,Company,company,string,Custom Attribute - Company,false,0,,"[{""principal"":""SELF"",""action"":""READ_ONLY""}]","""CUSTOM""",0
+bb821660-c12c-11ed-980f-a9f06676fb8f,1678663338697,Membership,membership,string,Custom attribute Membership,false,10,true,"[{""principal"":""SELF"",""action"":""READ_ONLY""}]","""CUSTOM""",100

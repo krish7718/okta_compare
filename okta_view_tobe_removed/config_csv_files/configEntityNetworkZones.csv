@@ -1,0 +1,7 @@
+Name,Status,Gateways,Proxies,Usage
+Australia,ACTIVE,,,POLICY
+BlockedIpZone,ACTIVE,,,BLOCKLIST
+CFA Public IP Address Ranges,ACTIVE,"['183.78.173.0/24', '183.78.174.0/24']",,POLICY
+DefaultEnhancedDynamicZone,INACTIVE,,,BLOCKLIST
+DefaultExemptIpZone,ACTIVE,,,POLICY
+LegacyIpZone,ACTIVE,,,POLICY

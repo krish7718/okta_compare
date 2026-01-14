@@ -1,0 +1,2 @@
+ID,Name,Status,Description,Audiences,Issuer,Credentials Rotation Mode
+aus3sl2qdf0aMjCNm1d7,default,ACTIVE,Default Authorization Server for your Applications,api://default,https://lyraratna.oktapreview.com/oauth2/default,AUTO

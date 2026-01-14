@@ -1,0 +1,16 @@
+<h2>Account Settings</h2>
+<p>Account settings control how Okta and your end users communicate with your org. This section includes designated point of contact for billing and technical support and configure levels of access for Okta Support and third-party admins.</p>
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Value</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for html_table in org_settings_data %}
+        {{ html_table | safe }}
+        <br/>
+        {% endfor %}
+    </tbody>
+</table>

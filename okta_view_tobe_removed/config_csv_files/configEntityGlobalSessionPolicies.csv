@@ -1,0 +1,7 @@
+ID,Status,Name,Description,Priority,Conditions,Rules
+00p58bv2qoQuhOGUw3l7,ACTIVE,Allow Access outside Australia,,1,"{'people': {'groups': {'include': ['00g6vfffqrrEcKVs73l7', '00g4u9hdb4tlpdAid3l7', '00g58bt1yq40Uppta3l7', '00g6uymptauGx91U33l7']}}}","Allow Access outside Australia, High risk rule, New behaviour rule, Default rule"
+00p66iauc8JfZrULb3l7,ACTIVE,CFA External Vendor Policy,CFA External Vendor Policy,2,{'people': {'groups': {'include': ['00g66i6vmxlZGfyjs3l7']}}},"Deny outside Australia, Default rule"
+00p66ibf0mOuLb3aV3l7,ACTIVE,CFA Generic Account Policy,CFA Generic Account Policy,3,{'people': {'groups': {'include': ['00g66i6xwpcsn8vq93l7']}}},"Deny outside Australia, Default rule"
+00p4v1absntH6ns5v3l7,ACTIVE,CFA Volunteer Policy,CFA Volunteer Policy,4,{'people': {'groups': {'include': ['00g4tejgs1OntTaTe3l7']}}},"Deny outside Australia, Default rule"
+00p4swtevsmkD9mxK3l7,ACTIVE,GSP-CFA Staff Policy,CFA Staff Policy,5,"{'people': {'groups': {'include': ['00g4zlcr6kzLraNnF3l7', '00g4teit4bSDhU0Qe3l7']}}}","G-Deny outside Australia, G-High risk rule, G-New behaviour rule, G-Default rule"
+00p4sn95aqFxbP6TD3l7,ACTIVE,Default Policy,The default policy applies in all situations if no other policy applies.,6,{'people': {'groups': {'include': ['00g4sn95apYdxAPKX3l7']}}},"Deny outside Australia, Default Rule"

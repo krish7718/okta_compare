@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>OktaSnapshot PDF</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    font-size: 11px;
+    color: #1f2937;
+    margin: 24px;
+  }
+  h1 {
+    font-size: 20px;
+    margin-bottom: 4px;
+  }
+  h2 {
+    font-size: 14px;
+    margin: 18px 0 8px;
+  }
+  p {
+    margin: 0 0 12px;
+    color: #4b5563;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 12px;
+    table-layout: fixed;
+    word-wrap: break-word;
+  }
+  th, td {
+    border: 1px solid #e5e7eb;
+    padding: 6px 8px;
+    vertical-align: top;
+  }
+  th {
+    background: #f3f4f6;
+    text-align: left;
+  }
+  .field-col {
+    width: 32%;
+  }
+  .value-col {
+    width: 68%;
+  }
+  .section {
+    page-break-inside: avoid;
+  }
+</style>
+</head>
+<body>
+  <h1>OktaSnapshot Configuration</h1>
+  <p>Generated for {{ guide_domain }}.</p>
+
+  {% set section_descriptions = {
+    "org-settings": "Organization settings define your tenant’s core profile details like company name, address, and support contacts.",
+    "security-settings": "Security general settings control key protections such as ThreatInsight, CAPTCHA, user enumeration safeguards, and related security notifications.",
+    "groups": "Groups are collections of users used to assign apps, policies, and access based on shared attributes or roles.",
+    "group-rules": "Group rules automatically assign users to groups based on profile attributes and rule logic.",
+    "network-zones": "Network zones define trusted or blocked IP ranges used in policy conditions and access controls.",
+    "applications": "Applications represent the apps integrated with Okta, including their sign-on configuration and key settings.",
+    "authenticators": "Authenticators are the verification methods users enroll, such as password, email, SMS, or app-based factors.",
+    "authenticator-enrollment-policies": "Authenticator enrollment policies define which authenticators users must or can enroll.",
+    "password-policies": "Password policies define password complexity, length, and rotation rules for users.",
+    "password-policy-rules": "Password policy rules specify which users the password policy applies to and its enforcement conditions.",
+    "session-policies": "Global session policies supply the context necessary for the user to advance to the next authentication step once Okta has identified them. They also specify actions to take, such as allowing access, prompting for a challenge, and setting the time before prompting for another challenge.",
+    "session-policy-rules": "Global session policy rules define specific conditions and actions for when session policy controls apply.",
+    "access-policies": "Authentication (access) policies define sign-on requirements for users and apps based on context.",
+    "access-policy-rules": "Authentication (access) policy rules specify detailed conditions and actions for user sign-on.",
+    "app-sign-on-policies": "App sign-on policies define access requirements for specific applications.",
+    "app-sign-on-policy-rules": "App sign-on policy rules detail the conditions and actions required for app access.",
+    "idp-discovery-policies": "IdP discovery policies determine which identity provider is used based on user and context.",
+    "idp-discovery-policy-rules": "IdP discovery policy rules specify the matching conditions and provider actions.",
+    "profile-enrollment-policies": "Profile enrollment policies control how users enroll and what profile data is required.",
+    "profile-enrollment-policy-rules": "Profile enrollment policy rules define enrollment conditions and attribute requirements.",
+    "auth-servers-settings": "Authorization server settings define issuer and core configuration for OAuth/OIDC tokens.",
+    "auth-servers-access-policies": "Authorization server access policies control token issuance based on client, user, and scope context.",
+    "auth-servers-access-policy-rules": "Authorization server access policy rules detail grant types, scopes, and token lifetimes.",
+    "auth-servers-claims": "Authorization server claims define which attributes are included in issued tokens.",
+    "auth-servers-scopes": "Authorization server scopes define the permissions that clients can request.",
+    "idps": "Identity providers define external IdP integrations and their provisioning and routing behavior.",
+    "idp-routing-rules": "IdP routing rules decide which IdP is used for sign-in based on request context.",
+    "brand-settings": "Brand settings control tenant branding such as name, privacy settings, and default brand behavior.",
+    "brand-pages": "Brand pages define custom sign-in, error, and other hosted page content.",
+    "brand-email-templates": "Brand email templates define subject lines and HTML content for Okta system emails.",
+    "custom-admin-roles": "Custom admin roles define tailored permission bundles for administrative access.",
+    "resource-sets": "Resource sets group objects that can be assigned to custom admin roles.",
+    "resource-set-resources": "Resource set resources list the specific objects included in each resource set.",
+    "resource-set-bindings": "Resource set bindings associate roles with resource sets and admins.",
+    "admin-assignments": "Admin assignments show which users, groups, or apps have administrative privileges.",
+    "api-tokens": "API tokens represent active API credentials issued for administrators or service accounts.",
+    "realms": "Realms segment users and apps into distinct namespaces within the same org.",
+    "realm-assignments": "Realm assignments define how users are routed into realms based on conditions.",
+    "profile-schema-user": "User profile schema defines the attributes and validation rules on user profiles.",
+    "profile-mappings": "Profile mappings define how attributes flow between sources and targets like IdPs or directories.",
+    "trusted-origins": "Trusted origins allow CORS, redirects, or iFrame embedding from specified origins."
+  } %}
+  {% for section in guide_sections %}
+  <div class="section">
+    <h2>{{ section.title }}</h2>
+    {% if section_descriptions.get(section.id) %}
+    <p class="section-description">{{ section_descriptions.get(section.id) }}</p>
+    {% endif %}
+    {% if section.rows %}
+    {% if section.id in ["org-settings", "security-settings"] %}
+    <table>
+      <thead>
+        <tr>
+          <th class="field-col">Setting</th>
+          <th class="value-col">Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in section.rows %}
+        <tr>
+          <td class="field-col">{{ row.get("Setting", "") }}</td>
+          {% set cell = row.get("Value", "") %}
+          <td class="value-col">
+            {% if cell is mapping or (cell is sequence and cell is not string) %}
+              {{ cell|default({})|tojson }}
+            {% else %}
+              {{ cell|default("") }}
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    {% for row in section.rows %}
+    {% set columns = row.keys() if section.id == "applications" else section.columns %}
+    <table>
+      <thead>
+        <tr>
+          <th class="field-col">Field</th>
+          <th class="value-col">Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for col in columns %}
+        <tr>
+          <td class="field-col">{{ col }}</td>
+          {% set cell = row[col] if col in row else "" %}
+          <td class="value-col">
+            {% if cell is mapping or (cell is sequence and cell is not string) %}
+              {{ cell|default({})|tojson }}
+            {% else %}
+              {{ cell|default("") }}
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endfor %}
+    {% endif %}
+    {% else %}
+      <p>No data available.</p>
+    {% endif %}
+  </div>
+  {% endfor %}
+</body>
+</html>

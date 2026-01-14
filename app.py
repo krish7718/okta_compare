@@ -4,8 +4,9 @@ import requests
 import pandas as pd
 import io
 import csv
-from flask import Flask, session, request, render_template, send_file, send_from_directory
+from flask import Flask, session, request, render_template, send_file, send_from_directory, redirect, url_for
 from datetime import datetime
+from zoneinfo import ZoneInfo
 
 # ----------------------------------------------------
 # Comparison modules
@@ -36,6 +37,7 @@ from modules.realms import compare_realms, compare_realm_assignments
 from modules.profile_schema_user import compare_user_profile_schema
 from modules.profile_mappings import compare_profile_mappings
 from modules.trusted_origins import compare_trusted_origins
+from modules.okta_view_guide import build_okta_view_guide
 
 # ----------------------------------------------------
 # Extractor modules
@@ -45,6 +47,8 @@ from scripts.extract_groups import get_groups
 app = Flask(__name__)
 app.secret_key = "okta_compare_secret_key"
 LAST_EXPORT = {"diffs": [], "matches": []}
+OKTA_VIEW_EXPORT = {"rows": []}
+OKTA_VIEW_GUIDE = {"sections": [], "domain": ""}
 
 # ---------------------------------------------------
 # Logging
@@ -1261,7 +1265,9 @@ def index():
 
             envA=envA_domain,
             envB=envB_domain,
-            generated_at=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            generated_at=datetime.now(ZoneInfo("Australia/Brisbane")).strftime(
+                "%Y-%m-%d %H:%M:%S %Z"
+            ),
         )
 
 
@@ -1433,10 +1439,68 @@ def handle_unexpected_error(error):
         message="We hit an unexpected error while building the report. Please retry.",
     ), 500
 
-@app.route("/view", methods=["GET"])
+@app.route("/snapshot", methods=["GET"])
 def okta_view():
-    logger.info("Rendering OktaView placeholder.")
-    return render_template("okta_view.html")
+    logger.info("Rendering OktaSnapshot form.")
+    return render_template("okta_view_form.html")
+
+
+@app.route("/snapshot", methods=["POST"])
+def okta_view_generate():
+    domain = (request.form.get("domain") or "").strip() or DEFAULT_ENV_A_DOMAIN
+    api_token = (request.form.get("api_token") or "").strip() or DEFAULT_ENV_A_TOKEN
+
+    logger.info("Generating OktaSnapshot guide for %s.", domain)
+    sections, export_rows = build_okta_view_guide(domain, api_token)
+    OKTA_VIEW_EXPORT["rows"] = export_rows
+    OKTA_VIEW_GUIDE["sections"] = sections
+    OKTA_VIEW_GUIDE["domain"] = domain
+
+    return redirect(url_for("okta_view_guide"))
+
+
+@app.route("/snapshot/guide", methods=["GET"])
+def okta_view_guide():
+    sections = OKTA_VIEW_GUIDE.get("sections") or []
+    domain = OKTA_VIEW_GUIDE.get("domain") or DEFAULT_ENV_A_DOMAIN
+    return render_template(
+        "okta_view_report.html",
+        guide_sections=sections,
+        guide_domain=domain,
+        guide_generated_at=datetime.now(ZoneInfo("Australia/Brisbane")).strftime(
+            "%Y-%m-%d %H:%M:%S %Z"
+        ),
+    )
+
+
+@app.route("/snapshot/export", methods=["GET"])
+def okta_view_export():
+    sections = OKTA_VIEW_GUIDE.get("sections") or []
+    domain = OKTA_VIEW_GUIDE.get("domain") or DEFAULT_ENV_A_DOMAIN
+    if not sections:
+        logger.warning("No OktaSnapshot guide data found for export.")
+    try:
+        from weasyprint import HTML
+    except Exception:
+        logger.exception("WeasyPrint not available for PDF export.")
+        return render_template(
+            "oktacompare_error.html",
+            title="PDF Export Unavailable",
+            message="PDF export requires WeasyPrint. Please install it and retry.",
+        ), 500
+
+    html = render_template(
+        "okta_view_pdf.html",
+        guide_sections=sections,
+        guide_domain=domain,
+    )
+    pdf = HTML(string=html).write_pdf()
+    return send_file(
+        io.BytesIO(pdf),
+        mimetype="application/pdf",
+        as_attachment=True,
+        download_name="okta_view_guide.pdf",
+    )
 
 
 @app.route("/evaluate", methods=["GET"])

@@ -22,12 +22,35 @@ def _signature_list(items):
     return json.dumps(sorted(normalized, key=lambda x: json.dumps(x, sort_keys=True, default=str)), sort_keys=True, default=str)
 
 
+def _extract_subject_body(customization):
+    if not isinstance(customization, dict):
+        return None, None
+    subject = customization.get("subject")
+    body = customization.get("body") or customization.get("htmlBody")
+
+    content = customization.get("content")
+    if isinstance(content, dict):
+        subject = subject or content.get("subject")
+        body = body or content.get("body") or content.get("htmlBody")
+
+    translations = customization.get("translations")
+    if isinstance(translations, list) and translations:
+        for translation in translations:
+            if not isinstance(translation, dict):
+                continue
+            subject = subject or translation.get("subject")
+            body = body or translation.get("body") or translation.get("htmlBody")
+
+    return subject, body
+
+
 def _customization_signature(customizations):
     normalized = []
     for customization in customizations or []:
+        subject, body = _extract_subject_body(customization)
         normalized.append({
-            "subject": customization.get("subject"),
-            "body": customization.get("body") or customization.get("htmlBody"),
+            "subject": subject,
+            "body": body,
         })
     return _signature_list(normalized)
 
