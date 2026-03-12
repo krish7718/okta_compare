@@ -70,6 +70,64 @@ Notes:
 - The app runs on port `5000` inside the container.
 - PDF export (`OktaSnapshot`) is intended to work in Docker because the image installs the required system libraries for `WeasyPrint`.
 
+## Run Locally
+
+You can also run `OktaVerse` directly on your local machine with Python.
+
+### Prerequisites
+- Python `3.10+`
+- `pip`
+
+### 1. Create and activate a virtual environment
+
+macOS / Linux:
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+Windows PowerShell:
+```powershell
+py -m venv .venv
+.venv\Scripts\Activate.ps1
+```
+
+### 2. Install Python libraries
+
+```bash
+pip install -r requirements.txt
+```
+
+The project currently depends on:
+- `flask`
+- `pandas`
+- `python-docx`
+- `requests`
+- `weasyprint`
+
+Note:
+- `WeasyPrint` may require additional OS-level libraries on some machines for PDF generation. If PDF export fails but the app starts, the Python install is usually fine and the missing dependency is at the system-library level.
+
+### 3. Start the app
+
+```bash
+python app.py
+```
+
+The Flask app starts on:
+- `http://localhost:5000`
+
+### 4. Open the tools
+
+- `http://localhost:5000` for `OktaCompare`
+- `http://localhost:5000/snapshot` for `OktaSnapshot`
+- `http://localhost:5000/evaluate` for `OktaEvaluate`
+- `http://localhost:5000/migrate` for `OktaMigrate`
+
+### 5. Stop the app
+
+Press `Ctrl+C` in the terminal running the Flask server.
+
 ## OktaCompare Legend
 - Critical: high-risk mismatch or missing object in an environment.
 - Medium: configuration mismatch for a matched object.
