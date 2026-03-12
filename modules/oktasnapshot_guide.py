@@ -27,6 +27,12 @@ from scripts.oktasnapshot_realms import get_realms_view, get_realm_assignments_v
 from scripts.oktasnapshot_profile_schema_user import get_profile_schema_user_view
 from scripts.oktasnapshot_profile_mappings import get_profile_mappings_view
 from scripts.oktasnapshot_trusted_origins import get_trusted_origins_view
+from scripts.oktasnapshot_event_hooks import get_event_hooks_view
+from scripts.oktasnapshot_inline_hooks import get_inline_hooks_view
+from scripts.oktasnapshot_attack_protection import get_attack_protection_view
+from scripts.oktasnapshot_group_push_mappings import get_group_push_mappings_view
+from scripts.oktasnapshot_entity_risk_policies import get_entity_risk_policies_view
+from scripts.oktasnapshot_post_auth_session_policies import get_post_auth_session_policies_view
 
 logging.basicConfig(
     level=logging.INFO,
@@ -123,6 +129,12 @@ def build_oktasnapshot_guide(domain, api_token):
     profile_schema_user = get_profile_schema_user_view(domain, api_token) or []
     profile_mappings = get_profile_mappings_view(domain, api_token) or []
     trusted_origins = get_trusted_origins_view(domain, api_token) or []
+    event_hooks = get_event_hooks_view(domain, api_token) or []
+    inline_hooks = get_inline_hooks_view(domain, api_token) or []
+    attack_protection = get_attack_protection_view(domain, api_token) or []
+    group_push_mappings = get_group_push_mappings_view(domain, api_token) or []
+    entity_risk_policies, entity_risk_rules = get_entity_risk_policies_view(domain, api_token)
+    post_auth_policies, post_auth_rules = get_post_auth_session_policies_view(domain, api_token)
 
     authz_access_combined = []
     for row in authz_access_policies:
@@ -189,6 +201,26 @@ def build_oktasnapshot_guide(domain, api_token):
         combined = dict(row)
         combined["Entry Type"] = "Policy"
         profile_enrollment_combined.append(combined)
+
+    entity_risk_combined = []
+    for row in entity_risk_policies:
+        combined = dict(row)
+        combined["Entry Type"] = "Policy"
+        entity_risk_combined.append(combined)
+    for row in entity_risk_rules:
+        combined = dict(row)
+        combined["Entry Type"] = "Rule"
+        entity_risk_combined.append(combined)
+
+    post_auth_combined = []
+    for row in post_auth_policies:
+        combined = dict(row)
+        combined["Entry Type"] = "Policy"
+        post_auth_combined.append(combined)
+    for row in post_auth_rules:
+        combined = dict(row)
+        combined["Entry Type"] = "Rule"
+        post_auth_combined.append(combined)
     for row in profile_enrollment_rules:
         combined = dict(row)
         combined["Entry Type"] = "Rule"
@@ -227,6 +259,8 @@ def build_oktasnapshot_guide(domain, api_token):
         _section("mfa-enrollment-policies", "MFA Enrollment Policies", mfa_combined),
         _section("idp-discovery-policies", "IDP Discovery Policies", idp_discovery_combined),
         _section("profile-enrollment-policies", "Profile Enrollment Policies", profile_enrollment_combined),
+        _section("entity-risk-policies", "Entity Risk Policies", entity_risk_combined),
+        _section("post-auth-session-policies", "Identity Threat Protection Policies", post_auth_combined),
         _section("brand-settings", "Brand Settings", brand_settings),
         _section("brand-pages", "Brand Pages", brand_pages),
         _section("brand-email-templates", "Brand Email Templates", brand_email_templates),
@@ -241,6 +275,10 @@ def build_oktasnapshot_guide(domain, api_token):
         _section("profile-schema-user", "Profile Schema - User", profile_schema_user),
         _section("profile-mappings", "Profile Mappings", profile_mappings),
         _section("trusted-origins", "Trusted Origins", trusted_origins),
+        _section("event-hooks", "Event Hooks", event_hooks),
+        _section("inline-hooks", "Inline Hooks", inline_hooks),
+        _section("attack-protection", "Access Controls - Attack Protection", attack_protection),
+        _section("group-push-mappings", "Group Push Mappings", group_push_mappings),
     ]
 
     export_rows = _export_rows_from_sections(sections)

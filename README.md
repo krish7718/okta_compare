@@ -83,13 +83,16 @@ Notes:
 | Groups | Group profile name | Description |
 | Group Rules | Rule name (group IDs in expressions normalized to group names) | Condition expression |
 | Network Zones | Zone name | Type, gateways, proxies, locations, status |
-| Applications | App label/name | Existence; group assignments only if `compare_group_assignments=True` |
+| Applications | App label/name + internal app type (`name` or `signOnMode`) | Existence; explicit comparison of directory-style apps such as `active_directory` and `csv_directory`; profile source status via `/api/v1/apps/{id}/features` when `PROFILE_MASTERING` is `ENABLED`; group assignments only if `compare_group_assignments=True` |
 | Authenticators | Authenticator key/name | Name, type, status |
-| Authenticator Enrollment Policies | Policy name | Rule signature (name, status, priority, conditions, actions); mismatch if any rule differs |
-| Password Policies | Policy name | Rule signature (name, status, priority, conditions, actions); mismatch if any rule differs |
-| App Sign-On Policies | Policy name | Rule signature (name, status, priority, conditions, actions); mismatch if any rule differs |
-| IDP Discovery Policies | Policy name | Rule-by-rule comparison (status, conditions, actions) for matching rule names |
-| Profile Enrollment Policies | Policy name | Rule signature (name, status, priority, conditions, actions); mismatch if any rule differs |
+| Authenticator Enrollment Policies | Policy name | Policy existence and per-rule comparison for rule name, status, priority, conditions, and actions |
+| Global Session Policies | Policy name | Policy-level comparison of status, priority, description, and conditions; per-rule comparison of priority, status, conditions, and actions |
+| Password Policies | Policy name | Policy and per-rule comparison including status, priority, description, conditions, settings, and rule actions |
+| App Sign-On Policies | Policy name | Policy-level comparison of status, priority, description, and conditions; per-rule comparison of priority, status, conditions, and actions |
+| IDP Discovery Policies | Policy name | Policy existence and rule-by-rule comparison of rule status, priority, conditions, and actions |
+| Profile Enrollment Policies | Policy name | Policy and per-rule comparison including status, priority, description, conditions, settings, and rule actions |
+| Entity Risk Policies | Policy name | Policy and per-rule comparison including status, priority, description, conditions, settings, and rule actions |
+| Identity Threat Protection Policies | Policy name | Policy and per-rule comparison including status, priority, description, conditions, settings, and rule actions |
 | Brand Settings | Brand name | Brand properties (`name`, `removePoweredByOkta`, privacy policy fields, `isDefault`) and theme properties (logo/colors/page variants/assets) |
 | Brand Pages | Brand name | Sign-in page `pageContent` HTML; error page settings signature (IDs/links excluded); widget customization diffs logged |
 | Brand Email Templates | Brand name + template name | Customization subject and body/`htmlBody` |
@@ -98,7 +101,7 @@ Notes:
 | Custom Admin Roles | Role label/name | Role settings signature (IDs/links/timestamps excluded) |
 | Resource Sets | Resource set label/name | Resource set settings signature (IDs/links/timestamps excluded) |
 | Admin Assignments | Set comparison (users/groups/apps) | Admin users (`login/email/displayName/userId`), admin groups (`name/groupId`), admin apps (`displayName/appInstanceId`) |
-| API Tokens | Token name | Network settings |
+| API Tokens | Token name | Full API token metadata from list/detail endpoints including status, client/user metadata, expiry, last updated, and network settings |
 | Security General Settings | Sanitized settings object | Threats config, ThreatInsight, security notifications, captcha, user enumeration, user lockout, authenticator settings (IDs/links/timestamps excluded) |
 | Org General Settings | `/api/v1/org` (sanitized) | All fields except `id`, `_links`, `created`, `lastUpdated`, `expiresAt`, `subdomain` |
 | Identity Providers | IdP name | Status, `protocol.type`, sanitized policy |
@@ -107,6 +110,14 @@ Notes:
 | Profile Schema - User | Attribute name | Full user profile attribute settings (base + custom schemas) |
 | Profile Mappings | `source.name -> target.name` (IdP app user mappings only) | Property mappings (`targetField`, source expression, `pushStatus`) |
 | Trusted Origins | Origin name (or URL) | Settings signature (IDs/links/timestamps excluded) |
+| Event Hooks | Event hook name | Full event hook settings signature including status, channel/config, auth scheme, and subscribed events (IDs/links/timestamps excluded) |
+| Inline Hooks | Inline hook name | Full inline hook settings signature including type, status, channel/config, auth scheme, and version (IDs/links/timestamps excluded) |
+| Access Controls - Attack Protection | Object/component name | Authenticator settings, user lockout settings, bot protection config, org-wide CAPTCHA settings, behavior detection rules, and CAPTCHA instance metadata |
+| Group Push Mappings | App + source/target group mapping | Full group push mapping settings per app using list/detail mapping endpoints |
+
+Notes:
+- Compare currently covers all supported entities listed above.
+- Snapshot currently extracts all supported entities listed below.
 
 ## OktaSnapshot Extracted Entities
 
@@ -130,6 +141,8 @@ Notes:
 | MFA Enrollment Policies | Extracted | Policies and rules combined (`Entry Type`) |
 | IDP Discovery Policies | Extracted | Policies and rules combined (`Entry Type`) |
 | Profile Enrollment Policies | Extracted | Policies and rules combined (`Entry Type`) |
+| Entity Risk Policies | Extracted | Policies and rules combined (`Entry Type`) |
+| Identity Threat Protection Policies | Extracted | Policies and rules combined (`Entry Type`) |
 | Brand Settings | Extracted | Brand/theme settings rows |
 | Brand Pages | Extracted | Brand page content/settings rows |
 | Brand Email Templates | Extracted | Template customization rows |
@@ -144,6 +157,10 @@ Notes:
 | Profile Schema - User | Extracted | User schema attributes |
 | Profile Mappings | Extracted | Mapping rows (filtered snapshot view) |
 | Trusted Origins | Extracted | Trusted origin rows |
+| Event Hooks | Extracted | Event hook inventory/settings |
+| Inline Hooks | Extracted | Inline hook inventory/settings |
+| Access Controls - Attack Protection | Extracted | Authenticator settings, user lockout, behaviors, bot protection, CAPTCHA instances, and org CAPTCHA settings |
+| Group Push Mappings | Extracted | Group push mappings with app context and mapping settings |
 
 ## OktaEvaluate
 

@@ -44,15 +44,41 @@ def _extract_subject_body(customization):
     return subject, body
 
 
-def _customization_signature(customizations):
-    normalized = []
+def _template_rows(customizations, default_content):
+    rows = []
     for customization in customizations or []:
         subject, body = _extract_subject_body(customization)
-        normalized.append({
-            "subject": subject,
-            "body": body,
+        rows.append({
+            "subject": subject or "",
+            "body": body or "",
         })
-    return _signature_list(normalized)
+
+    if rows:
+        return rows
+
+    subject, body = _extract_subject_body(default_content)
+    return [{
+        "subject": subject or "",
+        "body": body or "",
+    }]
+
+
+def _template_subject_signature(rows):
+    return _signature_list([{"subject": row.get("subject", "")} for row in rows or []])
+
+
+def _template_body_signature(rows):
+    return _signature_list([{"body": row.get("body", "")} for row in rows or []])
+
+
+def _template_preview(rows, key):
+    values = [str((row or {}).get(key) or "") for row in rows or []]
+    values = [value for value in values if value]
+    if not values:
+        return "<empty>"
+    if len(values) == 1:
+        return values[0]
+    return f"{len(values)} variants"
 
 
 def compare_brand_email_templates(envA_domain, envA_token, envB_domain, envB_token, limit=200):
@@ -77,11 +103,15 @@ def compare_brand_email_templates(envA_domain, envA_token, envB_domain, envB_tok
             continue
 
         brandB = dictB[name]
-        templatesA = get_brand_email_templates(baseA, envA_token, brandA.get("id"), limit=limit)
-        templatesB = get_brand_email_templates(baseB, envB_token, brandB.get("id"), limit=limit)
+        templatesA = get_brand_email_templates(baseA, envA_token, brandA.get("id"), limit=limit) or {}
+        templatesB = get_brand_email_templates(baseB, envB_token, brandB.get("id"), limit=limit) or {}
+        customizationsA_map = templatesA.get("customizations") or {}
+        customizationsB_map = templatesB.get("customizations") or {}
+        defaultsA_map = templatesA.get("defaults") or {}
+        defaultsB_map = templatesB.get("defaults") or {}
 
-        for template_name, customizationsA in templatesA.items():
-            if template_name not in templatesB:
+        for template_name in customizationsA_map:
+            if template_name not in customizationsB_map:
                 diffs.append({
                     "Category": "Brand Email Templates",
                     "Object": name,
@@ -95,29 +125,55 @@ def compare_brand_email_templates(envA_domain, envA_token, envB_domain, envB_tok
                 })
                 continue
 
-            customizationsB = templatesB.get(template_name, [])
-            if _customization_signature(customizationsA) != _customization_signature(customizationsB):
+            customizationsA = customizationsA_map.get(template_name, [])
+            customizationsB = customizationsB_map.get(template_name, [])
+            defaultA = defaultsA_map.get(template_name)
+            defaultB = defaultsB_map.get(template_name)
+            rowsA = _template_rows(customizationsA, defaultA)
+            rowsB = _template_rows(customizationsB, defaultB)
+
+            if _template_subject_signature(rowsA) != _template_subject_signature(rowsB):
                 diffs.append({
                     "Category": "Brand Email Templates",
                     "Object": name,
-                    "Attribute": template_name,
-                    "Env A Value": "Didn't match",
-                    "Env B Value": "Didn't match",
+                    "Attribute": f"{template_name} / Subject",
+                    "Env A Value": _template_preview(rowsA, "subject"),
+                    "Env B Value": _template_preview(rowsB, "subject"),
                     "Difference Type": "Mismatch",
                     "Impact": "Email Branding Drift",
-                    "Recommended Action": f"Align email template '{template_name}' for brand '{name}'",
+                    "Recommended Action": f"Align subject for email template '{template_name}' for brand '{name}'",
                     "Priority": "🟠 Medium"
                 })
             else:
                 matches.append({
                     "Category": "Brand Email Templates",
                     "Object": name,
-                    "Attribute": template_name,
+                    "Attribute": f"{template_name} / Subject",
                     "Value": "Match"
                 })
 
-        for template_name in templatesB:
-            if template_name not in templatesA:
+            if _template_body_signature(rowsA) != _template_body_signature(rowsB):
+                diffs.append({
+                    "Category": "Brand Email Templates",
+                    "Object": name,
+                    "Attribute": f"{template_name} / Body",
+                    "Env A Value": _template_preview(rowsA, "body"),
+                    "Env B Value": _template_preview(rowsB, "body"),
+                    "Difference Type": "Mismatch",
+                    "Impact": "Email Branding Drift",
+                    "Recommended Action": f"Align body for email template '{template_name}' for brand '{name}'",
+                    "Priority": "🟠 Medium"
+                })
+            else:
+                matches.append({
+                    "Category": "Brand Email Templates",
+                    "Object": name,
+                    "Attribute": f"{template_name} / Body",
+                    "Value": "Match"
+                })
+
+        for template_name in customizationsB_map:
+            if template_name not in customizationsA_map:
                 diffs.append({
                     "Category": "Brand Email Templates",
                     "Object": name,

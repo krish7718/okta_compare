@@ -127,3 +127,46 @@ def get_application_groups(domain_url, api_token, app_id):
             url = None
 
     return groups
+
+
+def get_application_features(domain_url, api_token, app_id):
+    """
+    Fetch features for a specific application.
+    Endpoint: /api/v1/apps/{appId}/features
+    Returns a list of feature objects (may be empty).
+    """
+    if not app_id:
+        return []
+
+    logger.info("Fetching application features for app_id=%s.", app_id)
+    headers = {
+        'Authorization': f"SSWS {api_token}",
+        'Accept': 'application/json'
+    }
+
+    domain_url = _ensure_domain_str(domain_url)
+    base = domain_url.rstrip('/')
+    url = f"{base}/api/v1/apps/{app_id}/features"
+
+    try:
+        resp = requests.get(url, headers=headers)
+    except Exception as exc:
+        logger.error("Error fetching features for app %s: %s", app_id, exc)
+        return []
+
+    if resp.status_code != 200:
+        logger.error(
+            "Error fetching features for app %s: %s %s",
+            app_id,
+            resp.status_code,
+            resp.text,
+        )
+        return []
+
+    try:
+        data = resp.json()
+    except ValueError:
+        logger.error("Invalid JSON received for application features (app %s)", app_id)
+        return []
+
+    return data if isinstance(data, list) else []

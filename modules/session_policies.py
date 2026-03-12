@@ -1,8 +1,23 @@
 import requests
+import json
 from scripts.extract_session_policies import (
     get_session_policies,
     get_policy_rules
 )
+
+_SKIP_KEYS = {"id", "_links", "links", "created", "lastUpdated", "lastUpdatedBy", "_embedded"}
+
+
+def _sanitize(value):
+    if isinstance(value, dict):
+        return {k: _sanitize(v) for k, v in value.items() if k not in _SKIP_KEYS}
+    if isinstance(value, list):
+        return [_sanitize(v) for v in value]
+    return value
+
+
+def _signature(value):
+    return json.dumps(_sanitize(value), sort_keys=True, default=str)
 
 # -----------------------------------------------------------
 # High-level compare dispatcher
@@ -100,19 +115,19 @@ def _extra_policy(name, extra_env):
 
 
 def _compare_policy_attributes(name, polA, polB, diffs, matches):
-    attrs = ["status", "priority", "description"]
+    attrs = ["status", "priority", "description", "conditions"]
 
     for attr in attrs:
         valA = polA.get(attr, "")
         valB = polB.get(attr, "")
 
-        if valA != valB:
+        if _signature(valA) != _signature(valB):
             diffs.append({
                 "Category": "Global Session Policies",
                 "Object": name,
                 "Attribute": attr,
-                "Env A Value": valA,
-                "Env B Value": valB,
+                "Env A Value": "Different" if isinstance(valA, (dict, list)) else valA,
+                "Env B Value": "Different" if isinstance(valB, (dict, list)) else valB,
                 "Difference Type": "Mismatch",
                 "Impact": "Authentication Policy Drift",
                 "Recommended Action": f"Align policy '{name}' attribute '{attr}'",
@@ -123,7 +138,7 @@ def _compare_policy_attributes(name, polA, polB, diffs, matches):
                 "Category": "Global Session Policies",
                 "Object": name,
                 "Attribute": attr,
-                "Value": valA
+                "Value": valA if not isinstance(valA, (dict, list)) else "Match"
             })
 
     return diffs, matches
@@ -183,19 +198,19 @@ def _compare_policy_rules(policy_name, rulesA, rulesB, diffs, matches):
 
 def _compare_rule_attributes(policy_name, rule_name, rA, rB, diffs, matches):
 
-    attrs = ["priority", "status"]
+    attrs = ["priority", "status", "conditions", "actions"]
 
     for attr in attrs:
         valA = rA.get(attr, "")
         valB = rB.get(attr, "")
 
-        if valA != valB:
+        if _signature(valA) != _signature(valB):
             diffs.append({
                 "Category": "Global Session Policies",
                 "Object": f"{policy_name} / Rule: {rule_name}",
                 "Attribute": attr,
-                "Env A Value": valA,
-                "Env B Value": valB,
+                "Env A Value": "Different" if isinstance(valA, (dict, list)) else valA,
+                "Env B Value": "Different" if isinstance(valB, (dict, list)) else valB,
                 "Difference Type": "Mismatch",
                 "Impact": "Rule Behavior",
                 "Recommended Action": f"Align rule '{rule_name}' in policy '{policy_name}'",
@@ -206,7 +221,7 @@ def _compare_rule_attributes(policy_name, rule_name, rA, rB, diffs, matches):
                 "Category": "Global Session Policies",
                 "Object": f"{policy_name} / Rule: {rule_name}",
                 "Attribute": attr,
-                "Value": valA
+                "Value": valA if not isinstance(valA, (dict, list)) else "Match"
             })
 
     return diffs, matches

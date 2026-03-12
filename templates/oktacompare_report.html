@@ -460,6 +460,32 @@ hr {
       <button onclick="viewDetails('profile')">View Details</button>
   </div>
 
+  <!-- Entity Risk Policies -->
+  <div class="summary-card">
+      <div class="entity-label">Entity</div>
+      <h4>Entity Risk Policies</h4>
+      <div class="total">Total Differences: <strong>{{ entity_risk_total_diff }}</strong></div>
+      <div class="counts">
+        <div class="badge">🔴 Critical: {{ entity_risk_summary_counts.get('🔴 Critical', 0) }}</div>
+        <div class="badge">🟠 Medium: {{ entity_risk_summary_counts.get('🟠 Medium', 0) }}</div>
+        <div class="badge">🟡 Low: {{ entity_risk_summary_counts.get('🟡 Low', 0) }}</div>
+      </div>
+      <button onclick="viewDetails('entityrisk')">View Details</button>
+  </div>
+
+  <!-- Identity Threat Protection Policies -->
+  <div class="summary-card">
+      <div class="entity-label">Entity</div>
+      <h4>Identity Threat Protection Policies</h4>
+      <div class="total">Total Differences: <strong>{{ post_auth_total_diff }}</strong></div>
+      <div class="counts">
+        <div class="badge">🔴 Critical: {{ post_auth_summary_counts.get('🔴 Critical', 0) }}</div>
+        <div class="badge">🟠 Medium: {{ post_auth_summary_counts.get('🟠 Medium', 0) }}</div>
+        <div class="badge">🟡 Low: {{ post_auth_summary_counts.get('🟡 Low', 0) }}</div>
+      </div>
+      <button onclick="viewDetails('postauth')">View Details</button>
+  </div>
+
   <!-- Brand Settings -->
   <div class="summary-card">
       <div class="entity-label">Entity</div>
@@ -679,6 +705,58 @@ hr {
         <div class="badge">🟡 Low: {{ origin_summary_counts.get('🟡 Low', 0) }}</div>
       </div>
       <button onclick="viewDetails('origins')">View Details</button>
+  </div>
+
+  <!-- Event Hooks -->
+  <div class="summary-card">
+      <div class="entity-label">Entity</div>
+      <h4>Event Hooks</h4>
+      <div class="total">Total Differences: <strong>{{ event_hook_total_diff }}</strong></div>
+      <div class="counts">
+        <div class="badge">🔴 Critical: {{ event_hook_summary_counts.get('🔴 Critical', 0) }}</div>
+        <div class="badge">🟠 Medium: {{ event_hook_summary_counts.get('🟠 Medium', 0) }}</div>
+        <div class="badge">🟡 Low: {{ event_hook_summary_counts.get('🟡 Low', 0) }}</div>
+      </div>
+      <button onclick="viewDetails('eventhooks')">View Details</button>
+  </div>
+
+  <!-- Inline Hooks -->
+  <div class="summary-card">
+      <div class="entity-label">Entity</div>
+      <h4>Inline Hooks</h4>
+      <div class="total">Total Differences: <strong>{{ inline_hook_total_diff }}</strong></div>
+      <div class="counts">
+        <div class="badge">🔴 Critical: {{ inline_hook_summary_counts.get('🔴 Critical', 0) }}</div>
+        <div class="badge">🟠 Medium: {{ inline_hook_summary_counts.get('🟠 Medium', 0) }}</div>
+        <div class="badge">🟡 Low: {{ inline_hook_summary_counts.get('🟡 Low', 0) }}</div>
+      </div>
+      <button onclick="viewDetails('inlinehooks')">View Details</button>
+  </div>
+
+  <!-- Access Controls - Attack Protection -->
+  <div class="summary-card">
+      <div class="entity-label">Entity</div>
+      <h4>Access Controls - Attack Protection</h4>
+      <div class="total">Total Differences: <strong>{{ attack_protection_total_diff }}</strong></div>
+      <div class="counts">
+        <div class="badge">🔴 Critical: {{ attack_protection_summary_counts.get('🔴 Critical', 0) }}</div>
+        <div class="badge">🟠 Medium: {{ attack_protection_summary_counts.get('🟠 Medium', 0) }}</div>
+        <div class="badge">🟡 Low: {{ attack_protection_summary_counts.get('🟡 Low', 0) }}</div>
+      </div>
+      <button onclick="viewDetails('attackprotection')">View Details</button>
+  </div>
+
+  <!-- Group Push Mappings -->
+  <div class="summary-card">
+      <div class="entity-label">Entity</div>
+      <h4>Group Push Mappings</h4>
+      <div class="total">Total Differences: <strong>{{ group_push_total_diff }}</strong></div>
+      <div class="counts">
+        <div class="badge">🔴 Critical: {{ group_push_summary_counts.get('🔴 Critical', 0) }}</div>
+        <div class="badge">🟠 Medium: {{ group_push_summary_counts.get('🟠 Medium', 0) }}</div>
+        <div class="badge">🟡 Low: {{ group_push_summary_counts.get('🟡 Low', 0) }}</div>
+      </div>
+      <button onclick="viewDetails('grouppush')">View Details</button>
   </div>
 
   <!-- Global Session Policies (combined) -->
@@ -1054,6 +1132,86 @@ hr {
     </table>
     {% else %}
       <p>No profile enrollment policy differences detected.</p>
+    {% endif %}
+  </div>
+</section>
+
+<!-- ENTITY RISK POLICIES DETAIL -->
+<section id="entityrisk-section" style="margin-top: 30px;">
+  <div id="entityrisk-toggle" class="toggle-header" onclick="toggleSection('entityrisk')">
+      <span class="chevron">▶</span> Entity: Entity Risk Policies – Detailed Comparison
+  </div>
+
+  <div id="entityrisk-comparison" style="display:none; margin-top: 10px;">
+    {% if entity_risk_df %}
+    <table>
+      <tr>
+        <th>Category</th><th>Object</th><th>Attribute</th>
+        <th>Env A Value</th><th>Env B Value</th>
+        <th>Difference Type</th><th>Impact</th>
+        <th>Recommended Action</th><th>Priority</th>
+      </tr>
+      {% for row in entity_risk_df %}
+      <tr class="
+          {% if '🔴' in row['Priority'] %}table-row-critical
+          {% elif '🟠' in row['Priority'] %}table-row-medium
+          {% elif '🟡' in row['Priority'] %}table-row-low
+          {% else %}table-row-matched{% endif %}
+      ">
+        <td>{{ row['Category'] }}</td>
+        <td>{{ row['Object'] }}</td>
+        <td>{{ row['Attribute'] }}</td>
+        <td>{{ row['Env A Value'] }}</td>
+        <td>{{ row['Env B Value'] }}</td>
+        <td>{{ row['Difference Type'] }}</td>
+        <td>{{ row['Impact'] }}</td>
+        <td>{{ row['Recommended Action'] }}</td>
+        <td>{{ row['Priority'] }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}
+      <p>No entity risk policy differences detected.</p>
+    {% endif %}
+  </div>
+</section>
+
+<!-- IDENTITY THREAT PROTECTION POLICIES DETAIL -->
+<section id="postauth-section" style="margin-top: 30px;">
+  <div id="postauth-toggle" class="toggle-header" onclick="toggleSection('postauth')">
+      <span class="chevron">▶</span> Entity: Identity Threat Protection Policies – Detailed Comparison
+  </div>
+
+  <div id="postauth-comparison" style="display:none; margin-top: 10px;">
+    {% if post_auth_df %}
+    <table>
+      <tr>
+        <th>Category</th><th>Object</th><th>Attribute</th>
+        <th>Env A Value</th><th>Env B Value</th>
+        <th>Difference Type</th><th>Impact</th>
+        <th>Recommended Action</th><th>Priority</th>
+      </tr>
+      {% for row in post_auth_df %}
+      <tr class="
+          {% if '🔴' in row['Priority'] %}table-row-critical
+          {% elif '🟠' in row['Priority'] %}table-row-medium
+          {% elif '🟡' in row['Priority'] %}table-row-low
+          {% else %}table-row-matched{% endif %}
+      ">
+        <td>{{ row['Category'] }}</td>
+        <td>{{ row['Object'] }}</td>
+        <td>{{ row['Attribute'] }}</td>
+        <td>{{ row['Env A Value'] }}</td>
+        <td>{{ row['Env B Value'] }}</td>
+        <td>{{ row['Difference Type'] }}</td>
+        <td>{{ row['Impact'] }}</td>
+        <td>{{ row['Recommended Action'] }}</td>
+        <td>{{ row['Priority'] }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}
+      <p>No identity threat protection policy differences detected.</p>
     {% endif %}
   </div>
 </section>
@@ -1734,6 +1892,166 @@ hr {
     </table>
     {% else %}
       <p>No trusted origin differences detected.</p>
+    {% endif %}
+  </div>
+</section>
+
+<!-- GROUP PUSH MAPPINGS DETAIL -->
+<section id="grouppush-section" style="margin-top: 30px;">
+  <div id="grouppush-toggle" class="toggle-header" onclick="toggleSection('grouppush')">
+      <span class="chevron">▶</span> Entity: Group Push Mappings – Detailed Comparison
+  </div>
+
+  <div id="grouppush-comparison" style="display:none; margin-top: 10px;">
+    {% if group_push_df %}
+    <table>
+      <tr>
+        <th>Category</th><th>Object</th><th>Attribute</th>
+        <th>Env A Value</th><th>Env B Value</th>
+        <th>Difference Type</th><th>Impact</th>
+        <th>Recommended Action</th><th>Priority</th>
+      </tr>
+      {% for row in group_push_df %}
+      <tr class="
+          {% if '🔴' in row['Priority'] %}table-row-critical
+          {% elif '🟠' in row['Priority'] %}table-row-medium
+          {% elif '🟡' in row['Priority'] %}table-row-low
+          {% else %}table-row-matched{% endif %}
+      ">
+        <td>{{ row['Category'] }}</td>
+        <td>{{ row['Object'] }}</td>
+        <td>{{ row['Attribute'] }}</td>
+        <td>{{ row['Env A Value'] }}</td>
+        <td>{{ row['Env B Value'] }}</td>
+        <td>{{ row['Difference Type'] }}</td>
+        <td>{{ row['Impact'] }}</td>
+        <td>{{ row['Recommended Action'] }}</td>
+        <td>{{ row['Priority'] }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}
+      <p>No group push mapping differences detected.</p>
+    {% endif %}
+  </div>
+</section>
+
+<!-- ATTACK PROTECTION DETAIL -->
+<section id="attackprotection-section" style="margin-top: 30px;">
+  <div id="attackprotection-toggle" class="toggle-header" onclick="toggleSection('attackprotection')">
+      <span class="chevron">▶</span> Entity: Access Controls - Attack Protection – Detailed Comparison
+  </div>
+
+  <div id="attackprotection-comparison" style="display:none; margin-top: 10px;">
+    {% if attack_protection_df %}
+    <table>
+      <tr>
+        <th>Category</th><th>Object</th><th>Attribute</th>
+        <th>Env A Value</th><th>Env B Value</th>
+        <th>Difference Type</th><th>Impact</th>
+        <th>Recommended Action</th><th>Priority</th>
+      </tr>
+      {% for row in attack_protection_df %}
+      <tr class="
+          {% if '🔴' in row['Priority'] %}table-row-critical
+          {% elif '🟠' in row['Priority'] %}table-row-medium
+          {% elif '🟡' in row['Priority'] %}table-row-low
+          {% else %}table-row-matched{% endif %}
+      ">
+        <td>{{ row['Category'] }}</td>
+        <td>{{ row['Object'] }}</td>
+        <td>{{ row['Attribute'] }}</td>
+        <td>{{ row['Env A Value'] }}</td>
+        <td>{{ row['Env B Value'] }}</td>
+        <td>{{ row['Difference Type'] }}</td>
+        <td>{{ row['Impact'] }}</td>
+        <td>{{ row['Recommended Action'] }}</td>
+        <td>{{ row['Priority'] }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}
+      <p>No attack protection differences detected.</p>
+    {% endif %}
+  </div>
+</section>
+
+<!-- INLINE HOOKS DETAIL -->
+<section id="inlinehooks-section" style="margin-top: 30px;">
+  <div id="inlinehooks-toggle" class="toggle-header" onclick="toggleSection('inlinehooks')">
+      <span class="chevron">▶</span> Entity: Inline Hooks – Detailed Comparison
+  </div>
+
+  <div id="inlinehooks-comparison" style="display:none; margin-top: 10px;">
+    {% if inline_hook_df %}
+    <table>
+      <tr>
+        <th>Category</th><th>Object</th><th>Attribute</th>
+        <th>Env A Value</th><th>Env B Value</th>
+        <th>Difference Type</th><th>Impact</th>
+        <th>Recommended Action</th><th>Priority</th>
+      </tr>
+      {% for row in inline_hook_df %}
+      <tr class="
+          {% if '🔴' in row['Priority'] %}table-row-critical
+          {% elif '🟠' in row['Priority'] %}table-row-medium
+          {% elif '🟡' in row['Priority'] %}table-row-low
+          {% else %}table-row-matched{% endif %}
+      ">
+        <td>{{ row['Category'] }}</td>
+        <td>{{ row['Object'] }}</td>
+        <td>{{ row['Attribute'] }}</td>
+        <td>{{ row['Env A Value'] }}</td>
+        <td>{{ row['Env B Value'] }}</td>
+        <td>{{ row['Difference Type'] }}</td>
+        <td>{{ row['Impact'] }}</td>
+        <td>{{ row['Recommended Action'] }}</td>
+        <td>{{ row['Priority'] }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}
+      <p>No inline hook differences detected.</p>
+    {% endif %}
+  </div>
+</section>
+
+<!-- EVENT HOOKS DETAIL -->
+<section id="eventhooks-section" style="margin-top: 30px;">
+  <div id="eventhooks-toggle" class="toggle-header" onclick="toggleSection('eventhooks')">
+      <span class="chevron">▶</span> Entity: Event Hooks – Detailed Comparison
+  </div>
+
+  <div id="eventhooks-comparison" style="display:none; margin-top: 10px;">
+    {% if event_hook_df %}
+    <table>
+      <tr>
+        <th>Category</th><th>Object</th><th>Attribute</th>
+        <th>Env A Value</th><th>Env B Value</th>
+        <th>Difference Type</th><th>Impact</th>
+        <th>Recommended Action</th><th>Priority</th>
+      </tr>
+      {% for row in event_hook_df %}
+      <tr class="
+          {% if '🔴' in row['Priority'] %}table-row-critical
+          {% elif '🟠' in row['Priority'] %}table-row-medium
+          {% elif '🟡' in row['Priority'] %}table-row-low
+          {% else %}table-row-matched{% endif %}
+      ">
+        <td>{{ row['Category'] }}</td>
+        <td>{{ row['Object'] }}</td>
+        <td>{{ row['Attribute'] }}</td>
+        <td>{{ row['Env A Value'] }}</td>
+        <td>{{ row['Env B Value'] }}</td>
+        <td>{{ row['Difference Type'] }}</td>
+        <td>{{ row['Impact'] }}</td>
+        <td>{{ row['Recommended Action'] }}</td>
+        <td>{{ row['Priority'] }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}
+      <p>No event hook differences detected.</p>
     {% endif %}
   </div>
 </section>

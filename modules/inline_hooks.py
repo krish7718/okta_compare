@@ -1,12 +1,8 @@
 import json
 
-from scripts.extract_api_tokens import get_api_tokens_with_metadata
+from scripts.extract_inline_hooks import get_inline_hooks
 
-_SKIP_KEYS = {"id", "_links", "links", "created", "lastUpdated", "lastUpdatedBy", "_embedded"}
-
-
-def _token_name(token):
-    return token.get("name") or token.get("label") or token.get("id")
+_SKIP_KEYS = {"id", "_links", "links", "created", "createdBy", "lastUpdated", "lastUpdatedBy", "_embedded"}
 
 
 def _sanitize(value):
@@ -21,70 +17,74 @@ def _signature(value):
     return json.dumps(_sanitize(value), sort_keys=True, default=str)
 
 
-def compare_api_tokens(envA_domain, envA_token, envB_domain, envB_token, limit=200):
+def _inline_hook_key(hook):
+    return hook.get("name") or hook.get("id")
+
+
+def compare_inline_hooks(envA_domain, envA_token, envB_domain, envB_token, limit=200):
     """
-    Compare API tokens between Env A and Env B by name using full token metadata.
+    Compare inline hooks between Env A and Env B by name.
     Returns (diffs, matches).
     """
     baseA = f"https://{envA_domain}"
     baseB = f"https://{envB_domain}"
 
-    tokensA = get_api_tokens_with_metadata(baseA, envA_token, limit=limit) or []
-    tokensB = get_api_tokens_with_metadata(baseB, envB_token, limit=limit) or []
+    hooksA = get_inline_hooks(baseA, envA_token, limit=limit) or []
+    hooksB = get_inline_hooks(baseB, envB_token, limit=limit) or []
 
     diffs = []
     matches = []
 
-    dictA = {_token_name(token): token for token in tokensA}
-    dictB = {_token_name(token): token for token in tokensB}
+    dictA = {_inline_hook_key(h): h for h in hooksA}
+    dictB = {_inline_hook_key(h): h for h in hooksB}
 
-    for name, tokenA in dictA.items():
+    for name, hookA in dictA.items():
         if name not in dictB:
             diffs.append({
-                "Category": "API Tokens",
+                "Category": "Inline Hooks",
                 "Object": name,
                 "Attribute": "-",
                 "Env A Value": "Exists",
                 "Env B Value": "Missing",
                 "Difference Type": "Missing in Env B",
-                "Impact": "API Access",
-                "Recommended Action": f"Create API token '{name}' in Env B",
+                "Impact": "Hook Execution",
+                "Recommended Action": f"Create inline hook '{name}' in Env B",
                 "Priority": "🔴 Critical"
             })
             continue
 
-        tokenB = dictB[name]
-        if _signature(tokenA) != _signature(tokenB):
+        hookB = dictB[name]
+        if _signature(hookA) != _signature(hookB):
             diffs.append({
-                "Category": "API Tokens",
+                "Category": "Inline Hooks",
                 "Object": name,
-                "Attribute": "Metadata",
+                "Attribute": "Settings",
                 "Env A Value": "Different",
                 "Env B Value": "Different",
                 "Difference Type": "Mismatch",
-                "Impact": "API Token Drift",
-                "Recommended Action": f"Align API token metadata for '{name}'",
+                "Impact": "Inline Hook Drift",
+                "Recommended Action": f"Align inline hook settings for '{name}'",
                 "Priority": "🟠 Medium"
             })
         else:
             matches.append({
-                "Category": "API Tokens",
+                "Category": "Inline Hooks",
                 "Object": name,
-                "Attribute": "Metadata",
+                "Attribute": "Settings",
                 "Value": "Match"
             })
 
     for name in dictB:
         if name not in dictA:
             diffs.append({
-                "Category": "API Tokens",
+                "Category": "Inline Hooks",
                 "Object": name,
                 "Attribute": "-",
                 "Env A Value": "Missing",
                 "Env B Value": "Exists",
                 "Difference Type": "Extra in Env B",
-                "Impact": "Unexpected Token",
-                "Recommended Action": f"Review extra API token '{name}' in Env B",
+                "Impact": "Unexpected Inline Hook",
+                "Recommended Action": f"Review extra inline hook '{name}' in Env B",
                 "Priority": "🟡 Low"
             })
 

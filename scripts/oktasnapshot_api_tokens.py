@@ -1,6 +1,6 @@
 import logging
 
-from scripts.extract_api_tokens import get_api_tokens
+from scripts.extract_api_tokens import get_api_tokens_with_metadata
 from scripts.oktasnapshot_utils import ensure_domain_str, get_paginated
 
 logging.basicConfig(
@@ -40,7 +40,7 @@ def _network_label(network, zone_map):
 
 def get_api_tokens_view(domain_url, api_token):
     logger.info("Fetching API tokens for OktaView.")
-    tokens = get_api_tokens(domain_url, api_token) or []
+    tokens = get_api_tokens_with_metadata(domain_url, api_token) or []
     zone_map = _zone_name_map(domain_url, api_token)
     rows = []
     for token in tokens:
@@ -49,9 +49,11 @@ def get_api_tokens_view(domain_url, api_token):
             "Name": token.get("name"),
             "User ID": token.get("userId"),
             "Client Name": token.get("clientName"),
+            "Status": token.get("status"),
             "Network": _network_label(token.get("network"), zone_map),
             "Created": token.get("created"),
             "Last Updated": token.get("lastUpdated"),
             "Expires At": token.get("expiresAt"),
+            "Last Updated By": token.get("lastUpdatedBy"),
         })
     return rows

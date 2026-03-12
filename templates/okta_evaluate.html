@@ -82,10 +82,36 @@
   .loader-title { font-size: 15px; font-weight: 600; color: #002e5d; margin: 0 0 6px; }
   .loader-subtitle { font-size: 13px; color: #4b5563; margin: 0; }
   @keyframes pulse { 0%, 80%, 100% { opacity: 0.3; } 40% { opacity: 1; } }
-  .hero-stats { display:grid; grid-template-columns: repeat(4, minmax(140px,1fr)); gap:12px; }
+  .hero-stats { display:grid; grid-template-columns: repeat(4, minmax(190px,1fr)); gap:12px; align-items:stretch; }
   .stat-card { background:#f8faff; border:1px solid #e3e9f7; border-radius:12px; padding:14px; }
   .stat-label { color:#6b7280; font-size:12px; text-transform: uppercase; letter-spacing:0.04em; margin-bottom:6px; }
   .stat-value { font-size:24px; font-weight:700; color:#0f1b3d; }
+  .stat-context { color:#4b5563; font-size:13px; }
+  .stat-value.high { color:#991b1b; }
+  .stat-value.medium { color:#92400e; }
+  .stat-value.low { color:#166534; }
+  .pass-card {
+    display:flex; align-items:center; gap:16px; background:linear-gradient(135deg, #eef6ff 0%, #f8faff 100%);
+  }
+  .pass-ring {
+    --progress: 0;
+    --ring-color: #1b2a6b;
+    width:88px; height:88px; border-radius:50%;
+    background: conic-gradient(var(--ring-color) calc(var(--progress) * 1%), #dbe7ff 0);
+    display:grid; place-items:center; flex:0 0 auto; position:relative;
+  }
+  .pass-ring::before {
+    content:"";
+    width:64px; height:64px; border-radius:50%;
+    background:#fff; border:1px solid #e3e9f7;
+    display:block;
+  }
+  .pass-ring-content {
+    position:absolute; text-align:center;
+  }
+  .pass-ring-value { font-size:20px; font-weight:700; color:#0f1b3d; line-height:1; }
+  .pass-ring-label { font-size:11px; color:#6b7280; text-transform:uppercase; letter-spacing:0.04em; }
+  .pass-meta { display:flex; flex-direction:column; gap:4px; }
   .band-ready { color:#15803d; }
   .band-review { color:#b45309; }
   .band-attention { color:#b91c1c; }
@@ -188,6 +214,60 @@
         </div>
         <div style="display:flex; gap:8px; flex-wrap:wrap;">
           <button class="primary-button" type="button" onclick="window.location.href='/evaluate/export/csv'">Export CSV</button>
+        </div>
+      </div>
+      <div class="hero-stats" style="margin-bottom:16px;">
+        <div class="stat-card pass-card">
+          <div class="pass-ring" style="--progress: {{ evaluation.validation_summary.pass_pct }};">
+            <div class="pass-ring-content">
+              <div class="pass-ring-value">{{ evaluation.validation_summary.pass_pct }}%</div>
+              <div class="pass-ring-label">Passed</div>
+            </div>
+          </div>
+          <div class="pass-meta">
+            <div class="stat-label" style="margin-bottom:0;">Overall Pass Rate</div>
+            <div class="stat-value">{{ evaluation.validation_summary.passed }} / {{ evaluation.validation_summary.assessed }}</div>
+            <div class="stat-context">{{ evaluation.validation_summary.passed }} out of {{ evaluation.validation_summary.assessed }} checks passed overall</div>
+          </div>
+        </div>
+        <div class="stat-card pass-card">
+          <div class="pass-ring" style="--progress: {{ ((evaluation.validation_summary.high / evaluation.validation_summary.assessed) * 100) if evaluation.validation_summary.assessed else 0 }}; --ring-color: #991b1b;">
+            <div class="pass-ring-content">
+              <div class="pass-ring-value high">{{ ((evaluation.validation_summary.high / evaluation.validation_summary.assessed) * 100)|round|int if evaluation.validation_summary.assessed else 0 }}%</div>
+              <div class="pass-ring-label">High</div>
+            </div>
+          </div>
+          <div class="pass-meta">
+            <div class="stat-label" style="margin-bottom:0;">High Severity</div>
+            <div class="stat-value high">{{ evaluation.validation_summary.high }} / {{ evaluation.validation_summary.assessed }}</div>
+            <div class="stat-context">{{ evaluation.validation_summary.high }} out of {{ evaluation.validation_summary.assessed }}</div>
+          </div>
+        </div>
+        <div class="stat-card pass-card">
+          <div class="pass-ring" style="--progress: {{ ((evaluation.validation_summary.medium / evaluation.validation_summary.assessed) * 100) if evaluation.validation_summary.assessed else 0 }}; --ring-color: #92400e;">
+            <div class="pass-ring-content">
+              <div class="pass-ring-value medium">{{ ((evaluation.validation_summary.medium / evaluation.validation_summary.assessed) * 100)|round|int if evaluation.validation_summary.assessed else 0 }}%</div>
+              <div class="pass-ring-label">Medium</div>
+            </div>
+          </div>
+          <div class="pass-meta">
+            <div class="stat-label" style="margin-bottom:0;">Medium Severity</div>
+            <div class="stat-value medium">{{ evaluation.validation_summary.medium }} / {{ evaluation.validation_summary.assessed }}</div>
+            <div class="stat-context">{{ evaluation.validation_summary.medium }} out of {{ evaluation.validation_summary.assessed }}</div>
+          </div>
+        </div>
+        <div class="stat-card pass-card">
+          <div class="pass-ring" style="--progress: {{ ((evaluation.validation_summary.low / evaluation.validation_summary.assessed) * 100) if evaluation.validation_summary.assessed else 0 }}; --ring-color: #166534;">
+            <div class="pass-ring-content">
+              <div class="pass-ring-value low">{{ ((evaluation.validation_summary.low / evaluation.validation_summary.assessed) * 100)|round|int if evaluation.validation_summary.assessed else 0 }}%</div>
+              <div class="pass-ring-label">Low</div>
+            </div>
+          </div>
+          <div class="pass-meta">
+            <div class="stat-label" style="margin-bottom:0;">Low Severity</div>
+            <div class="stat-value low">{{ evaluation.validation_summary.low }} / {{ evaluation.validation_summary.assessed }}</div>
+            <div class="stat-context">{{ evaluation.validation_summary.low }} out of {{ evaluation.validation_summary.assessed }}</div>
+          </div>
         </div>
       </div>
       <div class="page-subtitle" style="margin-bottom:10px;">This report lists what was checked, the result, and severity for each validation.</div>

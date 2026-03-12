@@ -39,6 +39,12 @@ from modules.realms import compare_realms, compare_realm_assignments
 from modules.profile_schema_user import compare_user_profile_schema
 from modules.profile_mappings import compare_profile_mappings
 from modules.trusted_origins import compare_trusted_origins
+from modules.event_hooks import compare_event_hooks
+from modules.inline_hooks import compare_inline_hooks
+from modules.attack_protection import compare_attack_protection
+from modules.group_push_mappings import compare_group_push_mappings
+from modules.entity_risk_policies import compare_entity_risk_policies
+from modules.post_auth_session_policies import compare_post_auth_session_policies
 from modules.oktasnapshot_guide import build_oktasnapshot_guide
 
 # ----------------------------------------------------
@@ -532,6 +538,35 @@ def _run_security_validations(sections, extra_context=None):
     return validations
 
 
+def _build_validation_summary(validations):
+    summary = {
+        "assessed": 0,
+        "high": 0,
+        "medium": 0,
+        "low": 0,
+        "passed": 0,
+        "pass_pct": 0,
+    }
+    for check in validations or []:
+        summary["assessed"] += 1
+
+        severity = str(check.get("severity") or "").strip().lower()
+        if severity == "high":
+            summary["high"] += 1
+        elif severity in {"moderate", "medium"}:
+            summary["medium"] += 1
+        elif severity == "low":
+            summary["low"] += 1
+
+        if str(check.get("status") or "").strip().lower() == "pass":
+            summary["passed"] += 1
+
+    if summary["assessed"]:
+        summary["pass_pct"] = round((summary["passed"] / summary["assessed"]) * 100)
+
+    return summary
+
+
 def _build_evaluate_summary(sections, domain, extra_context=None):
     section_by_id = _section_map(sections)
     total_sections = len(sections or [])
@@ -658,6 +693,7 @@ def _build_evaluate_summary(sections, domain, extra_context=None):
         recommendations.append("Tenant configuration coverage looks healthy. Proceed with detailed migration validation.")
 
     security_validations = _run_security_validations(sections or [], extra_context=extra_context)
+    validation_summary = _build_validation_summary(security_validations)
 
     return {
         "domain": domain,
@@ -670,6 +706,7 @@ def _build_evaluate_summary(sections, domain, extra_context=None):
         "readiness_band": readiness_band,
         "groups": group_results,
         "security_validations": security_validations,
+        "validation_summary": validation_summary,
         "recommendations": recommendations,
     }
 
@@ -1301,6 +1338,46 @@ def index():
         )
 
         # ===================================================
+        # ENTITY RISK POLICIES
+        # ===================================================
+        logger.info("Comparing entity risk policies.")
+        entity_risk_diffs, entity_risk_matches_raw = compare_entity_risk_policies(
+            envA_domain, envA_token,
+            envB_domain, envB_token
+        )
+        entity_risk_matches_display = [
+            {
+                "Category": m["Category"], "Object": m["Object"], "Attribute": m["Attribute"],
+                "Env A Value": m["Value"], "Env B Value": m["Value"], "Difference Type": "Match",
+                "Impact": "", "Recommended Action": "", "Priority": "🟢 Match"
+            } for m in entity_risk_matches_raw
+        ]
+        entity_risk_df = pd.DataFrame(entity_risk_diffs + entity_risk_matches_display)
+        entity_risk_summary_counts = pd.DataFrame(entity_risk_diffs)["Priority"].value_counts().to_dict() if entity_risk_diffs else {}
+        entity_risk_total_diff = len(entity_risk_diffs)
+        logger.info("Entity risk policies comparison complete: diffs=%s matches=%s", len(entity_risk_diffs), len(entity_risk_matches_raw))
+
+        # ===================================================
+        # IDENTITY THREAT PROTECTION POLICIES
+        # ===================================================
+        logger.info("Comparing identity threat protection policies.")
+        post_auth_diffs, post_auth_matches_raw = compare_post_auth_session_policies(
+            envA_domain, envA_token,
+            envB_domain, envB_token
+        )
+        post_auth_matches_display = [
+            {
+                "Category": m["Category"], "Object": m["Object"], "Attribute": m["Attribute"],
+                "Env A Value": m["Value"], "Env B Value": m["Value"], "Difference Type": "Match",
+                "Impact": "", "Recommended Action": "", "Priority": "🟢 Match"
+            } for m in post_auth_matches_raw
+        ]
+        post_auth_df = pd.DataFrame(post_auth_diffs + post_auth_matches_display)
+        post_auth_summary_counts = pd.DataFrame(post_auth_diffs)["Priority"].value_counts().to_dict() if post_auth_diffs else {}
+        post_auth_total_diff = len(post_auth_diffs)
+        logger.info("Identity threat protection policies comparison complete: diffs=%s matches=%s", len(post_auth_diffs), len(post_auth_matches_raw))
+
+        # ===================================================
         # BRAND SETTINGS
         # ===================================================
         logger.info("Comparing brand settings.")
@@ -1866,6 +1943,142 @@ def index():
             len(origin_matches_raw),
         )
 
+        # ===================================================
+        # EVENT HOOKS
+        # ===================================================
+        logger.info("Comparing event hooks.")
+        event_hook_diffs, event_hook_matches_raw = compare_event_hooks(
+            envA_domain, envA_token,
+            envB_domain, envB_token
+        )
+
+        event_hook_matches_display = [
+            {
+                "Category": m["Category"],
+                "Object": m["Object"],
+                "Attribute": m["Attribute"],
+                "Env A Value": m["Value"],
+                "Env B Value": m["Value"],
+                "Difference Type": "Match",
+                "Impact": "",
+                "Recommended Action": "",
+                "Priority": "🟢 Match"
+            } for m in event_hook_matches_raw
+        ]
+
+        event_hook_df = pd.DataFrame(event_hook_diffs + event_hook_matches_display)
+        event_hook_summary_counts = (
+            pd.DataFrame(event_hook_diffs)["Priority"].value_counts().to_dict() if event_hook_diffs else {}
+        )
+        event_hook_total_diff = len(event_hook_diffs)
+        logger.info(
+            "Event hooks comparison complete: diffs=%s matches=%s",
+            len(event_hook_diffs),
+            len(event_hook_matches_raw),
+        )
+
+        # ===================================================
+        # INLINE HOOKS
+        # ===================================================
+        logger.info("Comparing inline hooks.")
+        inline_hook_diffs, inline_hook_matches_raw = compare_inline_hooks(
+            envA_domain, envA_token,
+            envB_domain, envB_token
+        )
+
+        inline_hook_matches_display = [
+            {
+                "Category": m["Category"],
+                "Object": m["Object"],
+                "Attribute": m["Attribute"],
+                "Env A Value": m["Value"],
+                "Env B Value": m["Value"],
+                "Difference Type": "Match",
+                "Impact": "",
+                "Recommended Action": "",
+                "Priority": "🟢 Match"
+            } for m in inline_hook_matches_raw
+        ]
+
+        inline_hook_df = pd.DataFrame(inline_hook_diffs + inline_hook_matches_display)
+        inline_hook_summary_counts = (
+            pd.DataFrame(inline_hook_diffs)["Priority"].value_counts().to_dict() if inline_hook_diffs else {}
+        )
+        inline_hook_total_diff = len(inline_hook_diffs)
+        logger.info(
+            "Inline hooks comparison complete: diffs=%s matches=%s",
+            len(inline_hook_diffs),
+            len(inline_hook_matches_raw),
+        )
+
+        # ===================================================
+        # ACCESS CONTROLS - ATTACK PROTECTION
+        # ===================================================
+        logger.info("Comparing attack protection controls.")
+        attack_protection_diffs, attack_protection_matches_raw = compare_attack_protection(
+            envA_domain, envA_token,
+            envB_domain, envB_token
+        )
+
+        attack_protection_matches_display = [
+            {
+                "Category": m["Category"],
+                "Object": m["Object"],
+                "Attribute": m["Attribute"],
+                "Env A Value": m["Value"],
+                "Env B Value": m["Value"],
+                "Difference Type": "Match",
+                "Impact": "",
+                "Recommended Action": "",
+                "Priority": "🟢 Match"
+            } for m in attack_protection_matches_raw
+        ]
+
+        attack_protection_df = pd.DataFrame(attack_protection_diffs + attack_protection_matches_display)
+        attack_protection_summary_counts = (
+            pd.DataFrame(attack_protection_diffs)["Priority"].value_counts().to_dict() if attack_protection_diffs else {}
+        )
+        attack_protection_total_diff = len(attack_protection_diffs)
+        logger.info(
+            "Attack protection comparison complete: diffs=%s matches=%s",
+            len(attack_protection_diffs),
+            len(attack_protection_matches_raw),
+        )
+
+        # ===================================================
+        # GROUP PUSH MAPPINGS
+        # ===================================================
+        logger.info("Comparing group push mappings.")
+        group_push_diffs, group_push_matches_raw = compare_group_push_mappings(
+            envA_domain, envA_token,
+            envB_domain, envB_token
+        )
+
+        group_push_matches_display = [
+            {
+                "Category": m["Category"],
+                "Object": m["Object"],
+                "Attribute": m["Attribute"],
+                "Env A Value": m["Value"],
+                "Env B Value": m["Value"],
+                "Difference Type": "Match",
+                "Impact": "",
+                "Recommended Action": "",
+                "Priority": "🟢 Match"
+            } for m in group_push_matches_raw
+        ]
+
+        group_push_df = pd.DataFrame(group_push_diffs + group_push_matches_display)
+        group_push_summary_counts = (
+            pd.DataFrame(group_push_diffs)["Priority"].value_counts().to_dict() if group_push_diffs else {}
+        )
+        group_push_total_diff = len(group_push_diffs)
+        logger.info(
+            "Group push mappings comparison complete: diffs=%s matches=%s",
+            len(group_push_diffs),
+            len(group_push_matches_raw),
+        )
+
 
         # ===================================================
         # GLOBAL SESSION POLICIES (policies + rules together)
@@ -1913,6 +2126,8 @@ def index():
             + access_diffs
             + idp_diffs
             + profile_diffs
+            + entity_risk_diffs
+            + post_auth_diffs
             + brand_diffs
             + brand_pages_diffs
             + brand_email_diffs
@@ -1930,6 +2145,10 @@ def index():
             + schema_diffs
             + mapping_diffs
             + origin_diffs
+            + event_hook_diffs
+            + inline_hook_diffs
+            + attack_protection_diffs
+            + group_push_diffs
         )
         all_matches_raw = (
             group_matches_raw
@@ -1943,6 +2162,8 @@ def index():
             + access_matches_raw
             + idp_matches_raw
             + profile_matches_raw
+            + entity_risk_matches_raw
+            + post_auth_matches_raw
             + brand_matches_raw
             + brand_pages_matches_raw
             + brand_email_matches_raw
@@ -1960,6 +2181,10 @@ def index():
             + schema_matches_raw
             + mapping_matches_raw
             + origin_matches_raw
+            + event_hook_matches_raw
+            + inline_hook_matches_raw
+            + attack_protection_matches_raw
+            + group_push_matches_raw
         )
         LAST_EXPORT["diffs"] = all_diffs
         LAST_EXPORT["matches"] = all_matches_raw
@@ -2026,6 +2251,16 @@ def index():
             profile_df=profile_df.to_dict(orient="records"),
             profile_summary_counts=profile_summary_counts,
             profile_total_diff=profile_total_diff,
+
+            # Entity Risk Policies
+            entity_risk_df=entity_risk_df.to_dict(orient="records"),
+            entity_risk_summary_counts=entity_risk_summary_counts,
+            entity_risk_total_diff=entity_risk_total_diff,
+
+            # Identity Threat Protection Policies
+            post_auth_df=post_auth_df.to_dict(orient="records"),
+            post_auth_summary_counts=post_auth_summary_counts,
+            post_auth_total_diff=post_auth_total_diff,
 
             # Brand Settings
             brand_df=brand_df.to_dict(orient="records"),
@@ -2111,6 +2346,26 @@ def index():
             origin_df=origin_df.to_dict(orient="records"),
             origin_summary_counts=origin_summary_counts,
             origin_total_diff=origin_total_diff,
+
+            # Event Hooks
+            event_hook_df=event_hook_df.to_dict(orient="records"),
+            event_hook_summary_counts=event_hook_summary_counts,
+            event_hook_total_diff=event_hook_total_diff,
+
+            # Inline Hooks
+            inline_hook_df=inline_hook_df.to_dict(orient="records"),
+            inline_hook_summary_counts=inline_hook_summary_counts,
+            inline_hook_total_diff=inline_hook_total_diff,
+
+            # Access Controls - Attack Protection
+            attack_protection_df=attack_protection_df.to_dict(orient="records"),
+            attack_protection_summary_counts=attack_protection_summary_counts,
+            attack_protection_total_diff=attack_protection_total_diff,
+
+            # Group Push Mappings
+            group_push_df=group_push_df.to_dict(orient="records"),
+            group_push_summary_counts=group_push_summary_counts,
+            group_push_total_diff=group_push_total_diff,
 
             # Global Session Policies (combined)
             session_df=session_df.to_dict(orient="records"),
