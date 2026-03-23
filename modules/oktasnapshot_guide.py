@@ -33,6 +33,7 @@ from scripts.oktasnapshot_attack_protection import get_attack_protection_view
 from scripts.oktasnapshot_group_push_mappings import get_group_push_mappings_view
 from scripts.oktasnapshot_entity_risk_policies import get_entity_risk_policies_view
 from scripts.oktasnapshot_post_auth_session_policies import get_post_auth_session_policies_view
+from scripts.oktasnapshot_agents import get_agents_view
 
 logging.basicConfig(
     level=logging.INFO,
@@ -135,6 +136,7 @@ def build_oktasnapshot_guide(domain, api_token):
     group_push_mappings = get_group_push_mappings_view(domain, api_token) or []
     entity_risk_policies, entity_risk_rules = get_entity_risk_policies_view(domain, api_token)
     post_auth_policies, post_auth_rules = get_post_auth_session_policies_view(domain, api_token)
+    agents = get_agents_view(domain, api_token) or []
 
     authz_access_combined = []
     for row in authz_access_policies:
@@ -279,6 +281,7 @@ def build_oktasnapshot_guide(domain, api_token):
         _section("inline-hooks", "Inline Hooks", inline_hooks),
         _section("attack-protection", "Access Controls - Attack Protection", attack_protection),
         _section("group-push-mappings", "Group Push Mappings", group_push_mappings),
+        _section("agents", "Agents", agents),
     ]
 
     export_rows = _export_rows_from_sections(sections)

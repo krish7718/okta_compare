@@ -298,7 +298,7 @@ hr {
         OktaSnapshot <span class="tool-pill">Live</span>
       </a>
       <a class="tool-button" href="/evaluate">
-        OktaEvaluate <span class="tool-pill">Soon</span>
+        OktaEvaluate <span class="tool-pill">Live</span>
       </a>
       <a class="tool-button" href="/migrate">
         OktaMigrate <span class="tool-pill">Soon</span>
@@ -757,6 +757,19 @@ hr {
         <div class="badge">🟡 Low: {{ group_push_summary_counts.get('🟡 Low', 0) }}</div>
       </div>
       <button onclick="viewDetails('grouppush')">View Details</button>
+  </div>
+
+  <!-- Agents -->
+  <div class="summary-card">
+      <div class="entity-label">Entity</div>
+      <h4>Agents</h4>
+      <div class="total">Total Differences: <strong>{{ agent_total_diff }}</strong></div>
+      <div class="counts">
+        <div class="badge">🔴 Critical: {{ agent_summary_counts.get('🔴 Critical', 0) }}</div>
+        <div class="badge">🟠 Medium: {{ agent_summary_counts.get('🟠 Medium', 0) }}</div>
+        <div class="badge">🟡 Low: {{ agent_summary_counts.get('🟡 Low', 0) }}</div>
+      </div>
+      <button onclick="viewDetails('agents')">View Details</button>
   </div>
 
   <!-- Global Session Policies (combined) -->
@@ -1932,6 +1945,46 @@ hr {
     </table>
     {% else %}
       <p>No group push mapping differences detected.</p>
+    {% endif %}
+  </div>
+</section>
+
+<!-- AGENTS DETAIL -->
+<section id="agents-section" style="margin-top: 30px;">
+  <div id="agents-toggle" class="toggle-header" onclick="toggleSection('agents')">
+      <span class="chevron">▶</span> Entity: Agents – Detailed Comparison
+  </div>
+
+  <div id="agents-comparison" style="display:none; margin-top: 10px;">
+    {% if agent_df %}
+    <table>
+      <tr>
+        <th>Category</th><th>Object</th><th>Attribute</th>
+        <th>Env A Value</th><th>Env B Value</th>
+        <th>Difference Type</th><th>Impact</th>
+        <th>Recommended Action</th><th>Priority</th>
+      </tr>
+      {% for row in agent_df %}
+      <tr class="
+          {% if '🔴' in row['Priority'] %}table-row-critical
+          {% elif '🟠' in row['Priority'] %}table-row-medium
+          {% elif '🟡' in row['Priority'] %}table-row-low
+          {% else %}table-row-matched{% endif %}
+      ">
+        <td>{{ row['Category'] }}</td>
+        <td>{{ row['Object'] }}</td>
+        <td>{{ row['Attribute'] }}</td>
+        <td>{{ row['Env A Value'] }}</td>
+        <td>{{ row['Env B Value'] }}</td>
+        <td>{{ row['Difference Type'] }}</td>
+        <td>{{ row['Impact'] }}</td>
+        <td>{{ row['Recommended Action'] }}</td>
+        <td>{{ row['Priority'] }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}
+      <p>No agent differences detected.</p>
     {% endif %}
   </div>
 </section>

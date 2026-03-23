@@ -45,6 +45,7 @@ from modules.attack_protection import compare_attack_protection
 from modules.group_push_mappings import compare_group_push_mappings
 from modules.entity_risk_policies import compare_entity_risk_policies
 from modules.post_auth_session_policies import compare_post_auth_session_policies
+from modules.agents import compare_agents
 from modules.oktasnapshot_guide import build_oktasnapshot_guide
 
 # ----------------------------------------------------
@@ -1020,11 +1021,6 @@ def _run_security_validations(sections, extra_context=None):
         for row in group_rule_rows
         if _looks_like_inactive(row.get("Status"))
     ]
-    group_rules_without_target = [
-        str(row.get("Rule Name") or "Unnamed Rule")
-        for row in group_rule_rows
-        if _blankish(row.get("Then"))
-    ]
     validations.extend([
         _identity_validation(
             "Disabled Group Rules",
@@ -1035,23 +1031,24 @@ def _run_security_validations(sections, extra_context=None):
             "No group rule data was available for rule status validation.",
             data_available=bool(group_rule_rows),
         ),
-        _identity_validation(
-            "Group Rules Without Target Assignment",
-            "High",
-            group_rules_without_target,
-            lambda items: f"{len(items)} group rule(s) do not have an assignment target in the extracted action set.",
-            "All group rules have an explicit target assignment.",
-            "No group rule data was available for action validation.",
-            data_available=bool(group_rule_rows),
-        ),
     ])
 
     # Network zones
     zone_rows = _section_rows(section_by_id, "network-zones")
-    inactive_zones = [
+    network_policy_rows = _section_rows(section_by_id, "global-session-policies", entry_type="Rule") + _section_rows(
+        section_by_id,
+        "authentication-policies",
+        entry_type="Rule",
+    )
+    zone_usage_blob = " ".join(
+        json.dumps(row.get("Conditions Network"), sort_keys=True, default=str)
+        for row in network_policy_rows
+    )
+    unused_network_zones = [
         str(row.get("Name") or "Unnamed Zone")
         for row in zone_rows
-        if _looks_like_inactive(row.get("Status"))
+        if str(row.get("Name") or "").strip()
+        and str(row.get("Name")).lower() not in zone_usage_blob.lower()
     ]
     empty_trusted_zones = [
         str(row.get("Name") or "Unnamed Zone")
@@ -1062,13 +1059,13 @@ def _run_security_validations(sections, extra_context=None):
     ]
     validations.extend([
         _identity_validation(
-            "Inactive Network Zones",
+            "Network Zones Defined But Not Used In Policies",
             "Low",
-            inactive_zones,
-            lambda items: f"{len(items)} network zone(s) are not active.",
-            "All network zones are active.",
+            unused_network_zones,
+            lambda items: f"{len(items)} network zone(s) are defined but not referenced by extracted session or app sign-on policy rules.",
+            "All defined network zones are referenced by extracted session or app sign-on policy rules, or no network zones are configured.",
             "No network zone data was available for validation.",
-            data_available=True,
+            data_available=bool(zone_rows),
         ),
         _identity_validation(
             "Trusted Network Zones Without Entries",
@@ -1139,7 +1136,7 @@ def _run_security_validations(sections, extra_context=None):
         ),
         _identity_validation(
             "Password-Based Application Sign-On Modes Present",
-            "High",
+            "Low",
             password_based_apps,
             lambda items: f"{len(items)} application(s) use password-based or SWA-style sign-on modes.",
             "No password-based or SWA-style application sign-on modes were detected.",
@@ -3772,6 +3769,40 @@ def index():
             len(group_push_matches_raw),
         )
 
+        # ===================================================
+        # AGENTS
+        # ===================================================
+        logger.info("Comparing agents.")
+        agent_diffs, agent_matches_raw = compare_agents(
+            envA_domain, envA_token,
+            envB_domain, envB_token
+        )
+
+        agent_matches_display = [
+            {
+                "Category": m["Category"],
+                "Object": m["Object"],
+                "Attribute": m["Attribute"],
+                "Env A Value": m["Value"],
+                "Env B Value": m["Value"],
+                "Difference Type": "Match",
+                "Impact": "",
+                "Recommended Action": "",
+                "Priority": "🟢 Match"
+            } for m in agent_matches_raw
+        ]
+
+        agent_df = pd.DataFrame(agent_diffs + agent_matches_display)
+        agent_summary_counts = (
+            pd.DataFrame(agent_diffs)["Priority"].value_counts().to_dict() if agent_diffs else {}
+        )
+        agent_total_diff = len(agent_diffs)
+        logger.info(
+            "Agents comparison complete: diffs=%s matches=%s",
+            len(agent_diffs),
+            len(agent_matches_raw),
+        )
+
 
         # ===================================================
         # GLOBAL SESSION POLICIES (policies + rules together)
@@ -3842,6 +3873,7 @@ def index():
             + inline_hook_diffs
             + attack_protection_diffs
             + group_push_diffs
+            + agent_diffs
         )
         all_matches_raw = (
             group_matches_raw
@@ -3878,6 +3910,7 @@ def index():
             + inline_hook_matches_raw
             + attack_protection_matches_raw
             + group_push_matches_raw
+            + agent_matches_raw
         )
         LAST_EXPORT["diffs"] = all_diffs
         LAST_EXPORT["matches"] = all_matches_raw
@@ -4059,6 +4092,11 @@ def index():
             group_push_df=group_push_df.to_dict(orient="records"),
             group_push_summary_counts=group_push_summary_counts,
             group_push_total_diff=group_push_total_diff,
+
+            # Agents
+            agent_df=agent_df.to_dict(orient="records"),
+            agent_summary_counts=agent_summary_counts,
+            agent_total_diff=agent_total_diff,
 
             # Global Session Policies (combined)
             session_df=session_df.to_dict(orient="records"),

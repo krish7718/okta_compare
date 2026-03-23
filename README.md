@@ -172,6 +172,7 @@ Press `Ctrl+C` in the terminal running the Flask server.
 | Inline Hooks | Inline hook name | Full inline hook settings signature including type, status, channel/config, auth scheme, and version (IDs/links/timestamps excluded) |
 | Access Controls - Attack Protection | Object/component name | Authenticator settings, user lockout settings, bot protection config, org-wide CAPTCHA settings, behavior detection rules, and CAPTCHA instance metadata |
 | Group Push Mappings | App + source/target group mapping | Full group push mapping settings per app using list/detail mapping endpoints |
+| Agents | Agent pool name | Full agent pool settings signature including pool metadata and update settings from `/api/v1/agentPools/{poolId}/updates/settings` (IDs/links/timestamps excluded) |
 
 Notes:
 - Compare currently covers all supported entities listed above.
@@ -219,6 +220,7 @@ Notes:
 | Inline Hooks | Extracted | Inline hook inventory/settings |
 | Access Controls - Attack Protection | Extracted | Authenticator settings, user lockout, behaviors, bot protection, CAPTCHA instances, and org CAPTCHA settings |
 | Group Push Mappings | Extracted | Group push mappings with app context and mapping settings |
+| Agents | Extracted | Agent pool inventory and update settings |
 
 ## OktaEvaluate
 
@@ -236,15 +238,15 @@ Perform tenant security assessment checks and generate an exportable validation 
 
 | Check Area | Example Checks | Severity |
 |---|---|---|
-| App Sign-On / Authentication Policies | Catch-all/default deny posture | High |
+| App Sign-On / Authentication Policies | Catch-all/default deny posture, MFA every sign-in heuristics, Admin Console MFA posture | High / Moderate |
 | Session Security | Session lifetime exceeds recommended 2 hours | High |
 | Security Notifications | Password changed, suspicious activity, sign-on, factor enrollment/reset notifications | High |
 | MFA / Factor Enrollment | Weaker factors configured; optional factors in factor enrollment policies | High / Moderate |
 | Password Policies | Weak password policy heuristics (complexity/lockout/common passwords) | Moderate |
-| Network Zones | Presence of blocklisted zone | Moderate |
-| Applications | Missing access policy, Everyone assignment, password-based/SWA sign-on modes, disabled SAML apps | High / Moderate / Low |
-| Hooks / Trusted Origins | Unverified hooks, hooks without auth scheme, inactive hooks, insecure trusted origins | High / Moderate |
-| Admin Governance | Super admin exposure, unused custom admin roles, resource sets without bindings/resources, admin public client applications | High / Moderate / Low |
+| Network Zones | Presence of blocklisted zone, unused zones, trusted zones without entries | Moderate / Low |
+| Applications | Everyone assignment, password-based/SWA sign-on modes, disabled SAML apps | High / Moderate / Low |
+| Hooks / Trusted Origins | Unverified hooks, hooks without auth scheme, inactive hooks, insecure trusted origins | High / Low |
+| Admin Governance | Super admin exposure, unused custom admin roles, resource sets without bindings/resources, admin public client applications, token network restrictions | High / Moderate / Low |
 | Risk / Threat Controls | ThreatInsight blocking, attack-protection settings not enforcing, entity-risk and identity-threat-policy coverage | High |
 | Identity Risks (Users / Admins / Tokens) | No MFA, pending MFA, old password, unused accounts, SSO bypass/direct access, super admins with API tokens, unrotated API tokens, partially off-boarded users, unused custom admin roles | High / Moderate / Low |
 
@@ -253,43 +255,103 @@ Notes:
 - Checks that couldn't be supported defensibly from native Okta API data were removed rather than shown as placeholder informational findings.
 - Some policy checks are heuristics based on extracted policy rule conditions and actions, especially around MFA every sign-in and direct-access posture.
 
-### Entity-Based Checks
+### Check Catalog
 
-| Entity | OktaEvaluate Checks |
-|---|---|
-| Organization Settings | Organization support metadata completeness |
-| Security General Settings | Password changed notifications, suspicious activity reporting, new sign-on notifications, factor enrollment notifications, factor reset notifications |
-| Groups | Groups missing description |
-| Group Rules | Disabled group rules, group rules without target assignment |
-| Network Zones | Blocklisted network zone presence, inactive network zones, trusted network zones without entries |
-| Applications | Applications assigned to Everyone, password-based/SWA sign-on modes, disabled SAML applications |
-| Authenticators | Weak authenticators enabled, phishing-resistant authenticator availability |
-| MFA Enrollment Policies | Weaker factors in MFA enrollment policies, optional factors in MFA enrollment policies, required authenticator coverage |
-| Password Policies | Password policy strength |
-| Global Session Policies | Session lifetime less than or equal to 2 hours, high-risk/new-device MFA every sign-in heuristics |
-| Authentication Policies | Catch-all/default deny, tenant-wide MFA enforcement heuristics, high-risk/new-device MFA every sign-in heuristics, Admin Console MFA every sign-in heuristic |
-| Entity Risk Policies | Active entity risk policy rule coverage |
-| Identity Threat Protection Policies | Active identity threat protection policy rule coverage |
-| Identity Providers | Inactive identity providers, inactive IdP discovery rules |
-| Authorization Servers | Authorization servers without automatic key rotation, authorization server access rules with broad client scope |
-| Custom Admin Roles | Custom admin roles missing description, unused administrative roles |
-| Resource Sets | Resource sets without resources, resource sets without bindings |
-| Admin Assignments | Group-based admin assignments present, admin public client applications present, super admin count checks, admin/user inactivity checks |
-| API Tokens | Super admin with API token, unrotated keys and tokens, unused keys and tokens, tokens owned by inactive users, network restriction checks |
-| Brand Settings | Brands missing custom privacy policy URL |
-| Brand Email Templates | Email templates missing subject or body |
-| Trusted Origins | Insecure trusted origins (`http://`) |
-| Event Hooks | Unverified event hooks, event hooks without authentication scheme, inactive event hooks |
-| Inline Hooks | Inline hooks without authentication scheme, inactive inline hooks |
-| Access Controls - Attack Protection | Attack protection controls not enforcing, ThreatInsight blocking posture |
-| Realms | Inactive realms, realm default assignment coverage |
-| Profile Schema - User | Sensitive writable profile attributes |
-| Profile Mappings | Empty profile mappings |
-| Group Push Mappings | Inactive group push mappings, stale group push mappings |
-| Users / Accounts | No MFA, pending MFA, no MFA enforced, old password, unused account, partially off-boarded user, SSO bypass/direct access |
-| Admin Accounts | No MFA, pending MFA, old password, unused admin accounts, direct access, old-password/no-MFA/unused toxic combinations |
-| Super Admin Accounts | No MFA, pending MFA, old password, unused global admin accounts, super admin with API token |
-| Potential Service Accounts | Old password, unused account, console access, admin service-account variants |
+The table below lists the current `OktaEvaluate` checks with stable IDs. The prefix is meaningful to the control area, and the numeric suffix is unique within that area.
+
+| Check ID | Check | Severity |
+|---|---|---|
+| `ORG-01` | Organization Support Metadata Completeness | Moderate |
+| `SEC-01` | Password Changed Notifications | High |
+| `SEC-02` | Suspicious Activity Reporting for End Users | High |
+| `SEC-03` | New Sign-On Notifications | High |
+| `SEC-04` | Factor Enrollment Notifications | High |
+| `SEC-05` | Factor Reset Notifications | High |
+| `SEC-06` | ThreatInsight Blocking | High |
+| `GRP-01` | Groups Missing Description | Low |
+| `GRR-01` | Disabled Group Rules | Low |
+| `NET-01` | Blocklisted Network Zone Presence | Moderate |
+| `NET-02` | Network Zones Defined But Not Used In Policies | Low |
+| `NET-03` | Trusted Network Zones Without Entries | Moderate |
+| `AUT-01` | Weak Authenticators Enabled | High |
+| `AUT-02` | Phishing-Resistant Authenticator Availability | High |
+| `MFA-01` | Weaker Factors in MFA Enrollment Policies | High |
+| `MFA-02` | Optional Factors in MFA Enrollment Policies | Moderate |
+| `MFA-03` | Required Authenticator in MFA Enrollment Policies | High |
+| `PWD-01` | Password Policy Strength | Moderate |
+| `APP-01` | SAML Authentication Supported but Disabled Apps | High |
+| `APP-02` | Applications Assigned to Everyone | Moderate |
+| `APP-03` | Password-Based Application Sign-On Modes Present | Low |
+| `APP-04` | App Sign-On Policy Catch-All Deny | High |
+| `SES-01` | Session Lifetime <= 2 Hours | High |
+| `POL-01` | High-Risk Request MFA Every Sign-In | High |
+| `POL-02` | New Device MFA Every Sign-In | Moderate |
+| `POL-03` | Admin Console MFA Every Sign-In | High |
+| `POL-04` | Entity Risk Policy Rule Coverage | High |
+| `POL-05` | Identity Threat Protection Policy Rule Coverage | High |
+| `IDP-01` | Inactive Identity Providers | Low |
+| `IDP-02` | Inactive IdP Discovery Rules | Low |
+| `AS-01` | Authorization Servers Without Automatic Key Rotation | Moderate |
+| `AS-02` | Authorization Server Access Rules With Broad Client Scope | Moderate |
+| `CAR-01` | Custom Admin Roles Missing Description | Low |
+| `RST-01` | Resource Sets Without Resources | Moderate |
+| `RST-02` | Resource Sets Without Bindings | Moderate |
+| `ADM-01` | Admin Public Client Applications Present | Moderate |
+| `ADM-02` | No MFA - Admin Account | High |
+| `ADM-03` | Pending MFA - Admin Account | High |
+| `ADM-04` | No MFA Enforced - Admin Account | Moderate |
+| `ADM-05` | SSO Bypass - Admin | High |
+| `ADM-06` | SSO Bypass + No MFA - Admin | High |
+| `ADM-07` | Old Password - Admin Account | High |
+| `ADM-08` | Old Password - Admin Service Account | High |
+| `ADM-09` | Unused Admin Account | High |
+| `ADM-10` | Unused Admin Service Account | High |
+| `ADM-11` | Unused Administrative Roles | High |
+| `ADM-12` | Service Account with Console Access - Admin | High |
+| `ADM-13` | Old Password, No MFA, Unused Admin Accounts | High |
+| `ADM-14` | Old Password, No MFA, Unused Admin Service Accounts | High |
+| `ADM-15` | Unrotated and Unused Keys and Tokens - Admin | High |
+| `ADM-16` | Unrotated Keys and Tokens - Admin | High |
+| `ADM-17` | Unused Keys and Tokens - Admins | High |
+| `GAD-01` | No MFA - Global Admin Account | High |
+| `GAD-02` | Pending MFA - Global Admin Account | High |
+| `GAD-03` | No MFA Enforced - Global Admin Account | High |
+| `GAD-04` | Old Password - Global Admin Account | High |
+| `GAD-05` | Old Password - Global Admin Service Account | High |
+| `GAD-06` | Unused Global Admin Account | High |
+| `GAD-07` | Unused Global Admin Service Account | High |
+| `GAD-08` | Excessive Number of Super Admins | High |
+| `GAD-09` | Super Admin with API Token | High |
+| `API-01` | API Tokens Without Network Restrictions | High |
+| `BRD-01` | Brands Missing Custom Privacy Policy URL | Low |
+| `TOR-01` | Insecure Trusted Origins | High |
+| `EVH-01` | Unverified Event Hooks | High |
+| `EVH-02` | Event Hooks Without Authentication Scheme | High |
+| `EVH-03` | Inactive Event Hooks | Low |
+| `INH-01` | Inline Hooks Without Authentication Scheme | High |
+| `INH-02` | Inactive Inline Hooks | Low |
+| `ATP-01` | Attack Protection Controls Not Enforcing | High |
+| `RLM-01` | Inactive Realms | Low |
+| `RLM-02` | Realm Default Assignment Coverage | High |
+| `PRF-01` | Sensitive Writable Profile Attributes | High |
+| `PRF-02` | Empty Profile Mappings | Moderate |
+| `GPM-01` | Inactive Group Push Mappings | Low |
+| `GPM-02` | Stale Group Push Mappings | Low |
+| `USR-01` | No MFA - Account | Moderate |
+| `USR-02` | Pending MFA | Moderate |
+| `USR-03` | SSO Bypass - Account | Moderate |
+| `USR-04` | SSO Bypass + No MFA - Account | High |
+| `USR-05` | Old Password - Account | Moderate |
+| `USR-06` | Old Password - Service Account | Moderate |
+| `USR-07` | Unused Account | Low |
+| `USR-08` | Unused Service Account | Low |
+| `USR-09` | Partially Off-boarded User | High |
+| `USR-10` | Service Account with Console Access - Account | Low |
+| `USR-11` | Old Password, No MFA, Unused Accounts | High |
+| `USR-12` | Old Password, No MFA, Unused Service Accounts | High |
+| `USR-13` | Unrotated and Unused Keys and Tokens - Account | Moderate |
+| `USR-14` | Unrotated Keys and Tokens - Account | Moderate |
+| `USR-15` | Unused Keys and Tokens - Account | Low |
 
 ## OktaMigrate
 
