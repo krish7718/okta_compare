@@ -1,4 +1,5 @@
 import json
+import logging
 
 from scripts.extract_profile_mappings import (
     get_idp_app_user_types,
@@ -7,6 +8,7 @@ from scripts.extract_profile_mappings import (
 )
 
 _SKIP_KEYS = {"id", "_links", "links", "created", "lastUpdated", "lastUpdatedBy", "_embedded"}
+logger = logging.getLogger("okta_compare")
 
 
 def _sanitize(value):
@@ -57,12 +59,22 @@ def compare_profile_mappings(envA_domain, envA_token, envB_domain, envB_token, l
     idp_types_b = get_idp_app_user_types(baseB, envB_token) or []
     idp_names_a = {t.get("name") for t in idp_types_a if t.get("name")}
     idp_names_b = {t.get("name") for t in idp_types_b if t.get("name")}
+    logger.info(
+        "Profile mapping compare: resolved %s Env A IdP type(s) and %s Env B IdP type(s).",
+        len(idp_names_a),
+        len(idp_names_b),
+    )
 
     diffs = []
     matches = []
 
     mappingsA = get_profile_mappings(baseA, envA_token) or []
     mappingsB = get_profile_mappings(baseB, envB_token) or []
+    logger.info(
+        "Profile mapping compare: fetched %s Env A mapping(s) and %s Env B mapping(s).",
+        len(mappingsA),
+        len(mappingsB),
+    )
 
     def _mapping_key(mapping):
         source = mapping.get("source") or {}
@@ -78,8 +90,21 @@ def compare_profile_mappings(envA_domain, envA_token, envB_domain, envB_token, l
 
     dictA = {_mapping_key(m): m for m in mappingsA if _is_idp_mapping(m, idp_names_a)}
     dictB = {_mapping_key(m): m for m in mappingsB if _is_idp_mapping(m, idp_names_b)}
+    logger.info(
+        "Profile mapping compare: filtered to %s Env A mapping(s) and %s Env B mapping(s).",
+        len(dictA),
+        len(dictB),
+    )
 
+    compared = 0
     for key, mapA in dictA.items():
+        compared += 1
+        if compared == 1 or compared % 25 == 0:
+            logger.info(
+                "Profile mapping compare progress: processing mapping %s/%s.",
+                compared,
+                len(dictA),
+            )
         if key not in dictB:
             diffs.append({
                 "Category": "Profile Mappings",
@@ -145,4 +170,9 @@ def compare_profile_mappings(envA_domain, envA_token, envB_domain, envB_token, l
                 "Priority": "🟡 Low"
             })
 
+    logger.info(
+        "Profile mapping compare complete: diffs=%s matches=%s.",
+        len(diffs),
+        len(matches),
+    )
     return diffs, matches

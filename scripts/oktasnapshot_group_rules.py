@@ -12,9 +12,13 @@ logger = logging.getLogger("okta_compare")
 def get_group_rules_view(domain_url, api_token):
     logger.info("Fetching group rules for OktaView.")
     groups_map = get_groups_map(domain_url, api_token) or {}
+    logger.info("Resolved %s group name mapping(s) for group rule rendering.", len(groups_map))
     rules = get_group_rules(domain_url, api_token) or []
+    logger.info("Rendering %s group rule row(s) for OktaView.", len(rules))
     rows = []
-    for rule in rules:
+    for idx, rule in enumerate(rules, start=1):
+        if idx == 1 or idx % 25 == 0:
+            logger.info("Group rule rendering progress: processing rule %s/%s.", idx, len(rules))
         conditions = rule.get("conditions", {}).get("expression", {}).get("value", "") or ""
         for group_id, group_name in groups_map.items():
             conditions = conditions.replace(group_id, group_name)
@@ -41,4 +45,5 @@ def get_group_rules_view(domain_url, api_token):
             "Then": then_text,
             "Except": except_text,
         })
+    logger.info("Completed OktaView group rule rendering with %s row(s).", len(rows))
     return rows

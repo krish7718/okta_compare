@@ -2343,14 +2343,17 @@ def _build_validation_summary(validations):
         "high": 0,
         "medium": 0,
         "low": 0,
+        "high_passed": 0,
+        "medium_passed": 0,
+        "low_passed": 0,
         "high_failed": 0,
         "medium_failed": 0,
         "low_failed": 0,
         "passed": 0,
         "pass_pct": 0,
-        "high_fail_pct": 0,
-        "medium_fail_pct": 0,
-        "low_fail_pct": 0,
+        "high_pass_pct": 0,
+        "medium_pass_pct": 0,
+        "low_pass_pct": 0,
     }
     for check in validations or []:
         summary["assessed"] += 1
@@ -2359,14 +2362,20 @@ def _build_validation_summary(validations):
         status = str(check.get("status") or "").strip().lower()
         if severity == "high":
             summary["high"] += 1
+            if status == "pass":
+                summary["high_passed"] += 1
             if status == "fail":
                 summary["high_failed"] += 1
         elif severity in {"moderate", "medium"}:
             summary["medium"] += 1
+            if status == "pass":
+                summary["medium_passed"] += 1
             if status == "fail":
                 summary["medium_failed"] += 1
         elif severity == "low":
             summary["low"] += 1
+            if status == "pass":
+                summary["low_passed"] += 1
             if status == "fail":
                 summary["low_failed"] += 1
 
@@ -2376,11 +2385,11 @@ def _build_validation_summary(validations):
     if summary["assessed"]:
         summary["pass_pct"] = round((summary["passed"] / summary["assessed"]) * 100)
     if summary["high"]:
-        summary["high_fail_pct"] = round((summary["high_failed"] / summary["high"]) * 100)
+        summary["high_pass_pct"] = round((summary["high_passed"] / summary["high"]) * 100)
     if summary["medium"]:
-        summary["medium_fail_pct"] = round((summary["medium_failed"] / summary["medium"]) * 100)
+        summary["medium_pass_pct"] = round((summary["medium_passed"] / summary["medium"]) * 100)
     if summary["low"]:
-        summary["low_fail_pct"] = round((summary["low_failed"] / summary["low"]) * 100)
+        summary["low_pass_pct"] = round((summary["low_passed"] / summary["low"]) * 100)
 
     return summary
 
@@ -4712,6 +4721,21 @@ def okta_evaluate_export_pdf():
             "security_validations": [],
             "overall_score": "",
             "readiness_band": "",
+            "check_prefix_legend": CHECK_PREFIX_LEGEND,
+            "validation_summary": {
+                "assessed": 0,
+                "passed": 0,
+                "high": 0,
+                "medium": 0,
+                "low": 0,
+                "high_passed": 0,
+                "medium_passed": 0,
+                "low_passed": 0,
+                "pass_pct": 0,
+                "high_pass_pct": 0,
+                "medium_pass_pct": 0,
+                "low_pass_pct": 0,
+            },
         },
     )
     pdf = HTML(string=html).write_pdf()

@@ -32,8 +32,11 @@ def get_network_zones(domain_url, api_token):
     logger.info("Fetching network zones for OktaView.")
     url = f"{base}/api/v1/zones"
     zones = get_paginated(url, _headers(api_token), "Error fetching network zones") or []
+    logger.info("Fetched %s network zone record(s) for OktaView.", len(zones))
     results = []
-    for zone in zones:
+    for idx, zone in enumerate(zones, start=1):
+        if idx == 1 or idx % 10 == 0:
+            logger.info("Network zone rendering progress: processing zone %s/%s.", idx, len(zones))
         results.append({
             "Name": zone.get("name"),
             "Status": zone.get("status"),
@@ -41,4 +44,5 @@ def get_network_zones(domain_url, api_token):
             "Proxies": _extract_values(zone.get("proxies", [])),
             "Usage": zone.get("usage"),
         })
+    logger.info("Completed OktaView network zone rendering with %s row(s).", len(results))
     return results

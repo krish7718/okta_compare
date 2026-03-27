@@ -46,7 +46,10 @@ def get_applications(domain_url, api_token, limit=200):
     url = f"{base}/api/v1/apps?limit={limit}"
 
     apps = []
+    page = 0
     while url:
+        page += 1
+        logger.info("Requesting applications page %s.", page)
         resp = requests.get(url, headers=headers)
         if resp.status_code != 200:
             logger.error("Error fetching applications: %s %s", resp.status_code, resp.text)
@@ -60,10 +63,22 @@ def get_applications(domain_url, api_token, limit=200):
 
         if isinstance(data, list):
             apps.extend(data)
+            logger.info(
+                "Fetched %s application(s) from page %s; accumulated total=%s.",
+                len(data),
+                page,
+                len(apps),
+            )
         else:
             # unexpected shape, attempt to handle common wrapper
             if isinstance(data, dict) and 'applications' in data and isinstance(data['applications'], list):
                 apps.extend(data['applications'])
+                logger.info(
+                    "Fetched %s application(s) from wrapped page %s; accumulated total=%s.",
+                    len(data['applications']),
+                    page,
+                    len(apps),
+                )
             else:
                 logger.error("Unexpected response format for applications: %s", type(data))
                 break
@@ -71,9 +86,12 @@ def get_applications(domain_url, api_token, limit=200):
         next_link = resp.headers.get('Link')
         if next_link and 'rel="next"' in next_link:
             url = next_link.split(';')[0].strip('<>')
+            logger.info("Applications pagination continues after page %s.", page)
         else:
             url = None
+            logger.info("Applications pagination complete after %s page(s).", page)
 
+    logger.info("Returning %s total application(s).", len(apps))
     return apps
 
 
@@ -97,7 +115,9 @@ def get_application_groups(domain_url, api_token, app_id):
     url = f"{base}/api/v1/apps/{app_id}/groups"
 
     groups = []
+    page = 0
     while url:
+        page += 1
         resp = requests.get(url, headers=headers)
         if resp.status_code != 200:
             logger.error(
@@ -116,6 +136,14 @@ def get_application_groups(domain_url, api_token, app_id):
 
         if isinstance(data, list):
             groups.extend(data)
+            if page == 1 or page % 5 == 0:
+                logger.info(
+                    "Fetched %s group assignment(s) for app_id=%s on page %s; accumulated total=%s.",
+                    len(data),
+                    app_id,
+                    page,
+                    len(groups),
+                )
         else:
             logger.error("Unexpected response format for application groups: %s", type(data))
             break
@@ -126,6 +154,7 @@ def get_application_groups(domain_url, api_token, app_id):
         else:
             url = None
 
+    logger.info("Completed application group fetch for app_id=%s with %s total group assignment(s).", app_id, len(groups))
     return groups
 
 
@@ -169,4 +198,6 @@ def get_application_features(domain_url, api_token, app_id):
         logger.error("Invalid JSON received for application features (app %s)", app_id)
         return []
 
-    return data if isinstance(data, list) else []
+    features = data if isinstance(data, list) else []
+    logger.info("Fetched %s feature flag(s) for app_id=%s.", len(features), app_id)
+    return features

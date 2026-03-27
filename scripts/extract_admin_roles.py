@@ -17,14 +17,26 @@ def _ensure_domain_str(domain_url):
 
 
 def _get_json(url, headers, error_label):
-    resp = requests.get(url, headers=headers)
+    try:
+        resp = requests.get(url, headers=headers)
+    except requests.RequestException as exc:
+        logger.warning("%s: request failed (%s)", error_label, exc)
+        return None, None
+
     if resp.status_code != 200:
-        logger.error("%s: %s %s", error_label, resp.status_code, resp.text)
+        if resp.status_code in {403, 404}:
+            logger.info(
+                "%s: %s returned; feature may not be enabled or available in this tenant.",
+                error_label,
+                resp.status_code,
+            )
+        else:
+            logger.warning("%s: %s %s", error_label, resp.status_code, resp.text)
         return None, resp
     try:
         return resp.json(), resp
     except ValueError:
-        logger.error("Invalid JSON received for %s", error_label)
+        logger.warning("Invalid JSON received for %s", error_label)
         return None, resp
 
 

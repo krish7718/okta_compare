@@ -19,7 +19,7 @@ def _headers(api_token):
 
 def _get_group_names(base, api_token, app_id):
     url = f"{base}/api/v1/apps/{app_id}/groups"
-    groups = get_paginated(url, _headers(api_token), "Error fetching application groups") or []
+    groups = get_paginated(url, _headers(api_token), "Fetching application groups") or []
     names = []
     for group in groups:
         profile = group.get("profile") or {}
@@ -46,6 +46,33 @@ def _format_attribute_statements(statements):
     return "; ".join(formatted)
 
 
+def _format_endpoint_list(items):
+    if not items:
+        return ""
+    formatted = []
+    for item in items:
+        if isinstance(item, str):
+            formatted.append(item)
+            continue
+        if isinstance(item, dict):
+            value = item.get("url") or item.get("acsUrl") or item.get("location") or item.get("value")
+            if value:
+                binding = item.get("binding")
+                index = item.get("index")
+                parts = [str(value)]
+                meta = []
+                if binding:
+                    meta.append(str(binding))
+                if index is not None:
+                    meta.append(f"index={index}")
+                if meta:
+                    parts.append(f"({' '.join(meta)})")
+                formatted.append(" ".join(parts))
+                continue
+        formatted.append(json.dumps(item, sort_keys=True, default=str))
+    return ", ".join(formatted)
+
+
 def _format_saml_settings(app_settings, signon_settings):
     return {
         "Single Sign-On URL": signon_settings.get("ssoAcsUrl"),
@@ -64,7 +91,7 @@ def _format_saml_settings(app_settings, signon_settings):
         "Request Compressed": signon_settings.get("requestCompressed"),
         "Signed Request Enabled": signon_settings.get("samlSignedRequestEnabled"),
         "Allow Multiple ACS Endpoints": signon_settings.get("allowMultipleAcsEndpoints"),
-        "ACS Endpoints": ", ".join(signon_settings.get("acsEndpoints") or []),
+        "ACS Endpoints": _format_endpoint_list(signon_settings.get("acsEndpoints") or []),
         "Single Logout Enabled": (signon_settings.get("slo") or {}).get("enabled"),
         "Attribute Statements": _format_attribute_statements(signon_settings.get("attributeStatements")),
         "Audience Override": signon_settings.get("audienceOverride"),
@@ -136,7 +163,7 @@ def _get_policy_name(base, api_token, policy_href, cache):
     policy_id = policy_href.split("/")[-1]
     if policy_id in cache:
         return cache[policy_id]
-    data = get_json(f"{base}/api/v1/policies/{policy_id}", _headers(api_token), "Error fetching access policy")
+    data = get_json(f"{base}/api/v1/policies/{policy_id}", _headers(api_token), "Fetching access policy")
     name = data.get("name") if isinstance(data, dict) else ""
     cache[policy_id] = name or ""
     return cache[policy_id]
@@ -146,7 +173,7 @@ def get_applications(domain_url, api_token):
     base = ensure_domain_str(domain_url).rstrip("/")
     logger.info("Fetching applications for OktaView.")
     url = f'{base}/api/v1/apps?filter=status eq "ACTIVE"&limit=200'
-    apps = get_paginated(url, _headers(api_token), "Error fetching applications") or []
+    apps = get_paginated(url, _headers(api_token), "Fetching applications") or []
     rows = []
     policy_cache = {}
     for app in apps:

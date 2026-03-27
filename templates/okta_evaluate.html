@@ -220,6 +220,7 @@
         </div>
         <div style="display:flex; gap:8px; flex-wrap:wrap;">
           <button class="primary-button" type="button" onclick="window.location.href='/evaluate/export/csv'">Export CSV</button>
+          <button class="primary-button" type="button" onclick="window.location.href='/evaluate/export/pdf'">Export PDF</button>
         </div>
       </div>
       <div class="hero-stats" style="margin-bottom:16px;">
@@ -237,42 +238,42 @@
           </div>
         </div>
         <div class="stat-card pass-card">
-          <div class="pass-ring" style="--progress: {{ evaluation.validation_summary.high_fail_pct }}; --ring-color: #166534;">
+          <div class="pass-ring" style="--progress: {{ evaluation.validation_summary.high_pass_pct }}; --ring-color: #166534;">
             <div class="pass-ring-content">
-              <div class="pass-ring-value low">{{ evaluation.validation_summary.high_fail_pct }}%</div>
+              <div class="pass-ring-value low">{{ evaluation.validation_summary.high_pass_pct }}%</div>
               <div class="pass-ring-label">High</div>
             </div>
           </div>
           <div class="pass-meta">
-            <div class="stat-label" style="margin-bottom:0;">High Severity Failed</div>
-            <div class="stat-value low">{{ evaluation.validation_summary.high_failed }} / {{ evaluation.validation_summary.high }}</div>
-            <div class="stat-context">{{ evaluation.validation_summary.high_failed }} failed out of {{ evaluation.validation_summary.high }} high severity checks</div>
+            <div class="stat-label" style="margin-bottom:0;">High Severity Passed</div>
+            <div class="stat-value low">{{ evaluation.validation_summary.high_passed }} / {{ evaluation.validation_summary.high }}</div>
+            <div class="stat-context">{{ evaluation.validation_summary.high_passed }} passed out of {{ evaluation.validation_summary.high }} high severity checks</div>
           </div>
         </div>
         <div class="stat-card pass-card">
-          <div class="pass-ring" style="--progress: {{ evaluation.validation_summary.medium_fail_pct }}; --ring-color: #166534;">
+          <div class="pass-ring" style="--progress: {{ evaluation.validation_summary.medium_pass_pct }}; --ring-color: #166534;">
             <div class="pass-ring-content">
-              <div class="pass-ring-value low">{{ evaluation.validation_summary.medium_fail_pct }}%</div>
+              <div class="pass-ring-value low">{{ evaluation.validation_summary.medium_pass_pct }}%</div>
               <div class="pass-ring-label">Medium</div>
             </div>
           </div>
           <div class="pass-meta">
-            <div class="stat-label" style="margin-bottom:0;">Medium Severity Failed</div>
-            <div class="stat-value low">{{ evaluation.validation_summary.medium_failed }} / {{ evaluation.validation_summary.medium }}</div>
-            <div class="stat-context">{{ evaluation.validation_summary.medium_failed }} failed out of {{ evaluation.validation_summary.medium }} medium severity checks</div>
+            <div class="stat-label" style="margin-bottom:0;">Medium Severity Passed</div>
+            <div class="stat-value low">{{ evaluation.validation_summary.medium_passed }} / {{ evaluation.validation_summary.medium }}</div>
+            <div class="stat-context">{{ evaluation.validation_summary.medium_passed }} passed out of {{ evaluation.validation_summary.medium }} medium severity checks</div>
           </div>
         </div>
         <div class="stat-card pass-card">
-          <div class="pass-ring" style="--progress: {{ evaluation.validation_summary.low_fail_pct }}; --ring-color: #166534;">
+          <div class="pass-ring" style="--progress: {{ evaluation.validation_summary.low_pass_pct }}; --ring-color: #166534;">
             <div class="pass-ring-content">
-              <div class="pass-ring-value low">{{ evaluation.validation_summary.low_fail_pct }}%</div>
+              <div class="pass-ring-value low">{{ evaluation.validation_summary.low_pass_pct }}%</div>
               <div class="pass-ring-label">Low</div>
             </div>
           </div>
           <div class="pass-meta">
-            <div class="stat-label" style="margin-bottom:0;">Low Severity Failed</div>
-            <div class="stat-value low">{{ evaluation.validation_summary.low_failed }} / {{ evaluation.validation_summary.low }}</div>
-            <div class="stat-context">{{ evaluation.validation_summary.low_failed }} failed out of {{ evaluation.validation_summary.low }} low severity checks</div>
+            <div class="stat-label" style="margin-bottom:0;">Low Severity Passed</div>
+            <div class="stat-value low">{{ evaluation.validation_summary.low_passed }} / {{ evaluation.validation_summary.low }}</div>
+            <div class="stat-context">{{ evaluation.validation_summary.low_passed }} passed out of {{ evaluation.validation_summary.low }} low severity checks</div>
           </div>
         </div>
       </div>
